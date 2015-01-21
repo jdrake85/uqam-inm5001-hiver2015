@@ -6,7 +6,7 @@
 ###Membres:
 
 - Mourad Rezgui (Coordonnateur)
-- Tobie Généreux
+- Tobie Généreux-Vincent
 - Jason Drake
 
 
@@ -25,7 +25,7 @@ Ce jeu s'adresse à toute personne âgée de 13 ans ou plus qui s'intéresserait
 
 ####Fonctionnalités pour l'utilisateur :
 
-- Le jeu est décomposé en plusieurs niveaux, chaque niveau étant une salle d’hôpital; chaque salle, personnage et monstre est modélisé en 3D;
+- Le jeu est décomposé en une série successive de plusieurs niveaux, chaque niveau étant une salle d’hôpital; les niveaux sont composés de tuiles carrées et le jeu se déroule en vue isométrique; chaque salle, personnage et monstre est modélisé en 3D;
 
 - Diriger les actions d'un petit groupe de personnages (2 à 3) lors des combats avec des monstres à l'aide d'une interface graphique, qui indique en particulier des attributs des membres du groupe ainsi que leurs actions possibles;
 
@@ -56,10 +56,12 @@ Comme chaque membre de l'équipe est un programmeur de calibre (au moins) interm
 
 Ensuite, les éléments logiciels qui sont caractéristiques des jeux vidéo, tels que les graphiques et les sons, les animations, l'intelligence artificielle ainsi que l’exécution de tous ces éléments en continu, risque de consommer trop de temps pour être maîtrisés par tous et donc devront sûrement être répartis par catégorie parmi les membres de notre équipe.  Par contre, un de nos membres a déjà des connaissances par rapport à la modélisation en 3D, ce qui allège un peu le développement de ce projet.
 
+Un temps total de 400 heures de travail est alloué à ce projet.  Le jeu contiendra tous les éléments de base typiques d'un jeu stratégique à tour de rôle, mais la complexité stratégique du jeu sera malheureusement restreinte aux fonctionnalités énnoncées ci-haut.  De plus, notre équipe ne comptant aucun artiste profesionnel, la facture visuelle se rapprochera de la demo technique.
+
 
 ####Technologies utilisées :
 
-Notre projet sera principalement développé avec l'engin de jeu *jMonkeyEngine 3.0* , qui permet de créer un jeu en 3D à l'aide de la programmation en Java.  La modélisation en 3D ainsi que les animations seront créées avec le programme *3ds Max*. 
+Notre projet sera principalement développé avec l'engin de jeu *jMonkeyEngine 3.0* basé sur la librairie LWJGL qui permet de créer un jeu en 3D à l'aide de la programmation en Java.  La librairie Nifty GUI, supportée par JMonkey, sera utilisée pour la création des interfaces graphiques.  La modélisation en 3D ainsi que les animations seront créées avec le programme *3ds Max*, et les images et textures seront produites à l'aide de *Gimp* et de *Mudbox*.  La gestion des versions se fera grâce au gestionnaire en ligne *GitHub*.
 
 
 ####Exclusion(s) :

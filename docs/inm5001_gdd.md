@@ -77,7 +77,7 @@ L'utilisateur perd le combat s'il ne reste plus de personnages en vie dans son �
 
 **Jouer son tour (pour l'utilisateur) :**
 
-*Avant de faire une action :*
+*__Avant de faire une action :__*
 
 En plus de la disposition des créatures dans le niveau, l'utilisateur peut consulter plusieurs autres sources visuelles d'information avant de décider de faire une action avec un personnage.  En particulier :
 La bannière des tours indique l'ordre des tours (courant et futurs) des créatures dans le niveau
@@ -85,23 +85,23 @@ Le nombre de vies (health) de tous les personnages (dont le personnage courant) 
 Le nombre de vies des monstres est affiché à la fois dans l'espace de jeu et dans la bannière des tours, ainsi que le nom des monstres (afin de facilité leur identification)
 Le montant d’énergie du personnage courant est affiché dans son panneau correspondant
 
-*Actions :*
+*__Actions :__*
 
 Durant le tour d'un de ses personnage, l'utilisateur peut décider les actions de celui-ci en utilisant le panneau de personnage correspondant.  Comme chaque action consomme de l’énergie, l’utilisateur doit judicieusement choisir une ou plusieurs actions durant le tour.  Il doit aussi prendre en considération les vies de chaque ennemi, qui se retrouveront sous la forme d'une barre chiffrée à la fois en dessous de l'ennemi dans l'espace de jeu et en dessous du portrait correspondant dans la bannière des tours.
 
 Le panneau du personnage contient tous les actions possibles durant le tour, dont :
 
-*1. Move :*
+1. __Move__ :
 Permet de déplacer le personnage d'un certain nombre de cases dans le terrain du niveau .  
 
 Après un click de la souris sur le bouton Move, les cases auxquelles le personnage peut se rendre seront illuminés graphiquement dans l'espace de jeu.
 
 Un click subséquent dans une des cases illuminées déplaceront ce personnage, et un click sur un autre bouton annulera l'illumination des cases (aucun déplacement du personnage).
 
-*2. End Turn :*
+2. __End Turn__ :
 Termine le tour courant, et donc le tour passe à la prochaine créature (contrôlé ou non par l'utilisateur) dans la bannière des tours.
 
-*3. Skill (1, 2, 3 ou 4)*
+3. __Skill (1, 2, 3 ou 4)__
 Permet d'effectuer une attaque ou habilité spéciale d'un personnage.
 
 Après un click de la souris sur le bouton du Skill, les cases auxquelles le skill peut être 	appliquer seront illuminés graphiquement dans l'espace de jeu.
@@ -137,4 +137,4 @@ ___
 
 Les niveaux auront des dimensions de 8x8 cases.  
 
-Pour plus de détails sur les niveaux, les personnages, les armes, les skills ou les monstres, consulter les images jpeg scannées dans le répertoire *2015-01-21 INM 5001 G30 Projet* dans [Dropbox](https://www.dropbox.com).  
+Pour plus de détails sur les niveaux, les personnages, les armes, les skills ou les monstres, consulter les images jpeg scannées dans le répertoire *2015-01-21 INM 5001 G30 Projet* sur [Dropbox](https://www.dropbox.com).  

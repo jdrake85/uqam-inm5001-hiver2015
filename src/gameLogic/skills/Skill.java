@@ -2,13 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package gameLogic;
+package gameLogic.skills;
 
 /**
  *
  * @author User
  */
-public class Skill {
+public abstract class Skill {
     int level = 8;
     boolean hasKnockback = false;
     boolean hasImpair = false;
@@ -33,13 +33,18 @@ public class Skill {
         return name;
     }
     
+    // The child skill must describe the action performed
+    public abstract void performAtFrom
+            (int targetXCoord, int targetYCoord, int sourceXCoord, int sourceYCoord);
+    
+    // The child skill must determine if its action can be performed
+    public abstract boolean performableAtFrom
+            (int targetXCoord, int targetYCoord, int sourceXCoord, int sourceYCoord);
+    
     public boolean performableWithEnergy(int energy) {
         return energy >= energyCost;
     }
-    
-    public boolean performableAt(int xCoord, int yCoord) {
-        return true; // TODO
-    }
+
     
     public boolean getHasKnockback() {
         return hasKnockback; 

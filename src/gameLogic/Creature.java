@@ -4,6 +4,8 @@
  */
 package gameLogic;
 
+import gameLogic.skills.Skill;
+
 /**
  *
  * @author User
@@ -39,13 +41,24 @@ public class Creature extends Entity {
         return this.xCoord == xCoord && this.yCoord == yCoord;
     }
     
+    public int getXCoordinate() {
+        return xCoord;
+    }
+    
+    public int getYCoordinate() {
+        return yCoord;
+    }
+    
     public void useSkillAt(int skillNumber, int xCoord, int yCoord) {
         Skill chosenSkill = skills[skillNumber];
         
         if (chosenSkill.performableWithEnergy(energy) 
-                && chosenSkill.performableAt(xCoord, yCoord)) {
+                && chosenSkill.performableAtFrom
+                    (this.getXCoordinate(), this.getYCoordinate(), xCoord, yCoord)) {
             // TODO
            consumeEnergy(chosenSkill.getEnergyCost());
+        } else {
+            
         }
         
     }

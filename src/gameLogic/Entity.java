@@ -12,6 +12,12 @@ public class Entity {
     int xCoord;
     int yCoord;
     
+    public Entity() {
+        // Default off-map coordinates
+        xCoord = -1;
+        yCoord = -1;
+    }
+    
     public Entity(int xCoord, int yCoord) {
         this.xCoord = xCoord;
         this.yCoord = yCoord;

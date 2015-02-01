@@ -26,7 +26,12 @@ public class Creature extends Entity {
     
     Skill[] skills;
     
+    boolean isGood = true;
     boolean isImpaired = false;
+    
+    public Creature() {
+        super();
+    }
     
     public Creature(int xCoord, int yCoord) {
         super(xCoord, yCoord);
@@ -72,8 +77,41 @@ public class Creature extends Entity {
         health -= (int) (damage / defenseRating);
     }
     
-    public void setImpaired(boolean isImpaired) {
+    public void setIsImpaired(boolean isImpaired) {
         this.isImpaired = isImpaired;
     }
     
+    public void isImpaired(boolean isImpaired) {
+        this.isImpaired = isImpaired;
+    }
+    
+    public void setAlignment(String alignment) {
+        if (alignment.equals("bad")) {
+            isGood = false;
+        } else {
+            isGood = true;
+        }
+    }
+    
+    public boolean isAlignedTo(String alignment) {
+        boolean matchingAlignment;
+        if (alignment.equals("all")) {
+            matchingAlignment = true;
+        } else {
+            matchingAlignment = alignment.equals("good") && isGood 
+                    || alignment.equals("bad") && !isGood;
+        }
+        return matchingAlignment;
+    }
+    
+    public void moveOnceInDirection(String direction) {
+        if (direction.equals("up") && this.getXCoordinate() < 7) {
+            
+        }
+    }
+    
+    public void displayPosition() {
+        System.out.println("Position of creature <" + this + ">: ("
+                + this.getXCoordinate()+ ", " + this.getYCoordinate() + ")");
+    }
 }

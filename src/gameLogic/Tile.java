@@ -28,7 +28,7 @@ public class Tile {
     }
     
     public boolean isOccupiedBy(Creature creature) {
-        return occupier.equals(creature);
+        return occupier != null && occupier.equals(creature);
     }
     
     public Creature getOccupier() {

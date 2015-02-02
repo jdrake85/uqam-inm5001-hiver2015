@@ -60,10 +60,7 @@ public class GameBattle {
         int yCoord = gameboard.getCreatureYCoordinate(creature);
         if (gameboard.validMoveDirectionAccordingToPosition(xCoord, yCoord, direction)) {
             gameboard.moveCreatureInDirection(creature, direction);
-        } else {
-            System.out.println("Error: invalid move direction '" + direction 
-                    + "' for creature <" + creature + ">");
-        }
+        } // error warnings for invalid moves are displayed within the functions called
     }
     
 }

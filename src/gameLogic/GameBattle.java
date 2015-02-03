@@ -11,8 +11,8 @@ import java.util.List;
  * @author User
  */
 public class GameBattle {
-    private Creature creatureHavingTurn;
-    private List<Creature> creatureList;
+    private Creature creatureHavingTurn; // Not used or implemented yet
+    private List<Creature> creatureList; // Fast access to creatures on gameboard
     private GameBoard gameboard;
     
     public GameBattle() {
@@ -53,14 +53,18 @@ public class GameBattle {
         gameboard.insertCreatureAt(creature, xCoord, yCoord);
         refreshCreatureList();
     }
-
-    void moveCreatureInDirection(Creature creature, String direction) {
-        assert(gameboard.containsCreature(creature));
-        int xCoord = gameboard.getCreatureXCoordinate(creature);
-        int yCoord = gameboard.getCreatureYCoordinate(creature);
-        if (gameboard.validMoveDirectionAccordingToPosition(xCoord, yCoord, direction)) {
-            gameboard.moveCreatureInDirection(creature, direction);
-        } // error warnings for invalid moves are displayed within the functions called
-    }
     
+    public boolean creatureCanMoveInDirection(Creature creature, String direction) {
+        assert(gameboard.containsCreature(creature));
+        Coordinates coordinates = gameboard.getCreatureCoordinates(creature);
+        int xCoord = coordinates.getXCoord();
+        int yCoord = coordinates.getYCoord();
+        return gameboard.validMoveAccordingToDirectionRelativeTo(xCoord, yCoord, direction);
+    } 
+
+    public void moveCreatureInDirection(Creature creature, String direction) {
+        assert(creatureCanMoveInDirection(creature, direction));
+        gameboard.moveCreatureInDirection(creature, direction);
+        
+    }
 }

@@ -9,17 +9,13 @@ package gameLogic;
  * @author User
  */
 public class Tile {
-    private final int xCoord;
-    private final int yCoord;
     private Creature occupier = null;
     
-    public Tile(int xCoord, int yCoord) {
-        this.xCoord = xCoord;
-        this.yCoord = yCoord;
+    public Tile() {
+        occupier = null;
     }
     
-    public Tile(int xCoord, int yCoord, Creature occupier) {
-        this(xCoord, yCoord);
+    public Tile(Creature occupier) {
         this.occupier = occupier;
     }
     
@@ -28,7 +24,7 @@ public class Tile {
     }
     
     public boolean isOccupiedBy(Creature creature) {
-        return occupier != null && occupier.equals(creature);
+        return isOccupied() && occupier.equals(creature);
     }
     
     public Creature getOccupier() {
@@ -36,23 +32,14 @@ public class Tile {
     }
     
     public void addOccupier(Creature creature) {
-        assert(!isOccupied());
-        occupier = creature;
+        if (!isOccupied()) {
+            occupier = creature;
+        } else {
+            System.out.println("Error: attempt to stack creatures on same tile");
+        }
     }
     
     public void removeOccupier() {
         occupier = null;
-    }
-    
-    public int getXCoord() {
-        return xCoord;
-    }
-    
-    public int getYCoord() {
-        return yCoord;
-    }
-    
-    public String getCondensedCoordinates() {
-        return "(" + getXCoord() + ", " + getYCoord() + ")";
     }
 }

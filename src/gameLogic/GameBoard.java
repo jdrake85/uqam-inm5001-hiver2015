@@ -19,105 +19,74 @@ public class GameBoard {
 
     public GameBoard() {
         tiles = new Tile[xDim][yDim];
-        initializeTiles();
+        initializeEmptyTiles();
     }
 
-    private void initializeTiles() {
+    private void initializeEmptyTiles() {
         for (int i = 0; i < xDim; i++) {
             for (int j = 0; j < yDim; j++) {
-                tiles[i][j] = new Tile(i, j);
+                tiles[i][j] = new Tile();
             }
         }
     }
 
+    public Tile getTileAt(Coordinates coordinates) {
+        return getTileAt(coordinates.getXCoord(),coordinates.getYCoord());
+    }
+    
     public Tile getTileAt(int xCoord, int yCoord) {
         return tiles[xCoord][yCoord];
     }
+    
+    public static int tileCountBetweenCoordinates
+            (int firstXCoord, int firstYCoord, int secondXCoord, int secondYCoord) {
+        int diffAlongX = secondXCoord - firstXCoord;
+        int diffAlongY = secondYCoord - firstYCoord;
+        int tilesAlongX = diffAlongX > 0 ? diffAlongX : diffAlongX * -1;
+        int tilesAlongY = diffAlongY > 0 ? diffAlongY : diffAlongY * -1;
+        return tilesAlongX + tilesAlongY;
+    }
 
     public void displayCreatureCoordinates(Creature creature) {
-        Tile creatureTile = getTileContainingCreature(creature);
+        Coordinates coordinates = getCreatureCoordinates(creature);
         String outputIntro = "Creature <" + creature + "> was ";
-        if (creatureTile != null) {
+        if (coordinates != null) {
             System.out.println(outputIntro + "found at "
-                    + creatureTile.getCondensedCoordinates());
+                    + coordinates);
         } else {
             System.out.println(outputIntro + "not found on the gameboard.");
         }
     }
 
     public boolean containsCreature(Creature creature) {
-        boolean creatureFound = false;
-        for (int i = 0; i < xDim; i++) {
-            for (int j = 0; j < yDim; j++) {
-                if (tiles[i][j].isOccupiedBy(creature)) {
-                    creatureFound = true;
-                    break;
-                }
-            }
-        }
-        return creatureFound;
+        return getCreatureCoordinates(creature) != null;
     }
     
-    public int getCreatureXCoordinate(Creature creature) {
-        int creatureXCoordinate = -1;
+    public Coordinates getCreatureCoordinates(Creature creature) {
+        Coordinates coordinates = null;
         for (int i = 0; i < xDim; i++) {
             for (int j = 0; j < yDim; j++) {
                 if (tiles[i][j].isOccupiedBy(creature)) {
-                    creatureXCoordinate = i;
+                    coordinates = new Coordinates(i,j);
                     break;
                 }
             }
         }
-        return creatureXCoordinate;
+        return coordinates;
     }
-    
-    public int getCreatureYCoordinate(Creature creature) {
-        int creatureXCoordinate = -1;
-        for (int i = 0; i < xDim; i++) {
-            for (int j = 0; j < yDim; j++) {
-                if (tiles[i][j].isOccupiedBy(creature)) {
-                    creatureXCoordinate = j;
-                    break;
-                }
-            }
-        }
-        return creatureXCoordinate;
-    }
-
-    private Tile getTileContainingCreature(Creature creature) {
-        Tile creatureTile = null;
-        for (int i = 0; i < xDim; i++) {
-            for (int j = 0; j < yDim; j++) {
-                if (tiles[i][j].isOccupiedBy(creature)) {
-                    creatureTile = tiles[i][j];
-                    break;
-                }
-            }
-        }
-        return creatureTile;
-    }
-    
+      
     public void moveCreatureInDirection(Creature creature, String direction) {
-        Tile initialTile = this.getTileContainingCreature(creature);
-        int xCoord = initialTile.getXCoord();
-        int yCoord = initialTile.getYCoord();
-        assert(validMoveDirectionAccordingToPosition(xCoord, yCoord, direction));
-        // redundant for the moment - see GameBattle class
-        Tile destinationTile = 
-                getAdjacentTileAccordingToDirectionRelativeTo(initialTile, direction);
-        assert(destinationTile != null && !destinationTile.isOccupied());
-        destinationTile.addOccupier(creature);
-        initialTile.removeOccupier();
-        assert(destinationTile.isOccupiedBy(creature));
-        assert(!initialTile.isOccupied());
-    }
-    
-    private Tile getAdjacentTileAccordingToDirectionRelativeTo
-            (Tile tile, String direction) {
-        int xCoord = tile.getXCoord();
-        int yCoord = tile.getYCoord();
-        return getAdjacentTileAccordingToDirectionRelativeTo
-            (xCoord, yCoord, direction);
+        Coordinates coordinates = this.getCreatureCoordinates(creature);
+        int xCoord = coordinates.getXCoord();
+        int yCoord = coordinates.getYCoord();
+        if (validMoveAccordingToDirectionRelativeTo(xCoord, yCoord, direction)) {
+            // redundant for the moment - see GameBattle class
+            Tile initialTile = tiles[xCoord][yCoord];
+            Tile destinationTile = 
+                getAdjacentTileAccordingToDirectionRelativeTo(xCoord, yCoord, direction);
+            destinationTile.addOccupier(creature);
+            initialTile.removeOccupier();
+        }
     }
     
     private Tile getAdjacentTileAccordingToDirectionRelativeTo
@@ -135,7 +104,7 @@ public class GameBoard {
         return adjacentTile;
     }
 
-    public boolean validMoveDirectionAccordingToPosition
+    public boolean validMoveAccordingToDirectionRelativeTo
             (int xCoord, int yCoord, String direction) {
         return directionalMoveStaysWithinGameBoard(xCoord, yCoord, direction) && 
         directionalMoveGoesOntoUnoccupiedTile(xCoord, yCoord, direction);
@@ -194,6 +163,4 @@ public class GameBoard {
         assert (!targetTile.isOccupied());
         targetTile.addOccupier(creature);
     }
-
-    
 }

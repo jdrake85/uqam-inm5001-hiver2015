@@ -10,81 +10,82 @@ import gameLogic.skills.Skill;
  *
  * @author User
  */
-public class Creature extends Entity {
+public class Creature {
+
+    static final int COST_OF_STEP = 4;
     int level = 8;
-    
+    String name = "noName";
     int health = 8;
     int maxHealth = 8;
-    
     int energy = 8;
     int maxEnergy = 8;
-    
     int speed = 8;
-    
-    double attackRating = 8;
+    int attack = 8;
     double defenseRating = 8;
-    
     Skill[] skills;
-    
     boolean isGood = true;
     boolean isImpaired = false;
-    
+
     public Creature() {
-        super();
-    }
-    
-    public Creature(int xCoord, int yCoord) {
-        super(xCoord, yCoord);
         skills = new Skill[4];
     }
-    
+
     public boolean isAlive() {
         return health > 0;
     }
     
-    public boolean isAt(int xCoord, int yCoord) {
-        return this.xCoord == xCoord && this.yCoord == yCoord;
+    public boolean canPayEnergyCostForSkillNumber(int skillNumber) {
+        int energyCost = getEneryCostForSkillNumber(skillNumber);
+        return canPayEnergyCostOf(energyCost);
     }
     
-    public int getXCoordinate() {
-        return xCoord;
-    }
-    
-    public int getYCoordinate() {
-        return yCoord;
-    }
-    
-    public void useSkillAt(int skillNumber, int xCoord, int yCoord) {
+    public int getEneryCostForSkillNumber(int skillNumber) {
         Skill chosenSkill = skills[skillNumber];
-        
-        if (chosenSkill.performableWithEnergy(energy) 
-                && chosenSkill.performableAtFrom
-                    (this.getXCoordinate(), this.getYCoordinate(), xCoord, yCoord)) {
-            // TODO
-           consumeEnergy(chosenSkill.getEnergyCost());
-        } else {
-            
-        }
-        
+        return chosenSkill.getEnergyCost();
+    }
+
+    public void consumeEnergyForSkillNumber(int skillNumber) {
+        consumeEnergy(getEneryCostForSkillNumber(skillNumber));
+    }
+    
+    public boolean canPayEnergyCostForSteps(int numberOfSteps) {
+        int energyCost = getEnergyCostForSteps(numberOfSteps);
+        return canPayEnergyCostOf(energyCost);
+    }
+    
+    public int getEnergyCostForSteps(int numberOfSteps) {
+        return numberOfSteps * COST_OF_STEP;
+    }
+    
+    public void consumeEnergyForSteps(int numberOfSteps) {
+        consumeEnergy(getEnergyCostForSteps(numberOfSteps));
     }
     
     private void consumeEnergy(int energyConsumed) {
-        assert(energyConsumed <= energy);
+        assert (canPayEnergyCostOf(energyConsumed));
         energy -= energyConsumed;
     }
     
+    public boolean canPayEnergyCostOf(int energy) {
+        return this.energy >= energy;
+    }
+
+    public int dealDamage() {
+        return attack;
+    }
+
     public void receiveDamage(int damage) {
         health -= (int) (damage / defenseRating);
     }
-    
+
     public void setIsImpaired(boolean isImpaired) {
         this.isImpaired = isImpaired;
     }
-    
+
     public void isImpaired(boolean isImpaired) {
         this.isImpaired = isImpaired;
     }
-    
+
     public void setAlignment(String alignment) {
         if (alignment.equals("bad")) {
             isGood = false;
@@ -92,26 +93,15 @@ public class Creature extends Entity {
             isGood = true;
         }
     }
-    
+
     public boolean isAlignedTo(String alignment) {
         boolean matchingAlignment;
         if (alignment.equals("all")) {
             matchingAlignment = true;
         } else {
-            matchingAlignment = alignment.equals("good") && isGood 
+            matchingAlignment = alignment.equals("good") && isGood
                     || alignment.equals("bad") && !isGood;
         }
         return matchingAlignment;
-    }
-    
-    public void moveOnceInDirection(String direction) {
-        if (direction.equals("up") && this.getXCoordinate() < 7) {
-            
-        }
-    }
-    
-    public void displayPosition() {
-        System.out.println("Position of creature <" + this + ">: ("
-                + this.getXCoordinate()+ ", " + this.getYCoordinate() + ")");
     }
 }

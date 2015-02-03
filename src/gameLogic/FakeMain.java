@@ -20,9 +20,9 @@ public class FakeMain {
     private static void runBattle() {
         GameBattle battle = new GameBattle();
 
-        Creature hero = new Creature();
-        Creature zombie1 = new Creature();
-        Creature zombie2 = new Creature();
+        Creature hero = new Creature("Hero");
+        Creature zombie1 = new Creature("Zombie1");
+        Creature zombie2 = new Creature("Zombie2");
 
         zombie1.setAlignment("bad");
         zombie2.setAlignment("bad");
@@ -34,29 +34,23 @@ public class FakeMain {
         int turnCounter = 1;
         int TURN_LIMIT = 18;
 
-        System.out.print("HERO: ");
         battle.displayCreatureCoordinates(hero);
-        System.out.print("ZOMBIE1: ");
         battle.displayCreatureCoordinates(zombie1);
-        System.out.print("ZOMBIE2: ");
         battle.displayCreatureCoordinates(zombie2);
         System.out.println("------------------------------------");
         System.out.println();
 
         while (battle.containsBadCreatures() && turnCounter <= TURN_LIMIT) {
             if (turnCounter % 2 == 1) {
-                System.out.println("Moving +y...");
+                System.out.println("** Energy is " + hero.getEnergy() + ", trying to move in direction +y...");
                 battle.moveCreatureInDirection(hero, "+y");
             } else {
-                System.out.println("Moving +x...");
+                System.out.println("** Energy is " + hero.getEnergy() + ", trying to move in direction +x...");
                 battle.moveCreatureInDirection(hero, "+x");
             }
 
-            System.out.print("HERO: ");
             battle.displayCreatureCoordinates(hero);
-            System.out.print("ZOMBIE1: ");
             battle.displayCreatureCoordinates(zombie1);
-            System.out.print("ZOMBIE2: ");
             battle.displayCreatureCoordinates(zombie2);
 
             System.out.println();

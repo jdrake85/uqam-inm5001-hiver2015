@@ -49,7 +49,7 @@ public class GameBoard {
 
     public void displayCreatureCoordinates(Creature creature) {
         Coordinates coordinates = getCreatureCoordinates(creature);
-        String outputIntro = "Creature <" + creature + "> was ";
+        String outputIntro = "Creature '" + creature + "' was ";
         if (coordinates != null) {
             System.out.println(outputIntro + "found at "
                     + coordinates);
@@ -76,59 +76,16 @@ public class GameBoard {
     }
       
     public void moveCreatureInDirection(Creature creature, String direction) {
-        Coordinates coordinates = this.getCreatureCoordinates(creature);
-        int xCoord = coordinates.getXCoord();
-        int yCoord = coordinates.getYCoord();
-        if (validMoveAccordingToDirectionRelativeTo(xCoord, yCoord, direction)) {
-            // redundant for the moment - see GameBattle class
-            Tile initialTile = tiles[xCoord][yCoord];
-            Tile destinationTile = 
-                getAdjacentTileAccordingToDirectionRelativeTo(xCoord, yCoord, direction);
+        Coordinates initialCoords = getCreatureCoordinates(creature);
+        if (validDestinationTile(initialCoords, direction)) {
+            Coordinates destinationCoords = initialCoords.coordinatesOneUnitInDirection(direction);
+            Tile initialTile = getTileAt(initialCoords);
+            Tile destinationTile = getTileAt(destinationCoords);
             destinationTile.addOccupier(creature);
             initialTile.removeOccupier();
+        } else {
+            System.out.println("Error: GameBoard request for invalid move");
         }
-    }
-    
-    private Tile getAdjacentTileAccordingToDirectionRelativeTo
-            (int xCoord, int yCoord, String direction) {
-        Tile adjacentTile;
-        if (direction.equals("+x")) {
-            adjacentTile = this.getTileAt(xCoord + 1, yCoord);
-        } else if (direction.equals("+y")) {
-            adjacentTile = this.getTileAt(xCoord, yCoord + 1);
-        } else if (direction.equals("-x")) {
-            adjacentTile = this.getTileAt(xCoord - 1, yCoord);
-        } else {    //direction.equals("-y")) {
-            adjacentTile = this.getTileAt(xCoord, yCoord - 1); 
-        }
-        return adjacentTile;
-    }
-
-    public boolean validMoveAccordingToDirectionRelativeTo
-            (int xCoord, int yCoord, String direction) {
-        return directionalMoveStaysWithinGameBoard(xCoord, yCoord, direction) && 
-        directionalMoveGoesOntoUnoccupiedTile(xCoord, yCoord, direction);
-                
-    }
-    
-    private boolean directionalMoveStaysWithinGameBoard(int xCoord, int yCoord, String direction) {
-        boolean movementWithinGameBoard = direction.equals("+x") && xCoord <= 6
-                || direction.equals("+y") && yCoord <= 6
-                || direction.equals("-x") && xCoord >= 1
-                || direction.equals("-y") && yCoord >= 1;
-        if (!movementWithinGameBoard) {
-            System.out.println("*** Error: attempt to move off the gameboard.");
-        }
-        return movementWithinGameBoard;
-    }
-    
-    public boolean directionalMoveGoesOntoUnoccupiedTile(int xCoord, int yCoord, String direction) {
-        Tile destinationTile = getAdjacentTileAccordingToDirectionRelativeTo(xCoord, yCoord, direction);
-        boolean movementOntoUnoccupiedTile = !destinationTile.isOccupied();
-        if (!movementOntoUnoccupiedTile) {
-            System.out.println("*** Error: attempt to move onto an occupied tile.");
-        }
-        return movementOntoUnoccupiedTile;
     }
 
     public List<Creature> getGoodCreatureList() {
@@ -160,7 +117,38 @@ public class GameBoard {
 
     public void insertCreatureAt(Creature creature, int xCoord, int yCoord) {
         Tile targetTile = tiles[xCoord][yCoord];
-        assert (!targetTile.isOccupied());
-        targetTile.addOccupier(creature);
+        if (!targetTile.isOccupied()) {
+            targetTile.addOccupier(creature);
+        } else {
+            System.out.println("Error: tile at (" + xCoord + ", " + yCoord + ") already occupied");
+        }
+    }
+
+    public boolean validDestinationTile(Creature creature, String direction) {
+        Coordinates coordinates = getCreatureCoordinates(creature);
+        return validDestinationTile(coordinates, direction);
+    }
+    
+    public boolean validDestinationTile(Coordinates coordinates, String direction) {
+        Coordinates coordsAfterMove = coordinates.coordinatesOneUnitInDirection(direction);
+        // Outputs for debugging purposes
+        if (!tileIsWithinGameBoard(coordsAfterMove)) {
+            System.out.println("Error: tile at " + coordsAfterMove + " is outside of the gameboard");
+        } else if (tileIsOccupied(coordsAfterMove)) {
+            Tile targetTile = getTileAt(coordsAfterMove);
+            System.out.println("Error: tile at " + coordsAfterMove + " is already occupied by " + targetTile.getOccupier());
+        }
+        return tileIsWithinGameBoard(coordsAfterMove) && !tileIsOccupied(coordsAfterMove);
+    }
+
+    private boolean tileIsWithinGameBoard(Coordinates coordinates) {
+       int xCoord = coordinates.getXCoord();
+       int yCoord = coordinates.getYCoord();
+       return 0 <= xCoord && xCoord <= 7 && 0 <= yCoord && yCoord <= 7;
+    }
+
+    private boolean tileIsOccupied(Coordinates coordinates) {
+        Tile tile = getTileAt(coordinates);
+        return tile.isOccupied();
     }
 }

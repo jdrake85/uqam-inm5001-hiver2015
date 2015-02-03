@@ -54,17 +54,21 @@ public class GameBattle {
         refreshCreatureList();
     }
     
-    public boolean creatureCanMoveInDirection(Creature creature, String direction) {
-        assert(gameboard.containsCreature(creature));
-        Coordinates coordinates = gameboard.getCreatureCoordinates(creature);
-        int xCoord = coordinates.getXCoord();
-        int yCoord = coordinates.getYCoord();
-        return gameboard.validMoveAccordingToDirectionRelativeTo(xCoord, yCoord, direction);
-    } 
-
     public void moveCreatureInDirection(Creature creature, String direction) {
-        assert(creatureCanMoveInDirection(creature, direction));
-        gameboard.moveCreatureInDirection(creature, direction);
-        
+        if (creatureCanMoveInDirection(creature, direction)) {
+            creature.consumeEnergyForSteps(1);
+            gameboard.moveCreatureInDirection(creature, direction);
+        } // Outputs for debugging purposes handled by Creature/Gameboard classes
+    }
+    
+     public boolean creatureCanMoveInDirection(Creature creature, String direction) {
+       boolean validMove = false;
+       // Outputs for debugging purposes
+       if (!creature.canPayEnergyCostForSteps(1)) {
+           System.out.println("Error: creature does not have energy to move");
+       } else { // Outputs handled by gameboard methods
+           validMove = gameboard.validDestinationTile(creature, direction);
+       }
+        return validMove;
     }
 }

@@ -12,13 +12,13 @@ import gameLogic.skills.Skill;
  */
 public class Creature {
 
-    static final int COST_OF_STEP = 4;
+    static final int COST_OF_STEP = 2;
     int level = 8;
     String name = "noName";
     int health = 8;
     int maxHealth = 8;
-    int energy = 8;
-    int maxEnergy = 8;
+    int energy = 30;
+    int maxEnergy = 30;
     int speed = 8;
     int attack = 8;
     double defenseRating = 8;
@@ -26,19 +26,25 @@ public class Creature {
     boolean isGood = true;
     boolean isImpaired = false;
 
-    public Creature() {
+    public Creature(String name) {
+        this.name = name;
         skills = new Skill[4];
+    }
+    
+    @Override
+    public String toString() {
+        return name;
     }
 
     public boolean isAlive() {
         return health > 0;
     }
-    
+
     public boolean canPayEnergyCostForSkillNumber(int skillNumber) {
         int energyCost = getEneryCostForSkillNumber(skillNumber);
         return canPayEnergyCostOf(energyCost);
     }
-    
+
     public int getEneryCostForSkillNumber(int skillNumber) {
         Skill chosenSkill = skills[skillNumber];
         return chosenSkill.getEnergyCost();
@@ -47,27 +53,34 @@ public class Creature {
     public void consumeEnergyForSkillNumber(int skillNumber) {
         consumeEnergy(getEneryCostForSkillNumber(skillNumber));
     }
-    
+
     public boolean canPayEnergyCostForSteps(int numberOfSteps) {
         int energyCost = getEnergyCostForSteps(numberOfSteps);
         return canPayEnergyCostOf(energyCost);
     }
-    
+
     public int getEnergyCostForSteps(int numberOfSteps) {
         return numberOfSteps * COST_OF_STEP;
     }
-    
+
     public void consumeEnergyForSteps(int numberOfSteps) {
         consumeEnergy(getEnergyCostForSteps(numberOfSteps));
     }
-    
+
     private void consumeEnergy(int energyConsumed) {
-        assert (canPayEnergyCostOf(energyConsumed));
+        if (canPayEnergyCostOf(energyConsumed)) {
         energy -= energyConsumed;
+    } else {
+        System.out.println("Error: not enough energy to perform action");
+        }
     }
-    
+
     public boolean canPayEnergyCostOf(int energy) {
         return this.energy >= energy;
+    }
+    
+    public int getEnergy() {
+        return energy;
     }
 
     public int dealDamage() {

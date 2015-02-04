@@ -6,8 +6,10 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.Vector3f;
+import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import de.lessvoid.nifty.Nifty;
 import java.util.ArrayList;
 
 /**
@@ -16,8 +18,8 @@ import java.util.ArrayList;
  */
 public class Main extends SimpleApplication {
 
-    protected Spatial ninja;
-    protected int posX = 0;
+    public static Spatial ninja;
+    public static int posX = 0;
     protected int posZ = 0;
     protected static Scene scene1;
 
@@ -89,5 +91,18 @@ public class Main extends SimpleApplication {
         ninja.setLocalTranslation(0.0f, -1.0f, 0.0f);
 
         pivot.attachChild(ninja);
+        
+        NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
+    assetManager, inputManager, audioRenderer, guiViewPort);
+/** Create a new NiftyGUI object */
+Nifty nifty = niftyDisplay.getNifty();
+/** Read your XML and initialize your custom ScreenController */
+nifty.fromXml("Interface/screen.xml", "start");
+// nifty.fromXml("Interface/helloworld.xml", "start", new MySettingsScreen(data));
+// attach the Nifty display to the gui view port as a processor
+guiViewPort.addProcessor(niftyDisplay);
+// disable the fly cam
+flyCam.setDragToRotate(true);
+//nifty.fromXml("Interface/screen.xml", "start", new GUIOverlay());
     }
 }

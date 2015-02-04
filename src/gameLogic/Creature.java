@@ -95,8 +95,8 @@ public class Creature {
         this.isImpaired = isImpaired;
     }
 
-    public void isImpaired(boolean isImpaired) {
-        this.isImpaired = isImpaired;
+    public boolean isImpaired() {
+        return this.isImpaired;
     }
 
     public void setAlignment(String alignment) {

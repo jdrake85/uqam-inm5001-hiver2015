@@ -101,7 +101,7 @@ public class GameBoard {
     }
 
     private List<Creature> getCreatureListAccordingToAlignment(String alignment) {
-        ArrayList<Creature> creatures = new ArrayList();
+        ArrayList<Creature> creatures = new ArrayList<Creature>();
         for (int i = 0; i < xDim; i++) {
             for (int j = 0; j < yDim; j++) {
                 if (tiles[i][j].isOccupied()) {

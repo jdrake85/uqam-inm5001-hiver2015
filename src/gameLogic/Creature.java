@@ -20,7 +20,7 @@ public class Creature {
     int energy = 30;
     int maxEnergy = 30;
     int speed = 8;
-    int attack = 8;
+    int power = 8;
     double defenseRating = 8;
     Skill[] skills;
     boolean isGood = true;
@@ -53,6 +53,14 @@ public class Creature {
     public void consumeEnergyForSkillNumber(int skillNumber) {
         consumeEnergy(getEneryCostForSkillNumber(skillNumber));
     }
+    
+    private void consumeEnergy(int energyConsumed) {
+        if (canPayEnergyCostOf(energyConsumed)) {
+        energy -= energyConsumed;
+    } else {    // Debugging?
+        System.out.println("Error: not enough energy to perform action");
+        }
+    }
 
     public boolean canPayEnergyCostForSteps(int numberOfSteps) {
         int energyCost = getEnergyCostForSteps(numberOfSteps);
@@ -67,14 +75,6 @@ public class Creature {
         consumeEnergy(getEnergyCostForSteps(numberOfSteps));
     }
 
-    private void consumeEnergy(int energyConsumed) {
-        if (canPayEnergyCostOf(energyConsumed)) {
-        energy -= energyConsumed;
-    } else {
-        System.out.println("Error: not enough energy to perform action");
-        }
-    }
-
     public boolean canPayEnergyCostOf(int energy) {
         return this.energy >= energy;
     }
@@ -83,8 +83,8 @@ public class Creature {
         return energy;
     }
 
-    public int dealDamage() {
-        return attack;
+    public int getPower() {
+        return power;
     }
 
     public void receiveDamage(int damage) {
@@ -116,5 +116,9 @@ public class Creature {
                     || alignment.equals("bad") && !isGood;
         }
         return matchingAlignment;
+    }
+    
+    public Skill prepareSkill(int skillNumber) { 
+        return skills[skillNumber];
     }
 }

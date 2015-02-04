@@ -9,64 +9,65 @@ package gameLogic.skills;
  * @author User
  */
 public abstract class Skill {
-    int level = 8;
+
+    String name;
     boolean hasKnockback = false;
     boolean hasImpair = false;
-    String name;
-    int energyCost = 0;
-    int damage = 1;
-    
-    public Skill() {
-        // Dummy skill
-        this("attack", 1, 5, 1);
-    }
-    
-    public Skill(String name, int level, int energyCost, int damage) {
+    int energyCost;
+    int power;
+
+    public Skill(String name, int energyCost, int power) {
         this.name = name;
-        this.level = level;
         this.energyCost = energyCost;
-        this.damage = damage;
+        this.power = power;
     }
-    
+
+    public Skill(String name, boolean hasKnockback, boolean hasImpair, int energyCost, int power) {
+        this(name, energyCost, power);
+        this.hasKnockback = hasKnockback;
+        this.hasImpair = hasImpair;
+    }
+
     @Override
-    public String toString() { 
+    public String toString() {
         return name;
     }
-    
+
     // The child skill must describe the action performed
-    public abstract void performAtFrom
-            (int targetXCoord, int targetYCoord, int sourceXCoord, int sourceYCoord);
-    
+    public abstract void performAtFrom(int targetXCoord, int targetYCoord, int sourceXCoord, int sourceYCoord);
+
     // The child skill must determine if its action can be performed
-    public abstract boolean performableAtFrom
-            (int targetXCoord, int targetYCoord, int sourceXCoord, int sourceYCoord);
-    
+    public abstract boolean performableAtFrom(int targetXCoord, int targetYCoord, int sourceXCoord, int sourceYCoord);
+
     public boolean performableWithEnergy(int energy) {
         return energy >= energyCost;
     }
 
-    
     public boolean getHasKnockback() {
-        return hasKnockback; 
+        return hasKnockback;
     }
-    
+
     public void setHasKnockback(boolean hasKnockback) {
-        this.hasKnockback = hasKnockback; 
+        this.hasKnockback = hasKnockback;
     }
-    
+
     public boolean getHasImpair() {
-        return hasImpair; 
+        return hasImpair;
     }
-    
+
     public void setHasImpair(boolean hasImpair) {
-        this.hasImpair = hasImpair; 
+        this.hasImpair = hasImpair;
     }
-    
+
     public int getEnergyCost() {
         return energyCost;
     }
-    
+
     public int getDamage() {
-        return damage;
+        return power;
+    }
+
+    private String getName() {
+        return name;
     }
 }

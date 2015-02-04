@@ -49,6 +49,10 @@ public class GameBattle {
         gameboard.displayCreatureCoordinates(creature);
     }
     
+    public void draw() {
+        gameboard.draw();
+    }
+    
     public void insertCreatureAt(Creature creature, int xCoord, int yCoord) {
         gameboard.insertCreatureAt(creature, xCoord, yCoord);
         refreshCreatureList();
@@ -70,5 +74,16 @@ public class GameBattle {
            validMove = gameboard.validDestinationTile(creature, direction);
        }
         return validMove;
+    }
+     
+     public void useCreatureSkillAt(Creature creature, int skillNumber, Coordinates coords) {
+         if(creatureCanUseSkillAt(creature, skillNumber, coords)) {
+            creature.consumeEnergyForSkillNumber(skillNumber);
+            
+        } // Outputs for debugging purposes handled by Creature/Gameboard classes
+     }
+
+    private boolean creatureCanUseSkillAt(Creature creature, int skillNumber, Coordinates coords) {
+        return false;
     }
 }

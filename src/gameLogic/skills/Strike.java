@@ -9,6 +9,10 @@ package gameLogic.skills;
  * @author User
  */
 public class Strike extends Skill{
+    
+    public Strike(String name, int energyCost, int power) {
+        super(name, energyCost, power);
+    }
 
     @Override
     public void performAtFrom(int targetXCoord, int targetYCoord, int sourceXCoord, int sourceYCoord) {

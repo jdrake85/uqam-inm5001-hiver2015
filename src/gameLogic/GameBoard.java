@@ -151,4 +151,37 @@ public class GameBoard {
         Tile tile = getTileAt(coordinates);
         return tile.isOccupied();
     }
+    
+    public void draw() {
+        for (int j = 7; j >= 0; j--) {
+            String lineDrawing = j + " | ";
+            for (int i = 0; i < 8; i++) {
+                lineDrawing += drawTile(i, j) + " | ";
+            }
+            System.out.println(lineDrawing);
+        }
+        String xAxis = "  |";
+        String xLabels = "   ";
+        for (int n = 0; n < 8; n++) {
+            xAxis += "----";
+            xLabels += " " + n + " |";
+        }
+        System.out.println(xAxis);
+        System.out.println(xLabels);
+    }
+
+    private String drawTile(int i, int j) {
+        Tile tile = tiles[i][j];
+        String tileDrawing = " ";
+        Creature occupier = tile.getOccupier();
+        
+        if (occupier != null) {
+            if (occupier.isGood) {
+                tileDrawing = "H";
+            } else {
+                tileDrawing = "Z";
+            }
+        }
+        return tileDrawing;
+    }
 }

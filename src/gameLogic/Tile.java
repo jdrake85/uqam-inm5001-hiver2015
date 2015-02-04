@@ -4,10 +4,7 @@
  */
 package gameLogic;
 
-/**
- *
- * @author User
- */
+
 public class Tile {
     private Creature occupier = null;
     

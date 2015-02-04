@@ -35,13 +35,17 @@ public class FakeMain {
         //battle.insertCreatureAt(new Creature("OtherHero"), 3, 4);
 
         int turnCounter = 1;
-        int TURN_LIMIT = 306;
+        int TURN_LIMIT = 20;
 
         System.out.println("------------------------------------");
-        System.out.println("-- COMMANDS:          8           --");
+        System.out.println("--- COMMANDS");
+        System.out.println("------------------------------------");
+        System.out.println("-- MOVE:              8           --");
         System.out.println("--                  4   6         --");
         System.out.println("--                    2           --");
-        System.out.println("--                    0(exit)     --");
+        System.out.println("-- GET ENERGY:     5              --");
+        System.out.println("-- EXIT:           0              --");
+        System.out.println("-- GET MORE TURNS: 9              --");
         System.out.println("------------------------------------");
         System.out.println();
 
@@ -56,7 +60,7 @@ public class FakeMain {
 
             System.out.println();
             System.out.println("------------------------------------");
-            System.out.println("--- TURN #" + turnCounter++ + "                      ---");
+            System.out.println("--- TURN #" + turnCounter++ + " out of " + TURN_LIMIT + "   ---");
             System.out.println("------------------------------------");
             
             
@@ -75,8 +79,13 @@ public class FakeMain {
                 battle.moveCreatureInDirection(hero, "-x");
             } else if (command == 6) {
                 battle.moveCreatureInDirection(hero, "+x");
+            } else if (command == 5) {
+                System.out.println("Energy boost +20!");
+                hero.setEnergy(hero.getEnergy()+20);
             } else if (command == 0) {
                 break;
+             } else if (command == 9) {
+                TURN_LIMIT += 5;  
             } else {
                 System.out.println("** Error: unrecognized command, ending turn");
             }

@@ -121,4 +121,8 @@ public class Creature {
     public Skill prepareSkill(int skillNumber) { 
         return skills[skillNumber];
     }
+
+    void setEnergy(int energy) {
+       this.energy = energy;
+    }
 }

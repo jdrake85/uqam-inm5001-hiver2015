@@ -4,6 +4,8 @@
  */
 package gameLogic;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author User
@@ -75,5 +77,29 @@ public class Coordinates {
                     && this.yCoord == trueCoordinates.getYCoord();
         }
         return matching;
+    }
+    
+    public boolean quickEquals(Coordinates coord) {
+        return xCoord == coord.getXCoord() && yCoord == coord.getYCoord();
+    }
+    
+    public Coordinates[] getFourSurroundingCardinalCoordinates() {
+        Coordinates[] surroundingCoords = new Coordinates[4];
+        surroundingCoords[0] = new Coordinates(xCoord, yCoord + 1);
+        surroundingCoords[1] = new Coordinates(xCoord + 1, yCoord);
+        surroundingCoords[2] = new Coordinates(xCoord, yCoord - 1);
+        surroundingCoords[3] = new Coordinates(xCoord - 1, yCoord);
+        return surroundingCoords;
+    }
+    
+    public boolean foundIn(Coordinates[] coordinatesArray) {
+        boolean found = false;
+        for (Coordinates coord: coordinatesArray) {
+            if (this.quickEquals(coord)) {
+                found = true;
+                break;
+            }
+        }
+        return found;
     }
 }

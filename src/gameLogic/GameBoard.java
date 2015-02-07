@@ -29,6 +29,14 @@ public class GameBoard {
             }
         }
     }
+    
+    public int getDimensionAlongXAxis() {
+        return xDim;
+    }
+    
+    public int getDimensionAlongYAxis() {
+        return yDim;
+    }
 
     public Tile getTileAt(Coordinates coordinates) {
         return getTileAt(coordinates.getXCoord(),coordinates.getYCoord());
@@ -38,10 +46,18 @@ public class GameBoard {
         return tiles[xCoord][yCoord];
     }
     
+    public static int tileCountBetweenCoordinates(Coordinates initCoords, Coordinates destCoords) {
+        int initXCoord = initCoords.getXCoord();
+        int initYCoord = initCoords.getYCoord();
+        int destXCoord = destCoords.getXCoord();
+        int destYCoord = destCoords.getYCoord();
+        return tileCountBetweenCoordinates(initXCoord, initYCoord, destXCoord, destYCoord);
+    }
+    
     public static int tileCountBetweenCoordinates
-            (int firstXCoord, int firstYCoord, int secondXCoord, int secondYCoord) {
-        int diffAlongX = secondXCoord - firstXCoord;
-        int diffAlongY = secondYCoord - firstYCoord;
+            (int initXCoord, int initYCoord, int destXCoord, int destYCoord) {
+        int diffAlongX = destXCoord - initXCoord;
+        int diffAlongY = destYCoord - initYCoord;
         int tilesAlongX = diffAlongX > 0 ? diffAlongX : diffAlongX * -1;
         int tilesAlongY = diffAlongY > 0 ? diffAlongY : diffAlongY * -1;
         return tilesAlongX + tilesAlongY;
@@ -147,19 +163,34 @@ public class GameBoard {
        return 0 <= xCoord && xCoord <= 7 && 0 <= yCoord && yCoord <= 7;
     }
 
-    private boolean tileIsOccupied(Coordinates coordinates) {
+    public boolean tileIsOccupied(Coordinates coordinates) {
         Tile tile = getTileAt(coordinates);
         return tile.isOccupied();
     }
     
     public void draw() {
+        draw(null);
+    }
+    
+    public void draw(boolean[][] overlay) {
+        boolean withOverlay = overlay != null;
         for (int j = 7; j >= 0; j--) {
             String lineDrawing = j + " | ";
             for (int i = 0; i < 8; i++) {
-                lineDrawing += drawTile(i, j) + " | ";
+                char tileDrawing = drawTile(i, j);
+                if (tileDrawing == ' ' && withOverlay && overlay[i][j]) {
+                    lineDrawing += '*'; // Move is allowed according to overlay
+                } else {
+                    lineDrawing += drawTile(i, j); 
+                }
+                lineDrawing += " | ";
             }
             System.out.println(lineDrawing);
         }
+        drawXAxisDetails();
+    }
+    
+    private void drawXAxisDetails() {
         String xAxis = "  |";
         String xLabels = "   ";
         for (int n = 0; n < 8; n++) {
@@ -170,18 +201,20 @@ public class GameBoard {
         System.out.println(xLabels);
     }
 
-    private String drawTile(int i, int j) {
+    private char drawTile(int i, int j) {
         Tile tile = tiles[i][j];
-        String tileDrawing = " ";
+        char tileDrawing = ' ';
         Creature occupier = tile.getOccupier();
         
         if (occupier != null) {
             if (occupier.isGood) {
-                tileDrawing = "H";
+                tileDrawing = 'H';
             } else {
-                tileDrawing = "Z";
+                tileDrawing = 'Z';
             }
-        }
+        } 
         return tileDrawing;
     }
+
+    
 }

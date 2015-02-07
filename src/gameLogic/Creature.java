@@ -26,6 +26,8 @@ public class Creature {
     boolean isGood = true;
     boolean isImpaired = false;
 
+    
+    
     public Creature(String name) {
         this.name = name;
         skills = new Skill[4];

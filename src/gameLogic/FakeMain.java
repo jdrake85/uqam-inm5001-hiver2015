@@ -32,7 +32,6 @@ public class FakeMain {
         battle.insertCreatureAt(hero, 0, 0);
         battle.insertCreatureAt(zombie1, 0, 1);
         battle.insertCreatureAt(zombie2, 6, 6);
-        //battle.insertCreatureAt(new Creature("OtherHero"), 3, 4);
 
         int turnCounter = 1;
         int TURN_LIMIT = 20;
@@ -53,7 +52,7 @@ public class FakeMain {
         int command;
 
         System.out.println();
-        battle.draw();
+        battle.drawWithOverlayForValidCreatureMoves(hero);
         System.out.println();
 
         while (battle.containsBadCreatures() && turnCounter <= TURN_LIMIT) {
@@ -89,7 +88,6 @@ public class FakeMain {
             } else {
                 System.out.println("** Error: unrecognized command, ending turn");
             }
-
             
             System.out.println();
             battle.displayCreatureCoordinates(hero);
@@ -97,10 +95,7 @@ public class FakeMain {
             battle.displayCreatureCoordinates(zombie2);
             System.out.println();
             
-            battle.draw();
-
-            
-
+            battle.drawWithOverlayForValidCreatureMoves(hero);
         }
 
         System.out.println("Victory");

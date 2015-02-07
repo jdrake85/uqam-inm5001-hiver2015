@@ -53,9 +53,31 @@ public class GameBattle {
         gameboard.draw();
     }
     
+    public void drawWithOverlayForValidCreatureMoves(Creature creature) {
+        boolean[][] overlay = getValidCreatureMoves(creature);
+        gameboard.draw(overlay);
+    }
+      
     public void insertCreatureAt(Creature creature, int xCoord, int yCoord) {
         gameboard.insertCreatureAt(creature, xCoord, yCoord);
         refreshCreatureList();
+    }
+    
+    public boolean[][] getValidCreatureMoves(Creature creature) { 
+        int xDim = gameboard.getDimensionAlongXAxis();
+        int yDim = gameboard.getDimensionAlongYAxis();
+        boolean validMoves[][] = new boolean[xDim][yDim];
+        for (int i = 0; i < xDim; i++) {
+            for (int j = 0; j < yDim; j++) {
+                Coordinates destCoords = new Coordinates(i, j);
+                if (creatureCanMoveTo(creature, destCoords)) {
+                    validMoves[i][j] = true;
+                } else {
+                    validMoves[i][j] = false;
+                }
+            }
+        }
+        return validMoves;
     }
     
     public void moveCreatureInDirection(Creature creature, String direction) {
@@ -75,6 +97,13 @@ public class GameBattle {
        }
         return validMove;
     }
+     
+     // TODO: implement pathfinding or having the path being blocked
+     private boolean creatureCanMoveTo(Creature creature, Coordinates destCoords) { 
+         Coordinates initCoords = gameboard.getCreatureCoordinates(creature);
+         int stepsRequired = GameBoard.tileCountBetweenCoordinates(initCoords, destCoords);
+         return creature.canPayEnergyCostForSteps(stepsRequired) && !gameboard.tileIsOccupied(destCoords);
+     }
      
      public void useCreatureSkillAt(Creature creature, int skillNumber, Coordinates coords) {
          if(creatureCanUseSkillAt(creature, skillNumber, coords)) {

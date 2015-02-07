@@ -54,6 +54,15 @@ public class GameBoard {
         return tileCountBetweenCoordinates(initXCoord, initYCoord, destXCoord, destYCoord);
     }
     
+    public int tileCountBetweenCreatureAndCoordinates(Creature creature, Coordinates coords) {
+        Coordinates creatureCoords = getCreatureCoordinates(creature);
+        int tileCount = 0;
+        if (creatureCoords != null) {
+            tileCount = tileCountBetweenCoordinates(creatureCoords, coords);
+        }
+        return tileCount;
+    }
+    
     public static int tileCountBetweenCoordinates
             (int initXCoord, int initYCoord, int destXCoord, int destYCoord) {
         int diffAlongX = destXCoord - initXCoord;
@@ -100,7 +109,19 @@ public class GameBoard {
             destinationTile.addOccupier(creature);
             initialTile.removeOccupier();
         } else {
-            System.out.println("Error: GameBoard request for invalid move");
+            System.out.println("Error: GameBattle request for invalid move");
+        }
+    }
+    
+    public void moveCreatureTo(Creature creature, Coordinates destCoords) {
+        if (validDestinationTileAt(destCoords)) {
+            Coordinates initCoords = getCreatureCoordinates(creature);
+            Tile initialTile = getTileAt(initCoords);
+            Tile destinationTile = getTileAt(destCoords);
+            destinationTile.addOccupier(creature);
+            initialTile.removeOccupier();
+        } else {
+            System.out.println("Error: GameBattle request for invalid move");
         }
     }
 
@@ -138,6 +159,10 @@ public class GameBoard {
         } else {
             System.out.println("Error: tile at (" + xCoord + ", " + yCoord + ") already occupied");
         }
+    }
+    
+    public boolean validDestinationTileAt(Coordinates coords) { 
+        return tileIsWithinGameBoard(coords) && !tileIsOccupied(coords);
     }
 
     public boolean validDestinationTile(Creature creature, String direction) {

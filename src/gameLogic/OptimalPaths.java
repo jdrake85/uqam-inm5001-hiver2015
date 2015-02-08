@@ -127,4 +127,17 @@ public class OptimalPaths {
         int yCoord = coords.getYCoord();
         return dCoords[xCoord][yCoord];
     }
+
+    public CoordPath getPathForCreatureToCoordinates(Creature creature, Coordinates destCoords) {
+        CoordPath path = new CoordPath();
+        DijkstraCoord dCoords = coordinatesToDijkstraCoordinates(destCoords);
+        int pathLength = dCoords.getDistance();
+        DijkstraCoord currentDCoords = dCoords;
+        for (int i = 0; i < pathLength; i++) {
+            path.pushEndCoordinates(currentDCoords.getEndCoordinates());
+            Coordinates nextCoords = currentDCoords.getSourceCoordinates();
+            currentDCoords = coordinatesToDijkstraCoordinates(nextCoords);
+        }
+        return path.generateReversePath();
+    }
 }

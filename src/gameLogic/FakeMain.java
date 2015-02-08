@@ -80,16 +80,14 @@ public class FakeMain {
             System.out.println();
 
             System.out.println("** MOVE TO (X,Y): ");
-            try {
+           
                 System.out.print("X = ");
                 commandX = scan.nextInt();
                 System.out.print("Y = ");
                 commandY = scan.nextInt();
                 System.out.println("\nMoving to (" + commandX + ", " + commandY + ')');
                 keepPlaying = playTurn(commandX, commandY, hero, battle);
-            } catch (Exception e) {
-                System.out.println("Error: turn ending due to invalid input or move");
-            }
+            
             
             battle.drawWithOverlayForValidCreatureMoves(hero);
 
@@ -125,5 +123,4 @@ public class FakeMain {
         }
         return keepPlaying;
     }
-   
 }

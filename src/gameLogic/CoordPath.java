@@ -18,7 +18,7 @@ public class CoordPath {
     }
     
     public boolean isEmpty() {
-        return size() > 0;
+        return size() == 0;
     }
     
     public int size() {
@@ -45,4 +45,26 @@ public class CoordPath {
     public Coordinates popFirstCoordinates() {
         return pathElements.remove(0);
     }
+    
+    @Override
+    public String toString() {
+        String message = "Path: ";
+        if (isEmpty()) {
+            message += "empty";
+        } else {
+            for (Coordinates coords: pathElements) {
+                message += " -> " + coords;
+            }
+        }
+        return message;
+    }
+    
+    public CoordPath generateReversePath() { 
+        CoordPath reversePath = new CoordPath();
+        for (int i = pathElements.size() - 1; i >= 0 ; i--) {
+            Coordinates coords = pathElements.get(i);
+            reversePath.pushEndCoordinates(coords);
+        }
+        return reversePath;
+    }    
 }

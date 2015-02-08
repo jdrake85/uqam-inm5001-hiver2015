@@ -111,8 +111,10 @@ public class GameBattle {
 
     public void moveCreatureTo(Creature creature, Coordinates destCoords) {
         if (creatureCanMoveTo(creature, destCoords)) {
+            
             int stepsRequired = gameboard.tileCountBetweenCreatureAndCoordinates(creature, destCoords);
             creature.consumeEnergyForSteps(stepsRequired);
+            System.out.println(paths.getPathForCreatureToCoordinates(creature, destCoords));
             gameboard.moveCreatureTo(creature, destCoords);
         } else {
             System.out.println("Error: creature cannot move to " + destCoords);
@@ -122,8 +124,6 @@ public class GameBattle {
     // TODO: implement pathfinding
     private boolean creatureCanMoveTo(Creature creature, Coordinates destCoords) {
         int availableSteps = creature.maximumStepsAbleToWalk();
-        //System.out.println("Creature can pay for " + stepsRequired + " steps: " + creature.canPayEnergyCostForSteps(stepsRequired));
-        //System.out.println("Destination coordinates " + destCoords + " are valid: " + gameboard.validDestinationTileAt(destCoords));
         return paths.coordinatesReachableInAtMostDistanceOf(destCoords, availableSteps);
     }
 

@@ -26,17 +26,20 @@ public class FakeMain {
         Creature hero = new Creature("Hero");
         Creature zombie1 = new Creature("Zombie1");
         Creature zombie2 = new Creature("Zombie2");
+        Creature zombie3 = new Creature("Zombie3");
 
         zombie1.setAlignment("bad");
         zombie2.setAlignment("bad");
+        zombie3.setAlignment("bad");
 
         battle.insertCreatureAt(hero, 0, 0);
-        battle.insertCreatureAt(zombie1, 0, 1);
+        battle.insertCreatureAt(zombie1, 6, 7);
         battle.insertCreatureAt(zombie2, 6, 6);
+        battle.insertCreatureAt(zombie3, 7, 6);
 
         int turnCounter = 1;
         int TURN_LIMIT = 30;
-        displayAllCreatureCoordinates(battle, hero, zombie1, zombie2);
+        //displayAllCreatureCoordinates(battle, hero, zombie1, zombie2);
 
 
 
@@ -49,6 +52,8 @@ public class FakeMain {
         System.out.println();
 
         boolean keepPlaying = true;
+        
+        //Coordinates targetCoord = new Coordinates(3,3);
 
         while (battle.containsBadCreatures() && turnCounter <= TURN_LIMIT) {
             System.out.println();
@@ -72,10 +77,18 @@ public class FakeMain {
             }
 
             System.out.println();
-            displayAllCreatureCoordinates(battle, hero, zombie1, zombie2);
+            //displayAllCreatureCoordinates(battle, hero, zombie1, zombie2);
             System.out.println();
 
             battle.drawWithOverlayForValidCreatureMoves(hero);
+            
+            int stepsAvailable = hero.getEnergy() / 2;
+            /*
+            System.out.println("TEST: clear path of at most " + stepsAvailable + " steps between hero and " + targetCoord
+                     + ": " + battle.clearPathOfAtMostNStepsBetweenCreatureAndCoordinates(stepsAvailable, hero, targetCoord));*/
+            
+            battle.calculateOptimalPathsForCreature(hero);
+            battle.displayOptimalPaths();
 
             if (!keepPlaying) {
                 break;

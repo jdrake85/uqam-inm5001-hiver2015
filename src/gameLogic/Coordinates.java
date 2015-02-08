@@ -68,15 +68,16 @@ public class Coordinates {
     }
 
     @Override
-    public boolean equals(Object coordinates) {
-        boolean validObject = coordinates != null & coordinates instanceof Coordinates;
-        boolean matching = false;
-        if (validObject) {
-            Coordinates trueCoordinates = (Coordinates) coordinates;
-            matching = this.xCoord == trueCoordinates.getXCoord()
-                    && this.yCoord == trueCoordinates.getYCoord();
+    public boolean equals(Object o) {
+        boolean equality;
+        if (o == null || !(o instanceof Coordinates)) {
+            equality = false;
+        } else {
+            Coordinates coordinates = (Coordinates) o;
+            equality = xCoord == coordinates.getXCoord()
+                    && yCoord == coordinates.getYCoord();
         }
-        return matching;
+        return equality;
     }
     
     public boolean quickEquals(Coordinates coord) {

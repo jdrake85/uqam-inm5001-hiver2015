@@ -14,10 +14,22 @@ public class GameBattle {
 
     private Creature creatureHavingTurn; // Not used or implemented yet
     private List<Creature> creatureList; // Fast access to creatures on gameboard
+    private OptimalPaths paths;
     private GameBoard gameboard;
 
     public GameBattle() {
+        paths = new OptimalPaths(8,8);
         gameboard = new GameBoard();
+    }
+    
+    public void calculateOptimalPathsForCreature(Creature creature) {
+        Coordinates coords = gameboard.getCreatureCoordinates(creature);
+        boolean[][] occupiedTiles = gameboard.getOccupiedTiles();
+        paths.calculatePathsOnBoardForCoordinates(occupiedTiles , coords);
+    }
+    
+    public void displayOptimalPaths() {
+        paths.displayOptimalPaths();
     }
 
     public void refreshCreatureList() {
@@ -127,5 +139,10 @@ public class GameBattle {
 
     private boolean creatureCanUseSkillAt(Creature creature, int skillNumber, Coordinates coords) {
         return false;
+    }
+    
+    public boolean clearPathOfAtMostNStepsBetweenCreatureAndCoordinates(int stepLimit, Creature creautre, Coordinates coord) {
+        Coordinates creatureCoord = gameboard.getCreatureCoordinates(creautre);
+        return gameboard.clearPathOfAtMostNTilesExistsBetween(stepLimit, creatureCoord, coord);
     }
 }

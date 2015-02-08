@@ -6,6 +6,7 @@ package gameLogic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  *
@@ -182,7 +183,7 @@ public class GameBoard {
         return tileIsWithinGameBoard(coordsAfterMove) && !tileIsOccupied(coordsAfterMove);
     }
 
-    private boolean tileIsWithinGameBoard(Coordinates coordinates) {
+    public static boolean tileIsWithinGameBoard(Coordinates coordinates) {
        int xCoord = coordinates.getXCoord();
        int yCoord = coordinates.getYCoord();
        return 0 <= xCoord && xCoord <= 7 && 0 <= yCoord && yCoord <= 7;
@@ -192,6 +193,75 @@ public class GameBoard {
         Tile tile = getTileAt(coordinates);
         return tile.isOccupied();
     }
+    
+    public boolean clearPathOfAtMostNTilesExistsBetween(int tileLimit, Coordinates initCoord, Coordinates destCoord) {
+        ArrayList<Coordinates> excludedMoves = new ArrayList();
+        Stack<Coordinates> nextMoves = new Stack();
+        
+        return clearPathOfAtMostNTilesExistsBetween
+                (excludedMoves, nextMoves, tileLimit, initCoord, destCoord);
+    }
+    
+    private boolean clearPathOfAtMostNTilesExistsBetween
+            (List<Coordinates> excludedMoves, Stack<Coordinates> nextMoves, 
+            int tileLimit, Coordinates initCoord, Coordinates destCoord) {
+        
+        //System.out.println("Running clearPath from " + initCoord);
+        
+        boolean pathFound = initCoord.quickEquals(destCoord) && tileLimit >= 0;
+        /*
+        if (pathFound) { 
+            System.out.println("**** Search complete at " + initCoord);
+        }*/
+        
+        if  (!pathFound && tileLimit >= 0) {
+            //System.out.println("**** Searching for path from " + initCoord + " with " + tileLimit + " moves left");
+            for (Coordinates coord: initCoord.getFourSurroundingCardinalCoordinates()) {
+                if (validDestinationTileAt(coord) && !excludedMoves.contains(coord)) {
+                   // System.out.println("Excluded moves contains " + coord + ": " + excludedMoves.contains(coord));
+                    nextMoves.push(coord);
+                   // System.out.println("    Next coordinate: " + coord);
+                }
+            }
+
+            while (!nextMoves.empty() && !pathFound) {
+                pathFound = clearPathOfAtMostNTilesExistsBetween
+                    (excludedMoves, nextMoves, tileLimit - 1, nextMoves.pop(), destCoord);
+            }
+            
+            excludedMoves.add(initCoord);
+            //System.out.println("Closing " + initCoord + ": " + excludedMoves.contains(initCoord));
+            /*
+            if (!pathFound) {
+                System.out.println("**** No path found starting from " + initCoord);
+            } else {
+                System.out.println("**** Path found passing through " + initCoord);
+            }*/
+            
+        }
+        
+        //System.out.println("Excluded moves: " + excludedMoves);
+        return pathFound;
+    }
+    
+     private ArrayList<Coordinates> getValidUnoccupiedCoordinatesAdjacentTo(Coordinates initCoord) {
+        ArrayList<Coordinates> unoccupiedCoords = new ArrayList();
+        return unoccupiedCoords;
+    }
+     
+     public boolean[][] getOccupiedTiles() {
+         boolean[][] occupiedTiles = new boolean[xDim][yDim];
+         for (int i = 0; i < xDim; i++) {
+             for (int j = 0; j < yDim; j++) {
+                 if (tiles[i][j].isOccupied()) {
+                     occupiedTiles[i][j] = true;
+                 } else {
+                     occupiedTiles[i][j] = false;
+                 }
+             }
+         }
+         return occupiedTiles;
+     }
     
     public void draw() {
         draw(null);
@@ -239,7 +309,5 @@ public class GameBoard {
             }
         } 
         return tileDrawing;
-    }
-
-    
+    }  
 }

@@ -22,7 +22,7 @@ public class OptimalPaths {
         dCoords = new DijkstraCoord[xDim][yDim];
     }
 
-    public void calculatePathsOnBoardForCoordinates(boolean[][] occupiedNodes, Coordinates initCoords) {
+    public void calculateOptimalPathsStartingFromCoordinates(boolean[][] occupiedNodes, Coordinates initCoords) {
         initializeEmptyDijkstraCoords();
         initializeTargetDijkstraCoords(occupiedNodes);
         initializeSourceDijkstraCoords(initCoords); // Adds initial coords to the graph
@@ -81,8 +81,7 @@ public class OptimalPaths {
                     }
                 }
             }
-        }
-        
+        }  
     }
 
     private PriorityQueue<DijkstraCoord> generateQueueFromDijkstraCoords() {
@@ -105,5 +104,27 @@ public class OptimalPaths {
                 }
             }
         }
+    }
+    
+    public boolean[][] getTilesReachableInAtMostNSteps(int stepCount) { 
+        boolean[][] reachableTiles = new boolean[xDim][yDim];
+        for (int i = 0; i < xDim; i++) {
+            for (int j = 0; j < yDim; j++) {
+                reachableTiles[i][j] = (dCoords[i][j] != null) 
+                        && (dCoords[i][j].getSourceCoordinates() != null) 
+                        && (dCoords[i][j].getDistance() <= stepCount);
+            }
+        }
+        return reachableTiles;
+    }
+    
+    public boolean coordinatesReachableInAtMostDistanceOf(Coordinates coords, int distance) { 
+        return coordinatesToDijkstraCoordinates(coords).getDistance() <= distance;
+    }
+    
+    private DijkstraCoord coordinatesToDijkstraCoordinates(Coordinates coords) { 
+        int xCoord = coords.getXCoord();
+        int yCoord = coords.getYCoord();
+        return dCoords[xCoord][yCoord];
     }
 }

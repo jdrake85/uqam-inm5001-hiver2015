@@ -24,6 +24,11 @@ public class FakeMain {
         GameBattle battle = new GameBattle();
 
         Creature hero = new Creature("Hero");
+        
+        //----------------------------------------------------------------------
+        // Set up the scenario here
+        //----------------------------------------------------------------------
+        
         Creature zombie1 = new Creature("Zombie1");
         Creature zombie2 = new Creature("Zombie2");
         Creature zombie3 = new Creature("Zombie3");
@@ -36,12 +41,22 @@ public class FakeMain {
         battle.insertCreatureAt(zombie1, 6, 7);
         battle.insertCreatureAt(zombie2, 6, 6);
         battle.insertCreatureAt(zombie3, 7, 6);
+        
+        for (int i = 0; i < 7; i++) {
+            battle.insertCreatureAt(new Creature("other" + i), i, 1);
+            battle.insertCreatureAt(new Creature("more" + i + 1), i + 1, 3);
+            battle.insertCreatureAt(new Creature("evenMore" + i), i, 5);
+        }
+        
+        battle.removeCreatureAt(4, 3);
+        battle.removeCreatureAt(0, 5);
 
         int turnCounter = 1;
         int TURN_LIMIT = 30;
-        //displayAllCreatureCoordinates(battle, hero, zombie1, zombie2);
-
-
+       
+        //----------------------------------------------------------------------
+        // End of scenario setup
+        //----------------------------------------------------------------------
 
         Scanner scan = new Scanner(System.in);
         int commandX;
@@ -73,22 +88,10 @@ public class FakeMain {
                 System.out.println("\nMoving to (" + commandX + ", " + commandY + ')');
                 keepPlaying = playTurn(commandX, commandY, hero, battle);
             } catch (Exception e) {
-                System.out.println("Error: turn ending due to invalid input");
+                System.out.println("Error: turn ending due to invalid input or move");
             }
-
-            System.out.println();
-            //displayAllCreatureCoordinates(battle, hero, zombie1, zombie2);
-            System.out.println();
-
+            
             battle.drawWithOverlayForValidCreatureMoves(hero);
-            
-            int stepsAvailable = hero.getEnergy() / 2;
-            /*
-            System.out.println("TEST: clear path of at most " + stepsAvailable + " steps between hero and " + targetCoord
-                     + ": " + battle.clearPathOfAtMostNStepsBetweenCreatureAndCoordinates(stepsAvailable, hero, targetCoord));*/
-            
-            battle.calculateOptimalPathsForCreature(hero);
-            battle.displayOptimalPaths();
 
             if (!keepPlaying) {
                 break;
@@ -99,19 +102,12 @@ public class FakeMain {
         System.out.println("Victory");
     }
 
-    private static void displayAllCreatureCoordinates(GameBattle battle, Creature hero, Creature zombie1, Creature zombie2) {
-        battle.displayCreatureCoordinates(hero);
-        battle.displayCreatureCoordinates(zombie1);
-        battle.displayCreatureCoordinates(zombie2);
-    }
-
     private static void displayGameInstructions() {
         System.out.println("------------------------------------");
         System.out.println("--- COMMANDS");
         System.out.println("------------------------------------");
         System.out.println("- Type in X <enter>, then Y <enter> to move to coordinates (X,Y);");
         System.out.println("- To use a turn to receive energy, set X or Y to 8;");
-        //System.out.println("- To use a turn to increase the turn limit, set X or Y to 9;");
         System.out.println("- To end the game, set X or Y to -1;");
         System.out.println("------------------------------------");
     }
@@ -129,4 +125,5 @@ public class FakeMain {
         }
         return keepPlaying;
     }
+   
 }

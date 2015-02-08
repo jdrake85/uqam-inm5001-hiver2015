@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class GameBattle {
 
-    private Creature creatureHavingTurn; // Not used or implemented yet
+    //private Creature creatureHavingTurn; // TODO: Not used or implemented yet
     private List<Creature> creatureList; // Fast access to creatures on gameboard
     private OptimalPaths paths;
     private GameBoard gameboard;
@@ -22,10 +22,17 @@ public class GameBattle {
         gameboard = new GameBoard();
     }
     
-    public void calculateOptimalPathsForCreature(Creature creature) {
-        Coordinates coords = gameboard.getCreatureCoordinates(creature);
+    public boolean[][] getValidMovesOverlayForCreature(Creature creature) {
+        boolean[][] movesOverlay = new boolean[8][8];
+        calculateOptimalPathsForCreature(creature);
+        int stepCount = creature.maximumStepsAbleToWalk();
+        return paths.getTilesReachableInAtMostNSteps(stepCount);
+    }
+    
+    private void calculateOptimalPathsForCreature(Creature creature) {
+        Coordinates initCoords = gameboard.getCreatureCoordinates(creature);
         boolean[][] occupiedTiles = gameboard.getOccupiedTiles();
-        paths.calculatePathsOnBoardForCoordinates(occupiedTiles , coords);
+        paths.calculateOptimalPathsStartingFromCoordinates(occupiedTiles , initCoords);
     }
     
     public void displayOptimalPaths() {
@@ -67,7 +74,7 @@ public class GameBattle {
     }
 
     public void drawWithOverlayForValidCreatureMoves(Creature creature) {
-        boolean[][] overlay = getValidCreatureMoves(creature);
+        boolean[][] overlay = getValidMovesOverlayForCreature(creature);
         gameboard.draw(overlay);
     }
 
@@ -75,24 +82,14 @@ public class GameBattle {
         gameboard.insertCreatureAt(creature, xCoord, yCoord);
         refreshCreatureList();
     }
-
-    public boolean[][] getValidCreatureMoves(Creature creature) {
-        int xDim = gameboard.getDimensionAlongXAxis();
-        int yDim = gameboard.getDimensionAlongYAxis();
-        boolean validMoves[][] = new boolean[xDim][yDim];
-        for (int i = 0; i < xDim; i++) {
-            for (int j = 0; j < yDim; j++) {
-                Coordinates destCoords = new Coordinates(i, j);
-                if (creatureCanMoveTo(creature, destCoords)) {
-                    validMoves[i][j] = true;
-                } else {
-                    validMoves[i][j] = false;
-                }
-            }
-        }
-        return validMoves;
+    
+    // Quick implementation
+    public void removeCreatureAt(int xCoord, int yCoord) { 
+        Tile tile = gameboard.getTileAt(xCoord, yCoord);
+        tile.removeOccupier(); 
     }
 
+    // Unit movement
     public void moveCreatureInDirection(Creature creature, String direction) {
         if (creatureCanMoveInDirection(creature, direction)) {
             creature.consumeEnergyForSteps(1);
@@ -100,6 +97,7 @@ public class GameBattle {
         } // Outputs for debugging purposes handled by Creature/Gameboard classes
     }
 
+    // Unit movement
     public boolean creatureCanMoveInDirection(Creature creature, String direction) {
         boolean validMove = false;
         // Outputs for debugging purposes
@@ -113,7 +111,6 @@ public class GameBattle {
 
     public void moveCreatureTo(Creature creature, Coordinates destCoords) {
         if (creatureCanMoveTo(creature, destCoords)) {
-            System.out.println("** creature can move to " + destCoords);
             int stepsRequired = gameboard.tileCountBetweenCreatureAndCoordinates(creature, destCoords);
             creature.consumeEnergyForSteps(stepsRequired);
             gameboard.moveCreatureTo(creature, destCoords);
@@ -122,27 +119,22 @@ public class GameBattle {
         }
     }
 
-    // TODO: implement pathfinding or having the path being blocked
+    // TODO: implement pathfinding
     private boolean creatureCanMoveTo(Creature creature, Coordinates destCoords) {
-        int stepsRequired = gameboard.tileCountBetweenCreatureAndCoordinates(creature, destCoords);
+        int availableSteps = creature.maximumStepsAbleToWalk();
         //System.out.println("Creature can pay for " + stepsRequired + " steps: " + creature.canPayEnergyCostForSteps(stepsRequired));
         //System.out.println("Destination coordinates " + destCoords + " are valid: " + gameboard.validDestinationTileAt(destCoords));
-        return creature.canPayEnergyCostForSteps(stepsRequired) && gameboard.validDestinationTileAt(destCoords);
+        return paths.coordinatesReachableInAtMostDistanceOf(destCoords, availableSteps);
     }
 
     public void useCreatureSkillAt(Creature creature, int skillNumber, Coordinates coords) {
         if (creatureCanUseSkillAt(creature, skillNumber, coords)) {
             creature.consumeEnergyForSkillNumber(skillNumber);
-
+            //TODO: implement
         } // Outputs for debugging purposes handled by Creature/Gameboard classes
     }
 
     private boolean creatureCanUseSkillAt(Creature creature, int skillNumber, Coordinates coords) {
-        return false;
-    }
-    
-    public boolean clearPathOfAtMostNStepsBetweenCreatureAndCoordinates(int stepLimit, Creature creautre, Coordinates coord) {
-        Coordinates creatureCoord = gameboard.getCreatureCoordinates(creautre);
-        return gameboard.clearPathOfAtMostNTilesExistsBetween(stepLimit, creatureCoord, coord);
+        return false; // TODO: implement
     }
 }

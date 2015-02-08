@@ -88,6 +88,10 @@ public class Creature {
     public int getPower() {
         return power;
     }
+    
+    public int maximumStepsAbleToWalk() {
+        return (int) (energy / COST_OF_STEP);
+    }
 
     public void receiveDamage(int damage) {
         health -= (int) (damage / defenseRating);

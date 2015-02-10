@@ -23,7 +23,6 @@ public class GameBattle {
     }
     
     public boolean[][] getValidMovesOverlayForCreature(Creature creature) {
-        boolean[][] movesOverlay = new boolean[8][8];
         calculateOptimalPathsForCreature(creature);
         int stepCount = creature.maximumStepsAbleToWalk();
         return paths.getTilesReachableInAtMostNSteps(stepCount);
@@ -112,9 +111,10 @@ public class GameBattle {
     public void moveCreatureTo(Creature creature, Coordinates destCoords) {
         if (creatureCanMoveTo(creature, destCoords)) {
             
-            int stepsRequired = gameboard.tileCountBetweenCreatureAndCoordinates(creature, destCoords);
-            creature.consumeEnergyForSteps(stepsRequired);
-            System.out.println(paths.getPathForCreatureToCoordinates(creature, destCoords));
+            CoordPath pathChosen = paths.getPathForCreatureToCoordinates(creature, destCoords);
+            creature.consumeEnergyForSteps(pathChosen.length() - 1);
+            System.out.println(pathChosen);
+            
             gameboard.moveCreatureTo(creature, destCoords);
         } else {
             System.out.println("Error: creature cannot move to " + destCoords);

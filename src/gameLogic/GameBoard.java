@@ -75,12 +75,11 @@ public class GameBoard {
 
     public void displayCreatureCoordinates(Creature creature) {
         Coordinates coordinates = getCreatureCoordinates(creature);
-        String outputIntro = "Creature '" + creature + "' was ";
+        String outputIntro = "Creature '" + creature + '\'';
         if (coordinates != null) {
-            System.out.println(outputIntro + "found at "
-                    + coordinates);
+            System.out.println(outputIntro + " is at " + coordinates);
         } else {
-            System.out.println(outputIntro + "not found on the gameboard.");
+            System.out.println(outputIntro + " was not found on the gameboard.");
         }
     }
 
@@ -215,6 +214,36 @@ public class GameBoard {
          }
          return occupiedTiles;
      }
+     
+     public void moveCreatureAlongPath(Creature creature, CoordPath path) { 
+         Coordinates initCoords = path.popFirstCoordinates();
+         Coordinates creatureCoords = getCreatureCoordinates(creature);
+         if (!initCoords.equals(creatureCoords)) {
+             System.err.println("ERROR: movement failure, path starts at " 
+                     + initCoords + " but creature is at " + creatureCoords);
+         } else {
+             Coordinates nextCoords;
+             while (!path.isEmpty()) {
+                 nextCoords = path.popFirstCoordinates();
+                 moveCreatureFromTo(initCoords, nextCoords);
+                 initCoords = nextCoords;
+             }  
+         }
+     }
+     
+    private void moveCreatureFromTo(Coordinates initCoords, Coordinates destCoords) {
+        if (!tileIsOccupied(initCoords)) {
+            System.err.println("ERROR: movement failure, no creature found at " + initCoords);
+        } else if (!validDestinationTileAt(destCoords)) {
+             System.err.println("ERROR: movement failure, invalid destination tile at " + destCoords);    
+        } else {
+            Tile initialTile = getTileAt(initCoords);
+            Tile destinationTile = getTileAt(destCoords);
+            Creature creature = initialTile.getOccupier();
+            destinationTile.addOccupier(creature);
+            initialTile.removeOccupier();
+        }
+    }
     
     public void draw() {
         draw(null);

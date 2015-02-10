@@ -23,7 +23,7 @@ public class Creature {
     int power = 8;
     double defenseRating = 8;
     Skill[] skills;
-    boolean isGood = true;
+    boolean isGood = false;
     boolean isImpaired = false;
 
     

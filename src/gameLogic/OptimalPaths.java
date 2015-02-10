@@ -130,14 +130,15 @@ public class OptimalPaths {
 
     public CoordPath getPathForCreatureToCoordinates(Creature creature, Coordinates destCoords) {
         CoordPath path = new CoordPath();
-        DijkstraCoord dCoords = coordinatesToDijkstraCoordinates(destCoords);
-        int pathLength = dCoords.getDistance();
-        DijkstraCoord currentDCoords = dCoords;
+        DijkstraCoord initDCoords = coordinatesToDijkstraCoordinates(destCoords);
+        int pathLength = initDCoords.getDistance();
+        DijkstraCoord currentDCoords = initDCoords;
         for (int i = 0; i < pathLength; i++) {
             path.pushEndCoordinates(currentDCoords.getEndCoordinates());
             Coordinates nextCoords = currentDCoords.getSourceCoordinates();
             currentDCoords = coordinatesToDijkstraCoordinates(nextCoords);
         }
+        path.pushEndCoordinates(currentDCoords.getEndCoordinates());
         return path.generateReversePath();
     }
 }

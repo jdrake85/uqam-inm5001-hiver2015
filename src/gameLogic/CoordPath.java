@@ -18,10 +18,10 @@ public class CoordPath {
     }
     
     public boolean isEmpty() {
-        return size() == 0;
+        return length() == 0;
     }
     
-    public int size() {
+    public int length() {
         return pathElements.size();
     }
 

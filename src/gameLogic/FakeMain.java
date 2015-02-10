@@ -16,7 +16,6 @@ public class FakeMain {
         System.out.println("*** Fake main running");
         System.out.println("------------------------------------");
         displayGameInstructions();
-        System.out.println("Initial positions:");
         runBattle();
     }
 
@@ -24,6 +23,7 @@ public class FakeMain {
         GameBattle battle = new GameBattle();
 
         Creature hero = new Creature("Hero");
+        hero.setAlignment("good");
         
         //----------------------------------------------------------------------
         // Set up the scenario here
@@ -32,10 +32,6 @@ public class FakeMain {
         Creature zombie1 = new Creature("Zombie1");
         Creature zombie2 = new Creature("Zombie2");
         Creature zombie3 = new Creature("Zombie3");
-
-        zombie1.setAlignment("bad");
-        zombie2.setAlignment("bad");
-        zombie3.setAlignment("bad");
 
         battle.insertCreatureAt(hero, 0, 0);
         battle.insertCreatureAt(zombie1, 6, 7);
@@ -64,11 +60,8 @@ public class FakeMain {
 
         System.out.println();
         battle.drawWithOverlayForValidCreatureMoves(hero);
-        System.out.println();
 
         boolean keepPlaying = true;
-        
-        //Coordinates targetCoord = new Coordinates(3,3);
 
         while (battle.containsBadCreatures() && turnCounter <= TURN_LIMIT) {
             System.out.println();
@@ -85,13 +78,17 @@ public class FakeMain {
                 commandX = scan.nextInt();
                 System.out.print("Y = ");
                 commandY = scan.nextInt();
-                System.out.println("\nMoving to (" + commandX + ", " + commandY + ')');
+                System.out.println();
+                battle.displayCreatureCoordinates(hero);
+                System.out.println("Moving to (" + commandX + ", " + commandY + ")...");
                 keepPlaying = playTurn(commandX, commandY, hero, battle);
             } catch (Exception e) {
                 System.out.println("Error: turn ending due to invalid input or move");
             }
             
+            System.out.println();
             battle.drawWithOverlayForValidCreatureMoves(hero);
+            
 
             if (!keepPlaying) {
                 break;

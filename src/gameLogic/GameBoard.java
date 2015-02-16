@@ -152,6 +152,19 @@ public class GameBoard {
         }
         return creatures;
     }
+    
+    public void removeDeadCreatures() {
+        for (int i = 0; i < xDim; i++) {
+            for (int j = 0; j < yDim; j++) {
+                if (tiles[i][j].isOccupied()) {
+                    Creature creature = tiles[i][j].getOccupier();
+                    if (!creature.isAlive()) {
+                        tiles[i][j].removeOccupier();
+                    }
+                }
+            }
+        }
+    }
 
     public void insertCreatureAt(Creature creature, int xCoord, int yCoord) {
         Tile targetTile = tiles[xCoord][yCoord];
@@ -184,10 +197,14 @@ public class GameBoard {
         }
         return tileIsWithinGameBoard(coordsAfterMove) && !tileIsOccupied(coordsAfterMove);
     }
-
+    
     public static boolean tileIsWithinGameBoard(Coordinates coordinates) {
        int xCoord = coordinates.getXCoord();
        int yCoord = coordinates.getYCoord();
+       return tileIsWithinGameBoard(xCoord, yCoord);
+    }
+    
+    public static boolean tileIsWithinGameBoard(int xCoord, int yCoord) {
        return 0 <= xCoord && xCoord <= 7 && 0 <= yCoord && yCoord <= 7;
     }
 
@@ -260,7 +277,7 @@ public class GameBoard {
                     if (tileDrawing == ' ') {
                         lineDrawing += '*'; // Overlay is over empty tile
                     } else {
-                        lineDrawing += 'X'; // Overlay is over occupied tile
+                        lineDrawing += '#'; // Overlay is over occupied tile
                     }
                 } else {
                     lineDrawing += drawTile(i, j); 
@@ -322,10 +339,18 @@ public class GameBoard {
         int xCoord = originatingCoords.getXCoord();
         int yCoord = originatingCoords.getYCoord();
         //skillUseOverlay[xCoord][yCoord] = true; // TODO: USE WHEN FINISHED WITH ASCII GRAPHICS
-        skillUseOverlay[xCoord][yCoord + 1] = true;
-        skillUseOverlay[xCoord + 1][yCoord] = true;
-        skillUseOverlay[xCoord][yCoord - 1] = true;
-        skillUseOverlay[xCoord - 1][yCoord] = true;
+        if (tileIsWithinGameBoard(xCoord, yCoord + 1)) {
+            skillUseOverlay[xCoord][yCoord + 1] = true;
+        }
+        if (tileIsWithinGameBoard(xCoord + 1, yCoord)) {
+            skillUseOverlay[xCoord + 1][yCoord] = true;
+        }
+        if (tileIsWithinGameBoard(xCoord, yCoord - 1)) {
+            skillUseOverlay[xCoord][yCoord - 1] = true;
+        }
+        if (tileIsWithinGameBoard(xCoord - 1, yCoord)) {
+            skillUseOverlay[xCoord - 1][yCoord] = true;
+        }
     }
 
     void performSkillAt(Skill skill, Coordinates coords) {

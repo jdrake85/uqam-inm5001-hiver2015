@@ -21,7 +21,7 @@ public class Creature {
     int maxEnergy = 30;
     int speed = 8;
     int power = 8;
-    double defenseRating = 8;
+    double defenseRating = 1;
     Skill[] skills;
     boolean isGood = false;
     boolean isImpaired = false;
@@ -30,16 +30,22 @@ public class Creature {
     
     public Creature(String name) {
         this.name = name;
-        skills = new Skill[4];
+        skills = new Skill[12]; // TODO: eventually set to 4
     }
     
     @Override
     public String toString() {
+        return name;
+    }
+    
+    public void displayStats() {
         String output = name + "'s health: " + health;
         if (isGood) { 
-            output += '\n' + name + "'s energy: " + energy;
+                output = "#####################################\n" + output;
+                output += '\n' + name + "'s energy: " + energy
+                        + "\n#####################################";
         }
-        return output;
+        System.out.println(output);
     }
 
     public boolean isAlive() {
@@ -52,7 +58,7 @@ public class Creature {
     }
 
     public int getEneryCostForSkillNumber(int skillNumber) {
-        Skill chosenSkill = skills[skillNumber];
+        Skill chosenSkill = skills[skillNumber - 1];
         return chosenSkill.getEnergyCost();
     }
 
@@ -128,8 +134,16 @@ public class Creature {
         return matchingAlignment;
     }
     
+    public void setSkillAsNumber(Skill skill, int skillNumber) {
+        if (1 <= skillNumber && skillNumber <= 12) {
+            skills[skillNumber - 1] = skill;
+        } else {
+            System.err.println("Error: skill added with an out-of-bounds number");
+        }
+    }
+    
     public Skill prepareSkill(int skillNumber) { 
-        return skills[skillNumber];
+        return skills[skillNumber - 1];
     }
 
     void setEnergy(int energy) {

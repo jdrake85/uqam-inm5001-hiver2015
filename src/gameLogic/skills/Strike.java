@@ -12,13 +12,13 @@ import gameLogic.Coordinates;
  */
 public class Strike extends MeleeSkill{
     
-    public Strike(String name, int energyCost, int power) {
-        super(name, energyCost, power);
+    public Strike(int energyCost, int power) {
+        super("Strike", energyCost, power);
     }
 
     @Override
     public void performWithEnergyPointsAt(int energyPoints, Coordinates targetCoords) {
-        // TODO
+        System.out.println("PERFORMING STRIKE AT " + targetCoords);
     }
 
 

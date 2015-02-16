@@ -4,6 +4,7 @@
  */
 package gameLogic;
 
+import gameLogic.skills.*;
 import java.util.Scanner;
 
 /**
@@ -22,6 +23,8 @@ public class FakeMain {
 
         Creature hero = new Creature("Hero");
         hero.setAlignment("good");
+        battle.insertCreatureAt(hero, 0, 0);
+        hero.setSkillAsNumber(new Strike(1, 5), 1);
 
         initializeScenario(battle, hero);
 
@@ -46,7 +49,7 @@ public class FakeMain {
             battle.displayCombattants();
             
 
-            System.out.print("STEP 1: SELECT COMMAND TYPE: 0 to move, or 1-4 for skills: ");
+            System.out.print("STEP 1: SELECT COMMAND TYPE: 0 to move, or 1-12 for skills: ");
             try {
                 commandType = scan.nextInt();
             } catch (Exception e) {
@@ -56,8 +59,8 @@ public class FakeMain {
             
             if (commandType == 0) { 
                 System.out.println("MOVEMENT:");
-                battle.drawWithOverlayForValidCreatureMoves(hero);
-            } else if (commandType >= 1 && commandType <= 4) {
+                battle.drawWithOverlayForCreatureMoves(hero);
+            } else if (commandType >= 1 && commandType <= 12) {
                 System.out.println("USING SKILL " + commandType + ": " + hero.prepareSkill(commandType));
                 battle.drawWithOverlayForCreatureSkill(hero, commandType);
             }
@@ -69,11 +72,12 @@ public class FakeMain {
                 System.out.print("     Y = ");
                 commandY = scan.nextInt();
                 System.out.println();
-                System.out.println(hero);
                 keepPlaying = performTurn(commandType, commandX, commandY, hero, battle);
             } catch (Exception e) {
                 System.out.println('\n' + "** Invalid coordinates; ending turn.");
             }
+            
+            battle.refreshCreatureList();
         }
 
         scan.close();
@@ -88,7 +92,7 @@ public class FakeMain {
         System.out.println("--- STEP 1: CHOICE OF ACTIONS");
         System.out.println("------------------------------------");
         System.out.println("- To move, enter '0'");
-        System.out.println("- To use a skill numbered 1 through 4, enter '1', '2', '3' or '4'");
+        System.out.println("- To use a skill numbered 1 through 12, enter the corresponding number");
         System.out.println("------------------------------------");
         System.out.println("--- STEP 2: TARGET COORDINATES");
         System.out.println("- Type in X <enter>, then Y <enter> to set coordinates (X,Y);");
@@ -107,7 +111,7 @@ public class FakeMain {
         } else if (commandType == 0) {
             System.out.println("Moving to (" + commandX + ", " + commandY + ")...");
             battle.moveCreatureTo(hero, new Coordinates(commandX, commandY));
-        } else if (commandType >= 1 && commandType <= 4) {
+        } else if (commandType >= 1 && commandType <= 12) {
             System.out.println("Using skill " + hero.prepareSkill(commandType) + " at (" + commandX + ", " + commandY + ")...");
             battle.useCreatureSkillAt(hero, commandType, new Coordinates(commandX, commandY));
         } else {
@@ -121,7 +125,6 @@ public class FakeMain {
         Creature zombie2 = new Creature("ZombieA2");
         Creature zombie3 = new Creature("ZombieA3");
 
-        battle.insertCreatureAt(hero, 0, 0);
         battle.insertCreatureAt(zombie1, 6, 7);
         battle.insertCreatureAt(zombie2, 6, 6);
         battle.insertCreatureAt(zombie3, 7, 6);

@@ -26,26 +26,21 @@ public class GameBattle {
     
     public void displayCombattants() {
         refreshCreatureList();
-        System.out.println("\nCOMBATTANTS:\n");
+        System.out.println("\nCOMBATTANTS:");
         for (Creature creature: creatureList) {
-            String output = creature.toString();
-            if (creature.isGood) {
-                output = "#####################################\n" + output 
-                        + "\n#####################################";
-            }
-            System.out.println(output);
+            creature.displayStats();
         }
         System.out.println();
     }
     
-    public boolean[][] getValidlOverlayForCreatureSkill(Creature creature, int skillNumber) { 
+    public boolean[][] getOverlayForCreatureSkill(Creature creature, int skillNumber) { 
         Skill skill = creature.prepareSkill(skillNumber);
         Coordinates originatingCoords = gameboard.getCreatureCoordinates(creature);
         skill.setOriginatingFrom(originatingCoords);
         return gameboard.getSkillOverlay(skill);
     }
   
-    public boolean[][] getValidOverlayForCreatureMoves(Creature creature) {
+    public boolean[][] getOverlayForCreatureMoves(Creature creature) {
         calculateOptimalPathsForCreature(creature);
         int stepCount = creature.maximumStepsAbleToWalk();
         return paths.getTilesReachableInAtMostNSteps(stepCount);
@@ -62,6 +57,7 @@ public class GameBattle {
     }
 
     public void refreshCreatureList() {
+        gameboard.removeDeadCreatures();
         creatureList = gameboard.getFullCreatureList();
     }
 
@@ -92,18 +88,18 @@ public class GameBattle {
     }
 
     public void draw() {
+        currentOverlay = null;
         gameboard.draw();
     }
 
-    public void drawWithOverlayForValidCreatureMoves(Creature creature) {
-        boolean[][] overlay = getValidOverlayForCreatureMoves(creature);
-        gameboard.draw(overlay);
+    public void drawWithOverlayForCreatureMoves(Creature creature) {
+        currentOverlay = getOverlayForCreatureMoves(creature);
+        gameboard.draw(currentOverlay);
     }
     
     void drawWithOverlayForCreatureSkill(Creature creature, int skillNumber) {
-        boolean[][] overlay = getValidlOverlayForCreatureSkill(creature, skillNumber);
-        gameboard.draw(overlay);
-        
+        currentOverlay = getOverlayForCreatureSkill(creature, skillNumber);
+        gameboard.draw(currentOverlay);
     }
 
     public void insertCreatureAt(Creature creature, int xCoord, int yCoord) {

@@ -35,7 +35,11 @@ public class Creature {
     
     @Override
     public String toString() {
-        return name;
+        String output = name + "'s health: " + health;
+        if (isGood) { 
+            output += '\n' + name + "'s energy: " + energy;
+        }
+        return output;
     }
 
     public boolean isAlive() {

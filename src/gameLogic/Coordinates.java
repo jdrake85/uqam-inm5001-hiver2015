@@ -93,6 +93,13 @@ public class Coordinates {
         return surroundingCoords;
     }
     
+    public boolean areCardinalCoordinatesAdjacentTo(Coordinates coords) { 
+        return (coords.equals(new Coordinates(xCoord, yCoord + 1)) ||
+                coords.equals(new Coordinates(xCoord + 1, yCoord)) ||
+                coords.equals(new Coordinates(xCoord, yCoord - 1)) ||
+                coords.equals(new Coordinates(xCoord - 1, yCoord)));
+    }
+    
     public boolean foundIn(Coordinates[] coordinatesArray) {
         boolean found = false;
         for (Coordinates coord: coordinatesArray) {

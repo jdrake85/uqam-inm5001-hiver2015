@@ -4,26 +4,23 @@
  */
 package gameLogic.skills;
 
+import gameLogic.Coordinates;
+
 /**
  *
  * @author User
  */
-public class Strike extends Skill{
+public class Strike extends MeleeSkill{
     
     public Strike(String name, int energyCost, int power) {
         super(name, energyCost, power);
     }
 
     @Override
-    public void performAtFrom(int targetXCoord, int targetYCoord, int sourceXCoord, int sourceYCoord) {
-        assert(performableAtFrom(targetXCoord, targetYCoord, sourceXCoord, sourceYCoord));
-        
-        
+    public void performWithEnergyPointsAt(int energyPoints, Coordinates targetCoords) {
+        // TODO
     }
 
-    @Override
-    public boolean performableAtFrom(int targetXCoord, int targetYCoord, int sourceXCoord, int sourceYCoord) {
-        return targetXCoord - sourceXCoord == 1 && targetYCoord - sourceYCoord == 1;
-    }
+
     
 }

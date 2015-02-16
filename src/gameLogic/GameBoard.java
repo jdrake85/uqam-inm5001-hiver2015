@@ -4,9 +4,9 @@
  */
 package gameLogic;
 
+import gameLogic.skills.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 /**
  *
@@ -250,13 +250,18 @@ public class GameBoard {
     }
     
     public void draw(boolean[][] overlay) {
+        System.out.println();
         boolean withOverlay = overlay != null;
         for (int j = 7; j >= 0; j--) {
             String lineDrawing = j + " | ";
             for (int i = 0; i < 8; i++) {
                 char tileDrawing = drawTile(i, j);
-                if (tileDrawing == ' ' && withOverlay && overlay[i][j]) {
-                    lineDrawing += '*'; // Move is allowed according to overlay
+                if (withOverlay && overlay[i][j]) {
+                    if (tileDrawing == ' ') {
+                        lineDrawing += '*'; // Overlay is over empty tile
+                    } else {
+                        lineDrawing += 'X'; // Overlay is over occupied tile
+                    }
                 } else {
                     lineDrawing += drawTile(i, j); 
                 }
@@ -265,6 +270,7 @@ public class GameBoard {
             System.out.println(lineDrawing);
         }
         drawXAxisDetails();
+        System.out.println();
     }
     
     private void drawXAxisDetails() {
@@ -292,4 +298,49 @@ public class GameBoard {
         } 
         return tileDrawing;
     }  
+
+    public boolean[][] getSkillOverlay(Skill skill) {
+        boolean[][] skillUseOverlay = generateAllNegativeOverlay();
+        if (skill instanceof MeleeSkill) {
+            adjustOverlayForMeleeSkill(skill, skillUseOverlay);
+        }
+         return skillUseOverlay;
+    }
+
+    private boolean[][] generateAllNegativeOverlay() {
+        boolean[][] overlay = new boolean[xDim][yDim];
+        for (int i = 0; i < xDim; i++) {
+            for (int j = 0; j < yDim; j++) {
+                    overlay[i][j] = false;
+                }
+            }
+        return overlay;
+    }
+
+    private void adjustOverlayForMeleeSkill(Skill skill, boolean[][] skillUseOverlay) {
+        Coordinates originatingCoords = skill.getOriginatingFrom();
+        int xCoord = originatingCoords.getXCoord();
+        int yCoord = originatingCoords.getYCoord();
+        //skillUseOverlay[xCoord][yCoord] = true; // TODO: USE WHEN FINISHED WITH ASCII GRAPHICS
+        skillUseOverlay[xCoord][yCoord + 1] = true;
+        skillUseOverlay[xCoord + 1][yCoord] = true;
+        skillUseOverlay[xCoord][yCoord - 1] = true;
+        skillUseOverlay[xCoord - 1][yCoord] = true;
+    }
+
+    void performSkillAt(Skill skill, Coordinates coords) {
+        Tile targetTile = getTileAt(coords);
+        if (targetTile.isOccupied()) {
+            int damage = skill.getDamage();
+            Creature target = targetTile.getOccupier();
+            target.receiveDamage(damage);
+            if (damage > 0) {
+                System.out.println(target + " receives " + damage + " from " + skill);
+            } else {
+                System.out.println(target + " regains " + damage + " points from " + skill);
+            }
+        } else {
+            System.out.println(skill + " misses, tile at " + coords + " is not occupied");
+        } 
+    }
 }

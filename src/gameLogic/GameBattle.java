@@ -4,6 +4,7 @@
  */
 package gameLogic;
 
+import gameLogic.skills.*;
 import java.util.List;
 
 /**
@@ -16,13 +17,35 @@ public class GameBattle {
     private List<Creature> creatureList; // Fast access to creatures on gameboard
     private OptimalPaths paths;
     private GameBoard gameboard;
+    private boolean[][] currentOverlay = null;
 
     public GameBattle() {
         paths = new OptimalPaths(8,8);
         gameboard = new GameBoard();
     }
     
-    public boolean[][] getValidMovesOverlayForCreature(Creature creature) {
+    public void displayCombattants() {
+        refreshCreatureList();
+        System.out.println("\nCOMBATTANTS:\n");
+        for (Creature creature: creatureList) {
+            String output = creature.toString();
+            if (creature.isGood) {
+                output = "#####################################\n" + output 
+                        + "\n#####################################";
+            }
+            System.out.println(output);
+        }
+        System.out.println();
+    }
+    
+    public boolean[][] getValidlOverlayForCreatureSkill(Creature creature, int skillNumber) { 
+        Skill skill = creature.prepareSkill(skillNumber);
+        Coordinates originatingCoords = gameboard.getCreatureCoordinates(creature);
+        skill.setOriginatingFrom(originatingCoords);
+        return gameboard.getSkillOverlay(skill);
+    }
+  
+    public boolean[][] getValidOverlayForCreatureMoves(Creature creature) {
         calculateOptimalPathsForCreature(creature);
         int stepCount = creature.maximumStepsAbleToWalk();
         return paths.getTilesReachableInAtMostNSteps(stepCount);
@@ -73,8 +96,14 @@ public class GameBattle {
     }
 
     public void drawWithOverlayForValidCreatureMoves(Creature creature) {
-        boolean[][] overlay = getValidMovesOverlayForCreature(creature);
+        boolean[][] overlay = getValidOverlayForCreatureMoves(creature);
         gameboard.draw(overlay);
+    }
+    
+    void drawWithOverlayForCreatureSkill(Creature creature, int skillNumber) {
+        boolean[][] overlay = getValidlOverlayForCreatureSkill(creature, skillNumber);
+        gameboard.draw(overlay);
+        
     }
 
     public void insertCreatureAt(Creature creature, int xCoord, int yCoord) {
@@ -130,11 +159,17 @@ public class GameBattle {
     public void useCreatureSkillAt(Creature creature, int skillNumber, Coordinates coords) {
         if (creatureCanUseSkillAt(creature, skillNumber, coords)) {
             creature.consumeEnergyForSkillNumber(skillNumber);
-            //TODO: implement
+            Skill skill = creature.prepareSkill(skillNumber);
+            gameboard.performSkillAt(skill, coords);
         } // Outputs for debugging purposes handled by Creature/Gameboard classes
     }
 
     private boolean creatureCanUseSkillAt(Creature creature, int skillNumber, Coordinates coords) {
-        return false; // TODO: implement
+        Skill skill = creature.prepareSkill(skillNumber);
+        currentOverlay = gameboard.getSkillOverlay(skill);
+        int xCoord = coords.getXCoord();
+        int yCoord = coords.getYCoord();
+        return creature.canPayEnergyCostForSkillNumber(skillNumber) 
+                && currentOverlay[xCoord][yCoord];
     }
 }

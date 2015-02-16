@@ -4,17 +4,20 @@
  */
 package gameLogic.skills;
 
+import gameLogic.Coordinates;
+
 /**
  *
  * @author User
  */
 public abstract class Skill {
 
-    String name;
-    boolean hasKnockback = false;
-    boolean hasImpair = false;
-    int energyCost;
-    int power;
+    private String name;
+    private boolean hasKnockback = false;
+    private boolean hasImpair = false;
+    private int energyCost;
+    private int power;
+    protected Coordinates originatingCoords = null;
 
     public Skill(String name, int energyCost, int power) {
         this.name = name;
@@ -22,7 +25,7 @@ public abstract class Skill {
         this.power = power;
     }
 
-    public Skill(String name, boolean hasKnockback, boolean hasImpair, int energyCost, int power) {
+    public Skill(String name, int energyCost, int power, boolean hasKnockback, boolean hasImpair) {
         this(name, energyCost, power);
         this.hasKnockback = hasKnockback;
         this.hasImpair = hasImpair;
@@ -32,16 +35,14 @@ public abstract class Skill {
     public String toString() {
         return name;
     }
-
-    // The child skill must describe the action performed
-    public abstract void performAtFrom(int targetXCoord, int targetYCoord, int sourceXCoord, int sourceYCoord);
-
-    // The child skill must determine if its action can be performed
-    public abstract boolean performableAtFrom(int targetXCoord, int targetYCoord, int sourceXCoord, int sourceYCoord);
-
-    public boolean performableWithEnergy(int energy) {
-        return energy >= energyCost;
+    
+    public abstract void performWithEnergyPointsAt(int energyPoints, Coordinates targetCoords);
+    
+    public boolean performableWithEnergyPointsAt(int energyPoints, Coordinates targetCoords) {
+        return (energyPoints >= energyCost) && usableAt(targetCoords);
     }
+    
+    public abstract boolean usableAt(Coordinates targetCoords);
 
     public boolean getHasKnockback() {
         return hasKnockback;
@@ -67,7 +68,15 @@ public abstract class Skill {
         return power;
     }
 
-    private String getName() {
+    public String getName() {
         return name;
+    }
+    
+    public void setOriginatingFrom(Coordinates coordinates) {
+        originatingCoords = coordinates;
+    }
+    
+    public Coordinates getOriginatingFrom() {
+        return originatingCoords;
     }
 }

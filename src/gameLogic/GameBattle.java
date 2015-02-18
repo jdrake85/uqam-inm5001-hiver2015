@@ -4,6 +4,12 @@
  */
 package gameLogic;
 
+import gameLogic.Creature;
+import gameLogic.gameboard.GameBoard;
+import gameLogic.gameboard.Tile;
+import gameLogic.pathfinding.Coordinates;
+import gameLogic.pathfinding.CoordPath;
+import gameLogic.pathfinding.OptimalPaths;
 import gameLogic.skills.*;
 import java.util.List;
 
@@ -153,11 +159,13 @@ public class GameBattle {
     }
 
     public void useCreatureSkillAt(Creature creature, int skillNumber, Coordinates coords) {
+        Skill skill = creature.prepareSkill(skillNumber);
         if (creatureCanUseSkillAt(creature, skillNumber, coords)) {
             creature.consumeEnergyForSkillNumber(skillNumber);
-            Skill skill = creature.prepareSkill(skillNumber);
             gameboard.performSkillAt(skill, coords);
-        } // Outputs for debugging purposes handled by Creature/Gameboard classes
+        } else if (!creature.canPayEnergyCostForSkillNumber(skillNumber)) {
+            System.out.println("Not enough energy!");
+        }
     }
 
     private boolean creatureCanUseSkillAt(Creature creature, int skillNumber, Coordinates coords) {

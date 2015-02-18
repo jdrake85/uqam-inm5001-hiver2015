@@ -2,7 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package gameLogic;
+package gameLogic.gameboard;
+
+import gameLogic.Creature;
 
 
 public class Tile {

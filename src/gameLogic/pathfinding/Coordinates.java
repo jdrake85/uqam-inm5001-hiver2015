@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package gameLogic;
+package gameLogic.pathfinding;
 
 import java.util.ArrayList;
 
@@ -84,6 +84,32 @@ public class Coordinates {
         return xCoord == coord.getXCoord() && yCoord == coord.getYCoord();
     }
     
+    // Coordinates must be adjacent (one of the four surrounding cardinal coords
+    public Coordinates getNextCoordinatesInTheDirectionOf(Coordinates coords) { 
+        Coordinates nextCoords = null;
+        if (this.areCardinalCoordinatesAdjacentTo(coords)) {
+            int otherXCoord = coords.getXCoord();
+            int otherYCoord = coords.getYCoord();
+            if (otherXCoord - xCoord > 0) { 
+                nextCoords = new Coordinates(otherXCoord + 1, yCoord);
+            } else if (otherXCoord - xCoord < 0) {
+                nextCoords = new Coordinates(otherXCoord - 1, yCoord);
+            } else if (otherYCoord - yCoord > 0) {
+                nextCoords = new Coordinates(xCoord, otherYCoord + 1);
+            } else {
+                nextCoords = new Coordinates(xCoord, otherYCoord - 1);
+            }
+        }
+        return nextCoords;
+    }
+    
+    public boolean areCardinalCoordinatesAdjacentTo(Coordinates coords) { 
+        return (coords.equals(new Coordinates(xCoord, yCoord + 1)) ||
+                coords.equals(new Coordinates(xCoord + 1, yCoord)) ||
+                coords.equals(new Coordinates(xCoord, yCoord - 1)) ||
+                coords.equals(new Coordinates(xCoord - 1, yCoord)));
+    }
+    
     public Coordinates[] getFourSurroundingCardinalCoordinates() {
         Coordinates[] surroundingCoords = new Coordinates[4];
         surroundingCoords[0] = new Coordinates(xCoord, yCoord + 1);
@@ -93,12 +119,7 @@ public class Coordinates {
         return surroundingCoords;
     }
     
-    public boolean areCardinalCoordinatesAdjacentTo(Coordinates coords) { 
-        return (coords.equals(new Coordinates(xCoord, yCoord + 1)) ||
-                coords.equals(new Coordinates(xCoord + 1, yCoord)) ||
-                coords.equals(new Coordinates(xCoord, yCoord - 1)) ||
-                coords.equals(new Coordinates(xCoord - 1, yCoord)));
-    }
+    
     
     public boolean foundIn(Coordinates[] coordinatesArray) {
         boolean found = false;

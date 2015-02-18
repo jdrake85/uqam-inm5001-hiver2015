@@ -4,7 +4,9 @@
  */
 package gameLogic.skills;
 
-import gameLogic.Coordinates;
+import gameLogic.Creature;
+import gameLogic.pathfinding.Coordinates;
+import java.util.List;
 
 /**
  *
@@ -13,10 +15,10 @@ import gameLogic.Coordinates;
 public abstract class Skill {
 
     private String name;
-    private boolean hasKnockback = false;
-    private boolean hasImpair = false;
-    private int energyCost;
-    private int power;
+    protected boolean hasKnockback = false;
+    protected boolean hasImpair = false;
+    protected int energyCost;
+    protected int power;
     protected Coordinates originatingCoords = null;
 
     public Skill(String name, int energyCost, int power) {
@@ -36,40 +38,25 @@ public abstract class Skill {
         return name;
     }
     
-    public abstract void performWithEnergyPointsAt(int energyPoints, Coordinates targetCoords);
+    public abstract void performOn(Creature creature);
     
     public boolean performableWithEnergyPointsAt(int energyPoints, Coordinates targetCoords) {
-        return (energyPoints >= energyCost) && usableAt(targetCoords);
+        return (energyPoints >= energyCost) && usableRangeIncludesCoordinates(targetCoords);
     }
     
-    public abstract boolean usableAt(Coordinates targetCoords);
+    public abstract boolean usableRangeIncludesCoordinates(Coordinates targetCoords);
 
-    public boolean getHasKnockback() {
-        return hasKnockback;
-    }
-
-    public void setHasKnockback(boolean hasKnockback) {
-        this.hasKnockback = hasKnockback;
-    }
-
-    public boolean getHasImpair() {
-        return hasImpair;
-    }
-
-    public void setHasImpair(boolean hasImpair) {
-        this.hasImpair = hasImpair;
-    }
 
     public int getEnergyCost() {
         return energyCost;
     }
+    
+    public boolean hasKnockback() {
+        return hasKnockback;
+    }
 
     public int getDamage() {
         return power;
-    }
-
-    public String getName() {
-        return name;
     }
     
     public void setOriginatingFrom(Coordinates coordinates) {
@@ -79,4 +66,6 @@ public abstract class Skill {
     public Coordinates getOriginatingFrom() {
         return originatingCoords;
     }
+
+    public abstract List<Coordinates> generateAffectedCoordinatesFrom(Coordinates targetCoords);
 }

@@ -6,20 +6,20 @@ package gameLogic.skills;
 
 import gameLogic.Creature;
 
-
 /**
  *
  * @author User
  */
-public class Strike extends MeleeSkill{
+public class Knockback extends MeleeSkill{
     
-    public Strike(int energyCost, int power) {
-        super("Strike", energyCost, power);
+    public Knockback(int energyCost, int power) {
+        super("Knockback", energyCost, power, true, true);
     }
 
     @Override
     public void performOn(Creature creature) {
         creature.receiveDamage(power);
+        creature.becomeImpaired();
     }
 
 }

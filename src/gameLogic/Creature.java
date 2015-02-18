@@ -12,19 +12,19 @@ import gameLogic.skills.Skill;
  */
 public class Creature {
 
-    static final int COST_OF_STEP = 2;
-    int level = 8;
-    String name = "noName";
-    int health = 8;
-    int maxHealth = 8;
-    int energy = 30;
-    int maxEnergy = 30;
-    int speed = 8;
-    int power = 8;
-    double defenseRating = 1;
-    Skill[] skills;
-    boolean isGood = false;
-    boolean isImpaired = false;
+    private static final int COST_OF_STEP = 2;
+    private int level = 8;
+    private String name = "noName";
+    private int health = 8;
+    private int maxHealth = 8;
+    private int energy = 30;
+    private int maxEnergy = 30;
+    private int speed = 8;
+    private int power = 8;
+    private double defenseRating = 1;
+    private Skill[] skills;
+    private boolean isGood = false;
+    private boolean isImpaired = false;
 
     
     
@@ -39,11 +39,11 @@ public class Creature {
     }
     
     public void displayStats() {
-        String output = name + "'s health: " + health;
+        String output = name + ": HEALTH: " + health
+                + " / ENERGY: " + energy;
         if (isGood) { 
                 output = "#####################################\n" + output;
-                output += '\n' + name + "'s energy: " + energy
-                        + "\n#####################################";
+                output += "\n#####################################";
         }
         System.out.println(output);
     }
@@ -105,6 +105,11 @@ public class Creature {
 
     public void receiveDamage(int damage) {
         health -= (int) (damage / defenseRating);
+        if (health < 0) {
+            health = 0;
+        } else if (health > maxHealth){
+            health = maxHealth;
+        }
     }
 
     public void setIsImpaired(boolean isImpaired) {
@@ -113,6 +118,10 @@ public class Creature {
 
     public void isImpaired(boolean isImpaired) {
         this.isImpaired = isImpaired;
+    }
+    
+    public void becomeImpaired() {
+        energy = maxEnergy / 2;
     }
 
     public void setAlignment(String alignment) {

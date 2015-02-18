@@ -2,8 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package gameLogic;
+package gameLogic.gameboard;
 
+import gameLogic.Creature;
+import gameLogic.pathfinding.Coordinates;
+import gameLogic.pathfinding.CoordPath;
 import gameLogic.skills.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,23 +33,27 @@ public class GameBoard {
             }
         }
     }
-    
+
     public int getDimensionAlongXAxis() {
         return xDim;
     }
-    
+
     public int getDimensionAlongYAxis() {
         return yDim;
     }
 
     public Tile getTileAt(Coordinates coordinates) {
-        return getTileAt(coordinates.getXCoord(),coordinates.getYCoord());
+        return getTileAt(coordinates.getXCoord(), coordinates.getYCoord());
     }
-    
+
     public Tile getTileAt(int xCoord, int yCoord) {
-        return tiles[xCoord][yCoord];
+        Tile tile = null;
+        if (tileIsWithinGameBoard(xCoord, yCoord)) {
+            tile = tiles[xCoord][yCoord];
+        }
+        return tile;
     }
-    
+
     public static int tileCountBetweenCoordinates(Coordinates initCoords, Coordinates destCoords) {
         int initXCoord = initCoords.getXCoord();
         int initYCoord = initCoords.getYCoord();
@@ -54,7 +61,7 @@ public class GameBoard {
         int destYCoord = destCoords.getYCoord();
         return tileCountBetweenCoordinates(initXCoord, initYCoord, destXCoord, destYCoord);
     }
-    
+
     public int tileCountBetweenCreatureAndCoordinates(Creature creature, Coordinates coords) {
         Coordinates creatureCoords = getCreatureCoordinates(creature);
         int tileCount = 0;
@@ -63,9 +70,8 @@ public class GameBoard {
         }
         return tileCount;
     }
-    
-    public static int tileCountBetweenCoordinates
-            (int initXCoord, int initYCoord, int destXCoord, int destYCoord) {
+
+    public static int tileCountBetweenCoordinates(int initXCoord, int initYCoord, int destXCoord, int destYCoord) {
         int diffAlongX = destXCoord - initXCoord;
         int diffAlongY = destYCoord - initYCoord;
         int tilesAlongX = diffAlongX > 0 ? diffAlongX : diffAlongX * -1;
@@ -86,20 +92,20 @@ public class GameBoard {
     public boolean containsCreature(Creature creature) {
         return getCreatureCoordinates(creature) != null;
     }
-    
+
     public Coordinates getCreatureCoordinates(Creature creature) {
         Coordinates coordinates = null;
         for (int i = 0; i < xDim; i++) {
             for (int j = 0; j < yDim; j++) {
                 if (tiles[i][j].isOccupiedBy(creature)) {
-                    coordinates = new Coordinates(i,j);
+                    coordinates = new Coordinates(i, j);
                     break;
                 }
             }
         }
         return coordinates;
     }
-      
+
     // Unit movement
     public void moveCreatureInDirection(Creature creature, String direction) {
         Coordinates initialCoords = getCreatureCoordinates(creature);
@@ -113,7 +119,7 @@ public class GameBoard {
             System.out.println("Error: GameBattle request for invalid move");
         }
     }
-    
+
     public void moveCreatureTo(Creature creature, Coordinates destCoords) {
         if (validDestinationTileAt(destCoords)) {
             Coordinates initCoords = getCreatureCoordinates(creature);
@@ -152,7 +158,7 @@ public class GameBoard {
         }
         return creatures;
     }
-    
+
     public void removeDeadCreatures() {
         for (int i = 0; i < xDim; i++) {
             for (int j = 0; j < yDim; j++) {
@@ -174,8 +180,8 @@ public class GameBoard {
             System.out.println("Error: tile at (" + xCoord + ", " + yCoord + ") already occupied");
         }
     }
-    
-    public boolean validDestinationTileAt(Coordinates coords) { 
+
+    public boolean validDestinationTileAt(Coordinates coords) {
         return tileIsWithinGameBoard(coords) && !tileIsOccupied(coords);
     }
 
@@ -184,7 +190,7 @@ public class GameBoard {
         Coordinates coordinates = getCreatureCoordinates(creature);
         return validDestinationTile(coordinates, direction);
     }
-    
+
     // Unit movement
     public boolean validDestinationTile(Coordinates coordinates, String direction) {
         Coordinates coordsAfterMove = coordinates.coordinatesOneUnitInDirection(direction);
@@ -197,62 +203,79 @@ public class GameBoard {
         }
         return tileIsWithinGameBoard(coordsAfterMove) && !tileIsOccupied(coordsAfterMove);
     }
-    
+
     public static boolean tileIsWithinGameBoard(Coordinates coordinates) {
-       int xCoord = coordinates.getXCoord();
-       int yCoord = coordinates.getYCoord();
-       return tileIsWithinGameBoard(xCoord, yCoord);
+        int xCoord = coordinates.getXCoord();
+        int yCoord = coordinates.getYCoord();
+        return tileIsWithinGameBoard(xCoord, yCoord);
     }
-    
+
     public static boolean tileIsWithinGameBoard(int xCoord, int yCoord) {
-       return 0 <= xCoord && xCoord <= 7 && 0 <= yCoord && yCoord <= 7;
+        return 0 <= xCoord && xCoord <= 7 && 0 <= yCoord && yCoord <= 7;
     }
 
     public boolean tileIsOccupied(Coordinates coordinates) {
         Tile tile = getTileAt(coordinates);
         return tile.isOccupied();
     }
-    
-     private ArrayList<Coordinates> getValidUnoccupiedCoordinatesAdjacentTo(Coordinates initCoord) {
+
+    private ArrayList<Coordinates> getValidUnoccupiedCoordinatesAdjacentTo(Coordinates initCoord) {
         ArrayList<Coordinates> unoccupiedCoords = new ArrayList();
         return unoccupiedCoords;
     }
-     
-     public boolean[][] getOccupiedTiles() {
-         boolean[][] occupiedTiles = new boolean[xDim][yDim];
-         for (int i = 0; i < xDim; i++) {
-             for (int j = 0; j < yDim; j++) {
-                 if (tiles[i][j].isOccupied()) {
-                     occupiedTiles[i][j] = true;
-                 } else {
-                     occupiedTiles[i][j] = false;
-                 }
-             }
-         }
-         return occupiedTiles;
-     }
-     
-     public void moveCreatureAlongPath(Creature creature, CoordPath path) { 
-         Coordinates initCoords = path.popFirstCoordinates();
-         Coordinates creatureCoords = getCreatureCoordinates(creature);
-         if (!initCoords.equals(creatureCoords)) {
-             System.err.println("ERROR: movement failure, path starts at " 
-                     + initCoords + " but creature is at " + creatureCoords);
-         } else {
-             Coordinates nextCoords;
-             while (!path.isEmpty()) {
-                 nextCoords = path.popFirstCoordinates();
-                 moveCreatureFromTo(initCoords, nextCoords);
-                 initCoords = nextCoords;
-             }  
-         }
-     }
-     
+
+    public boolean[][] getOccupiedTiles() {
+        boolean[][] occupiedTiles = new boolean[xDim][yDim];
+        for (int i = 0; i < xDim; i++) {
+            for (int j = 0; j < yDim; j++) {
+                if (tiles[i][j].isOccupied()) {
+                    occupiedTiles[i][j] = true;
+                } else {
+                    occupiedTiles[i][j] = false;
+                }
+            }
+        }
+        return occupiedTiles;
+    }
+
+    public void moveCreatureAlongPath(Creature creature, CoordPath path) {
+        Coordinates initCoords = path.popFirstCoordinates();
+        Coordinates creatureCoords = getCreatureCoordinates(creature);
+        if (!initCoords.equals(creatureCoords)) {
+            System.err.println("ERROR: movement failure, path starts at "
+                    + initCoords + " but creature is at " + creatureCoords);
+        } else {
+            Coordinates nextCoords;
+            while (!path.isEmpty()) {
+                nextCoords = path.popFirstCoordinates();
+                moveCreatureFromTo(initCoords, nextCoords);
+                initCoords = nextCoords;
+            }
+        }
+    }
+    
+    private void knockbackCreatureFromSkill(Creature creature, Skill skill) {
+        Coordinates previousCoords = skill.getOriginatingFrom();
+        Coordinates coords = getCreatureCoordinates(creature);
+        Coordinates nextCoords;
+        int knockbackSteps = 2;
+        for (int i = 0; i < knockbackSteps; i++) {
+            nextCoords = previousCoords.getNextCoordinatesInTheDirectionOf(coords);
+            if (validDestinationTileAt(nextCoords)) {
+                moveCreatureFromTo(coords, nextCoords);
+                previousCoords = coords;
+                coords = nextCoords;
+            } else {
+                break;
+            }
+        }
+    }
+
     private void moveCreatureFromTo(Coordinates initCoords, Coordinates destCoords) {
         if (!tileIsOccupied(initCoords)) {
             System.err.println("ERROR: movement failure, no creature found at " + initCoords);
         } else if (!validDestinationTileAt(destCoords)) {
-             System.err.println("ERROR: movement failure, invalid destination tile at " + destCoords);    
+            System.err.println("ERROR: movement failure, invalid destination tile at " + destCoords);
         } else {
             Tile initialTile = getTileAt(initCoords);
             Tile destinationTile = getTileAt(destCoords);
@@ -261,11 +284,11 @@ public class GameBoard {
             initialTile.removeOccupier();
         }
     }
-    
+
     public void draw() {
         draw(null);
     }
-    
+
     public void draw(boolean[][] overlay) {
         System.out.println();
         boolean withOverlay = overlay != null;
@@ -280,7 +303,7 @@ public class GameBoard {
                         lineDrawing += '#'; // Overlay is over occupied tile
                     }
                 } else {
-                    lineDrawing += drawTile(i, j); 
+                    lineDrawing += drawTile(i, j);
                 }
                 lineDrawing += " | ";
             }
@@ -289,7 +312,7 @@ public class GameBoard {
         drawXAxisDetails();
         System.out.println();
     }
-    
+
     private void drawXAxisDetails() {
         String xAxis = "  |";
         String xLabels = "   ";
@@ -305,32 +328,32 @@ public class GameBoard {
         Tile tile = tiles[i][j];
         char tileDrawing = ' ';
         Creature occupier = tile.getOccupier();
-        
+
         if (occupier != null) {
-            if (occupier.isGood) {
+            if (occupier.isAlignedTo("good")) {
                 tileDrawing = 'H';
             } else {
                 tileDrawing = 'Z';
             }
-        } 
+        }
         return tileDrawing;
-    }  
+    }
 
     public boolean[][] getSkillOverlay(Skill skill) {
         boolean[][] skillUseOverlay = generateAllNegativeOverlay();
         if (skill instanceof MeleeSkill) {
             adjustOverlayForMeleeSkill(skill, skillUseOverlay);
         }
-         return skillUseOverlay;
+        return skillUseOverlay;
     }
 
     private boolean[][] generateAllNegativeOverlay() {
         boolean[][] overlay = new boolean[xDim][yDim];
         for (int i = 0; i < xDim; i++) {
             for (int j = 0; j < yDim; j++) {
-                    overlay[i][j] = false;
-                }
+                overlay[i][j] = false;
             }
+        }
         return overlay;
     }
 
@@ -353,19 +376,29 @@ public class GameBoard {
         }
     }
 
-    void performSkillAt(Skill skill, Coordinates coords) {
-        Tile targetTile = getTileAt(coords);
-        if (targetTile.isOccupied()) {
-            int damage = skill.getDamage();
-            Creature target = targetTile.getOccupier();
-            target.receiveDamage(damage);
-            if (damage > 0) {
-                System.out.println(target + " receives " + damage + " from " + skill);
+    public void performSkillAt(Skill skill, Coordinates targetCoords) {
+        List<Coordinates> affectedCoords = skill.generateAffectedCoordinatesFrom(targetCoords);
+        for (Coordinates coords : affectedCoords) {
+            Tile targetTile = getTileAt(coords);
+            if (targetTile != null && targetTile.isOccupied()) {
+                int damage = skill.getDamage();
+                Creature target = targetTile.getOccupier();
+                skill.performOn(target);
+                if (skill.hasKnockback()) {
+                    knockbackCreatureFromSkill(target, skill);
+                }
+                if (damage > 0) {
+                    System.out.println(target + " receives " + damage + " damage from " + skill);
+                    if (!target.isAlive()) {
+                        System.out.println("and expires!");
+                    }
+                } else {
+                    System.out.println(target + " regains " + damage + " points from " + skill);
+                }
             } else {
-                System.out.println(target + " regains " + damage + " points from " + skill);
+                System.out.println(skill + " misses, tile at " + coords + " is empty");
             }
-        } else {
-            System.out.println(skill + " misses, tile at " + coords + " is not occupied");
-        } 
+        }
+
     }
 }

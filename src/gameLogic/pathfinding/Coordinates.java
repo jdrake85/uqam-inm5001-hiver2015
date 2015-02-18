@@ -119,8 +119,6 @@ public class Coordinates {
         return surroundingCoords;
     }
     
-    
-    
     public boolean foundIn(Coordinates[] coordinatesArray) {
         boolean found = false;
         for (Coordinates coord: coordinatesArray) {

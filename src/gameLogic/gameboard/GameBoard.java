@@ -393,7 +393,7 @@ public class GameBoard {
                         System.out.println("and expires!");
                     }
                 } else {
-                    System.out.println(target + " regains " + damage + " points from " + skill);
+                    System.out.println(target + " regains " + (damage *-1) + " points from " + skill);
                 }
             } else {
                 System.out.println(skill + " misses, tile at " + coords + " is empty");

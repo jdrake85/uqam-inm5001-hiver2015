@@ -2,10 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package gameLogic.skills;
+package gameLogic.skills.hero;
 
 import gameLogic.Creature;
 import gameLogic.pathfinding.Coordinates;
+import gameLogic.skills.MeleeSkill;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

@@ -4,8 +4,10 @@
  */
 package gameLogic;
 
+import gameLogic.skills.nurse.*;
+import gameLogic.skills.hero.*;
+import gameLogic.skills.soldier.*;
 import gameLogic.pathfinding.Coordinates;
-import gameLogic.skills.*;
 import java.util.Scanner;
 
 /**
@@ -146,18 +148,18 @@ public class FakeMain {
     }
 
     private static void assignAllSkillsTo(Creature hero) {
-        hero.setSkillAsNumber(new Strike(1, 1), 1);
-        hero.setSkillAsNumber(new HomeRun(2, 2), 2);
-        hero.setSkillAsNumber(new SpinningPipe(3, 3), 3);
+        hero.setSkillAsNumber(new Strike(1, 4), 1);
+        hero.setSkillAsNumber(new HomeRun(2, 4), 2);
+        hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
         hero.setSkillAsNumber(new Knockback(4, 4), 4);
-        hero.setSkillAsNumber(new Strike(5, 5), 5);
-        hero.setSkillAsNumber(new Strike(6, 6), 6);
-        hero.setSkillAsNumber(new Strike(7, 7), 7);
-        hero.setSkillAsNumber(new Strike(8, 8), 8);
-        hero.setSkillAsNumber(new Strike(9, 9), 9);
-        hero.setSkillAsNumber(new Strike(10, 10), 10);
-        hero.setSkillAsNumber(new Strike(11, 11), 11);
-        hero.setSkillAsNumber(new Strike(12, 12), 12);
+        hero.setSkillAsNumber(new Heal(5, 4), 5);
+        hero.setSkillAsNumber(new Strike(6, 4), 6);
+        hero.setSkillAsNumber(new Strike(7, 4), 7);
+        hero.setSkillAsNumber(new Push(8, 4), 8);
+        hero.setSkillAsNumber(new Strike(9, 4), 9);
+        hero.setSkillAsNumber(new Strike(10, 4), 10);
+        hero.setSkillAsNumber(new Stab(11, 4), 11);
+        hero.setSkillAsNumber(new CutThroat(12, 1), 12);
 
     }
     
@@ -168,7 +170,14 @@ public class FakeMain {
         System.out.println("2 - Home Run");
         System.out.println("3 - Spinning Pipe");
         System.out.println("4 - Knockback");
+        System.out.println("5 - Heal");
         
+        
+        System.out.println("8 - Push");
+        
+        
+        System.out.println("11 - Stab");
+        System.out.println("12 - Cut Throat");
         System.out.println();
     }
 }

@@ -25,8 +25,6 @@ public class Creature {
     private Skill[] skills;
     private boolean isGood = false;
     private boolean isImpaired = false;
-
-    
     
     public Creature(String name) {
         this.name = name;
@@ -155,7 +153,7 @@ public class Creature {
         return skills[skillNumber - 1];
     }
 
-    void setEnergy(int energy) {
+    public void setEnergy(int energy) {
        this.energy = energy;
     }
 }

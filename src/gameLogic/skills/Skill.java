@@ -20,6 +20,7 @@ public abstract class Skill {
     protected int energyCost;
     protected int power;
     protected Coordinates originatingCoords = null;
+    protected Coordinates targetCoords = null;
 
     public Skill(String name, int energyCost, int power) {
         this.name = name;
@@ -38,7 +39,7 @@ public abstract class Skill {
         return name;
     }
     
-    public abstract void performOn(Creature creature);
+    public abstract int performOn(Creature creature);
     
     public boolean performableWithEnergyPointsAt(int energyPoints, Coordinates targetCoords) {
         return (energyPoints >= energyCost) && usableRangeIncludesCoordinates(targetCoords);
@@ -65,6 +66,14 @@ public abstract class Skill {
     
     public Coordinates getOriginatingFrom() {
         return originatingCoords;
+    }
+    
+    public void setTargetCoordinates(Coordinates coords) {
+        targetCoords = coords;
+    }
+    
+    public Coordinates getTargetCoordinates() {
+        return targetCoords;
     }
 
     public abstract List<Coordinates> generateAffectedCoordinatesFrom(Coordinates targetCoords);

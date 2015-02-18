@@ -18,9 +18,11 @@ public class HomeRun extends MeleeSkill{
     }
 
     @Override
-    public void performOn(Creature creature) {
-        creature.receiveDamage(power);
+    public int performOn(Creature creature) {
+        int damageDealt = power;
+        creature.receiveDamage(damageDealt);
         creature.becomeImpaired();
+        return damageDealt;
     }
 
 }

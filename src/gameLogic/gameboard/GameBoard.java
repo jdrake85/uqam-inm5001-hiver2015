@@ -253,7 +253,7 @@ public class GameBoard {
             }
         }
     }
-    
+
     private void knockbackCreatureFromSkill(Creature creature, Skill skill) {
         Coordinates previousCoords = skill.getOriginatingFrom();
         Coordinates coords = getCreatureCoordinates(creature);
@@ -340,9 +340,13 @@ public class GameBoard {
     }
 
     public boolean[][] getSkillOverlay(Skill skill) {
-        boolean[][] skillUseOverlay = generateAllNegativeOverlay();
+        boolean[][] skillUseOverlay = null;
         if (skill instanceof MeleeSkill) {
+            skillUseOverlay = generateAllNegativeOverlay();
             adjustOverlayForMeleeSkill(skill, skillUseOverlay);
+        } else if (skill instanceof RangedSkill) {
+            skillUseOverlay = new boolean[xDim][yDim];
+            adjustOverlayForRangedSkill((RangedSkill) skill, skillUseOverlay);
         }
         return skillUseOverlay;
     }
@@ -376,25 +380,43 @@ public class GameBoard {
         }
     }
 
-    public void performSkillAt(Skill skill, Coordinates targetCoords) {
+    private void adjustOverlayForRangedSkill(RangedSkill skill, boolean[][] skillUseOverlay) {
+        Coordinates originatingCoords = skill.getOriginatingFrom();
+        int xCoord = originatingCoords.getXCoord();
+        int yCoord = originatingCoords.getYCoord();
+        int range = skill.getRange();
+        for (int i = 0; i < xDim; i++) {
+            for (int j = 0; j < yDim; j++) {
+                skillUseOverlay[i][j] = (Math.abs(i - xCoord) + Math.abs(j - yCoord)) <= range;
+            }
+        }
+        skillUseOverlay[xCoord][yCoord] = false; // More efficient to negate after loops
+    }
+
+    public void performTargetedSkill(Skill skill) {
+        Coordinates targetCoords = skill.getTargetCoordinates();
         List<Coordinates> affectedCoords = skill.generateAffectedCoordinatesFrom(targetCoords);
         for (Coordinates coords : affectedCoords) {
             Tile targetTile = getTileAt(coords);
             if (targetTile != null && targetTile.isOccupied()) {
-                int damage = skill.getDamage();
                 Creature target = targetTile.getOccupier();
-                skill.performOn(target);
-                if (skill.hasKnockback()) {
-                    knockbackCreatureFromSkill(target, skill);
-                }
+                int damage = skill.performOn(target);
+
                 if (damage > 0) {
                     System.out.println(target + " receives " + damage + " damage from " + skill);
+                    if (skill.hasKnockback()) {
+                            knockbackCreatureFromSkill(target, skill);
+                        }
                     if (!target.isAlive()) {
-                        System.out.println("and expires!");
+                        System.out.println("...and expires!");
+                        
                     }
+                } else if (damage == 0) {
+                    System.out.println(skill + "misses!");
                 } else {
-                    System.out.println(target + " regains " + (damage *-1) + " points from " + skill);
+                    System.out.println(target + " regains " + (damage * -1) + " points from " + skill);
                 }
+
             } else {
                 System.out.println(skill + " misses, tile at " + coords + " is empty");
             }

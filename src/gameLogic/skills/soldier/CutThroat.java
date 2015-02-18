@@ -19,14 +19,16 @@ public class CutThroat extends MeleeSkill{
     }
 
     @Override
-    public void performOn(Creature creature) {
-        creature.receiveDamage(power);
+    public int performOn(Creature creature) {
+        int damageDealt = power;
+        creature.receiveDamage(damageDealt);
         Random generator = new Random();
         int numberRange = 10;
         int numberLimit = (int) (numberRange * 0.4);
         if (generator.nextInt(numberRange) > numberLimit) {
             creature.becomeImpaired();
         }
+        return damageDealt;
     }
 
 }

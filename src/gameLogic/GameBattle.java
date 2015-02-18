@@ -162,7 +162,8 @@ public class GameBattle {
         Skill skill = creature.prepareSkill(skillNumber);
         if (creatureCanUseSkillAt(creature, skillNumber, coords)) {
             creature.consumeEnergyForSkillNumber(skillNumber);
-            gameboard.performSkillAt(skill, coords);
+            skill.setTargetCoordinates(coords);
+            gameboard.performTargetedSkill(skill);
         } else if (!creature.canPayEnergyCostForSkillNumber(skillNumber)) {
             System.out.println("Not enough energy!");
         }

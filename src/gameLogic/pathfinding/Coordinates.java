@@ -129,4 +129,10 @@ public class Coordinates {
         }
         return found;
     }
+    
+    public int sumOfXYComponentDistancesTo(Coordinates coords) {
+        int xDistance = Math.abs(xCoord - coords.getXCoord());
+        int yDistance = Math.abs(yCoord - coords.getYCoord());
+        return xDistance + yDistance;
+    }
 }

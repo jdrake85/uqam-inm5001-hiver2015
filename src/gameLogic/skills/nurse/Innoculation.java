@@ -2,26 +2,25 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package gameLogic.skills.hero;
+package gameLogic.skills.nurse;
 
 import gameLogic.Creature;
-import gameLogic.skills.MeleeSkill;
+import gameLogic.skills.RangedSkill;
 
 /**
  *
  * @author User
  */
-public class Knockback extends MeleeSkill{
+public class Innoculation extends RangedSkill{
     
-    public Knockback(int energyCost, int power) {
-        super("Knockback", energyCost, power, true, true);
+    public Innoculation(int energyCost, int power) {
+        super("Innoculation", energyCost, power, 4);
     }
 
     @Override
     public int performOn(Creature creature) {
         int damageDealt = power;
         creature.receiveDamage(damageDealt);
-        creature.becomeImpaired();
         return damageDealt;
     }
 

@@ -21,8 +21,10 @@ public class SpinningPipe extends MeleeSkill {
     }
 
     @Override
-    public void performOn(Creature creature) {
-        creature.receiveDamage(power);
+    public int performOn(Creature creature) {
+        int damageDealt = power;
+        creature.receiveDamage(damageDealt);
+        return damageDealt;
     }
 
     @Override

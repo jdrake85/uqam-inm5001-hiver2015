@@ -18,7 +18,9 @@ public class Heal extends MeleeSkill{
     }
 
     @Override
-    public void performOn(Creature creature) {
-        creature.receiveDamage(power);
+    public int performOn(Creature creature) {
+        int healingDealt = power;
+        creature.receiveDamage(healingDealt);
+        return healingDealt;
     }
 }

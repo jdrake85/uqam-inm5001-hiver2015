@@ -347,6 +347,8 @@ public class GameBoard {
         } else if (skill instanceof RangedSkill) {
             skillUseOverlay = new boolean[xDim][yDim];
             adjustOverlayForRangedSkill((RangedSkill) skill, skillUseOverlay);
+        } else if (skill instanceof EverywhereSkill) {
+            skillUseOverlay = generateBadCreaturesOverlay();
         }
         return skillUseOverlay;
     }
@@ -392,6 +394,21 @@ public class GameBoard {
         }
         skillUseOverlay[xCoord][yCoord] = false; // More efficient to negate after loops
     }
+    
+    private boolean[][] generateBadCreaturesOverlay() {
+        boolean[][] overlay = new boolean[xDim][yDim];
+        for (int i = 0; i < xDim; i++) {
+            for (int j = 0; j < yDim; j++) {
+                boolean badCreatureFound = false;
+                if (tiles[i][j].isOccupied()) {
+                    Creature creature = tiles[i][j].getOccupier();
+                    badCreatureFound = creature.isAlignedTo("bad");
+                }
+                overlay[i][j] = badCreatureFound;
+            }
+        }
+        return overlay;
+    }
 
     public void performTargetedSkill(Skill skill) {
         Coordinates targetCoords = skill.getTargetCoordinates();
@@ -416,11 +433,7 @@ public class GameBoard {
                 } else {
                     System.out.println(target + " regains " + (damage * -1) + " points from " + skill);
                 }
-
-            } else {
-                System.out.println(skill + " misses, tile at " + coords + " is empty");
             }
         }
-
-    }
+    } 
 }

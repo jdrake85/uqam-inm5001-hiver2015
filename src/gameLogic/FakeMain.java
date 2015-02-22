@@ -157,7 +157,7 @@ public class FakeMain {
         hero.setSkillAsNumber(new Strike(7, 4), 7); // TODO
         hero.setSkillAsNumber(new Push(8, 4), 8);
         hero.setSkillAsNumber(new AimedShot(9, 4), 9);
-        hero.setSkillAsNumber(new Strike(10, 4), 10); // TODO
+        hero.setSkillAsNumber(new ShootEmAll(10, 4), 10);
         hero.setSkillAsNumber(new Stab(11, 4), 11);
         hero.setSkillAsNumber(new CutThroat(12, 1), 12);
 
@@ -175,7 +175,7 @@ public class FakeMain {
         // TODO: Skill 7
         System.out.println("8 - Push");
         System.out.println("9 - Aimed Shot");
-        // TODO: Skill 10
+        System.out.println("10 - Shoot 'Em All");
         System.out.println("11 - Stab");
         System.out.println("12 - Cut Throat");
         System.out.println();

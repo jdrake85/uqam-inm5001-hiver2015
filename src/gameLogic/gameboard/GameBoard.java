@@ -349,6 +349,8 @@ public class GameBoard {
             adjustOverlayForRangedSkill((RangedSkill) skill, skillUseOverlay);
         } else if (skill instanceof EverywhereSkill) {
             skillUseOverlay = generateBadCreaturesOverlay();
+        } else if (skill instanceof DirectionnalSkill) {
+            skillUseOverlay = generateDirectionnalOverlay((DirectionnalSkill) skill);
         }
         return skillUseOverlay;
     }
@@ -409,7 +411,25 @@ public class GameBoard {
         }
         return overlay;
     }
+    
+    private boolean[][] generateDirectionnalOverlay(DirectionnalSkill skill) {
+        boolean[][] overlay = new boolean[xDim][yDim];
+        Coordinates originatingCoords = skill.getOriginatingFrom();
+        int xCoord = originatingCoords.getXCoord();
+        int yCoord = originatingCoords.getYCoord();
+        int range = skill.getRange();
+        for (int i = 0; i < xDim; i++) {
+            for (int j = 0; j < yDim; j++) {
+                int xDiff = Math.abs(xCoord - i);
+                int yDiff = Math.abs(yCoord - j);
+                overlay[i][j] = !(xDiff > range || yDiff > range || originatingCoords.isDiagonalTo(new Coordinates(i,j)));
+            }
+        }
+        overlay[originatingCoords.getXCoord()][originatingCoords.getYCoord()] = false; // More efficient to negate after loops
+        return overlay;
+    }
 
+    // Error here for mustard gas
     public void performTargetedSkill(Skill skill) {
         Coordinates targetCoords = skill.getTargetCoordinates();
         List<Coordinates> affectedCoords = skill.generateAffectedCoordinatesFrom(targetCoords);

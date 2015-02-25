@@ -131,8 +131,10 @@ public class FakeMain {
 
         for (int i = 0; i < 7; i++) {
             battle.insertCreatureAt(new Creature("ZombieB" + i), i, 1);
-            battle.insertCreatureAt(new Creature("ZombieC" + i + 1), i + 1, 3);
-            battle.insertCreatureAt(new Creature("ZombieD" + i), i, 5);
+            battle.insertCreatureAt(new Creature("ZombieC" + i + 1), i + 1, 2);
+            battle.insertCreatureAt(new Creature("ZombieD" + i + 1), i + 1, 3);
+            battle.insertCreatureAt(new Creature("ZombieE" + i + 1), i + 1, 4);
+            battle.insertCreatureAt(new Creature("ZombieF" + i), i, 5);
         }
 
         battle.removeCreatureAt(4, 3);
@@ -154,7 +156,7 @@ public class FakeMain {
         hero.setSkillAsNumber(new Knockback(4, 4), 4);
         hero.setSkillAsNumber(new Heal(5, 4), 5);
         hero.setSkillAsNumber(new Innoculation(6, 4), 6);
-        hero.setSkillAsNumber(new Strike(7, 4), 7); // TODO
+        hero.setSkillAsNumber(new MustardGas(7, 4), 7);
         hero.setSkillAsNumber(new Push(8, 4), 8);
         hero.setSkillAsNumber(new AimedShot(9, 4), 9);
         hero.setSkillAsNumber(new ShootEmAll(10, 4), 10);
@@ -172,7 +174,7 @@ public class FakeMain {
         System.out.println("4 - Knockback");
         System.out.println("5 - Heal");
         System.out.println("6 - Innoculation");
-        // TODO: Skill 7
+        System.out.println("7 - Mustard Gas");
         System.out.println("8 - Push");
         System.out.println("9 - Aimed Shot");
         System.out.println("10 - Shoot 'Em All");

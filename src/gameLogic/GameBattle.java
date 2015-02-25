@@ -4,7 +4,6 @@
  */
 package gameLogic;
 
-import gameLogic.Creature;
 import gameLogic.gameboard.GameBoard;
 import gameLogic.gameboard.Tile;
 import gameLogic.pathfinding.Coordinates;

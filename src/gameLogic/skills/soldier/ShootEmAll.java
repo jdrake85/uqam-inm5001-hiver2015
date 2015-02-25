@@ -12,8 +12,8 @@ import java.util.Random;
  *
  * @author User
  */
-public class ShootEmAll extends EverywhereSkill{
-    
+public class ShootEmAll extends EverywhereSkill {
+
     public ShootEmAll(int energyCost, int power) {
         super("Shoot 'Em All", energyCost, power, "bad");
     }
@@ -21,11 +21,13 @@ public class ShootEmAll extends EverywhereSkill{
     @Override
     public int performOn(Creature creature) {
         int damageDealt = 0;
-        Random generator = new Random();
-        int range = 10;
-        if (generator.nextInt(range) > range/2) {
-            damageDealt = power;
-            creature.receiveDamage(damageDealt);
+        if (creature.isAlignedTo("bad")) {
+            Random generator = new Random();
+            int range = 10;
+            if (generator.nextInt(range) > range / 2) {
+                damageDealt = power;
+                creature.receiveDamage(damageDealt);
+            }
         }
         return damageDealt;
     }

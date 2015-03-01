@@ -17,7 +17,7 @@ public class Creature {
     private String name = "noName";
     private int health = 8;
     private int maxHealth = 8;
-    private int energy = 30;
+    private int energy =6;
     private int maxEnergy = 30;
     private int speed = 8;
     private int power = 8;

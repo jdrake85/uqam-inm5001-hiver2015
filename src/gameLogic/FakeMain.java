@@ -17,11 +17,11 @@ import java.util.Scanner;
 public class FakeMain {
 
     public static void main(String[] args) {
-        displayGameInstructions();
+        //displayGameInstructions();
         runBattle();
     }
 
-    private static void runBattle() {
+    protected static void runBattle() { //private to protected
         GameBattle battle = new GameBattle();
 
         Creature hero = initializeHero(battle);
@@ -36,7 +36,7 @@ public class FakeMain {
         int commandY;
 
         boolean keepPlaying = true;
-
+/*
         while (battle.containsBadCreatures() && turnCounter <= TURN_LIMIT && keepPlaying) {
             System.out.println();
             System.out.println("------------------------------------");
@@ -48,7 +48,7 @@ public class FakeMain {
             battle.displayCombattants();
             displaySkills();
 
-
+            
             System.out.print("STEP 1: SELECT COMMAND TYPE: 0 to move, or 1-12 for skills: ");
             try {
                 commandType = scan.nextInt();
@@ -77,11 +77,11 @@ public class FakeMain {
                 System.out.println('\n' + "** Invalid coordinates; ending turn.");
             }
 
-            battle.refreshCreatureList();
+           battle.refreshCreatureList();
         }
 
         scan.close();
-        System.out.println("Victory");
+        System.out.println("Victory");*/
     }
 
     private static void displayGameInstructions() {
@@ -101,7 +101,7 @@ public class FakeMain {
         System.out.println("------------------------------------");
     }
 
-    private static boolean performTurn(int commandType, int commandX, int commandY, Creature hero, GameBattle battle) {
+    protected static boolean performTurn(int commandType, int commandX, int commandY, Creature hero, GameBattle battle) {
         boolean keepPlaying = true;
         if (commandX == 8 || commandY == 8) {
             System.out.println("Energy boost +40!");
@@ -120,11 +120,16 @@ public class FakeMain {
         return keepPlaying;
     }
 
-    private static void initializeScenario(GameBattle battle, Creature hero) {
+    protected static void initializeScenario(GameBattle battle, Creature hero) {
         Creature zombie1 = new Creature("ZombieA1");
         Creature zombie2 = new Creature("ZombieA2");
         Creature zombie3 = new Creature("ZombieA3");
+        
+        battle.insertCreatureAt(zombie1, 1, 1);
+        battle.insertCreatureAt(zombie2, 1, 2);
 
+        
+/*
         battle.insertCreatureAt(zombie1, 6, 7);
         battle.insertCreatureAt(zombie2, 6, 6);
         battle.insertCreatureAt(zombie3, 7, 6);
@@ -136,10 +141,10 @@ public class FakeMain {
         }
 
         battle.removeCreatureAt(4, 3);
-        battle.removeCreatureAt(0, 5);
+        battle.removeCreatureAt(0, 5);*/
     }
 
-    private static Creature initializeHero(GameBattle battle) {
+    protected static Creature initializeHero(GameBattle battle) {
         Creature hero = new Creature("Hero");
         hero.setAlignment("good");
         battle.insertCreatureAt(hero, 0, 0);
@@ -147,7 +152,7 @@ public class FakeMain {
         return hero;
     }
 
-    private static void assignAllSkillsTo(Creature hero) {
+    protected static void assignAllSkillsTo(Creature hero) {
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
@@ -163,8 +168,8 @@ public class FakeMain {
 
     }
     
-    private static void displaySkills() {
-        System.out.println();
+    protected static void displaySkills() {
+        System.out.println();/*
         System.out.println("SKILLS:");
         System.out.println("1 - Strike");
         System.out.println("2 - Home Run");
@@ -177,7 +182,7 @@ public class FakeMain {
         System.out.println("9 - Aimed Shot");
         // TODO: Skill 10
         System.out.println("11 - Stab");
-        System.out.println("12 - Cut Throat");
+        System.out.println("12 - Cut Throat");*/
         System.out.println();
     }
 }

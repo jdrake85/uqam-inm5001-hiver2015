@@ -17,21 +17,27 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
+import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import de.lessvoid.nifty.Nifty;
+import mygame.Main;
+import static mygame.Main.nifty;
+import mygame.Scene;
 
 public class FakeMain2 extends SimpleApplication {
  
     public static void main(String[] args){
-        FakeMain2 app = new FakeMain2();
+        app = new FakeMain2();
         app.start();
     }
 
     protected Node pivot = new Node("pivot");
     protected Node mainNode = new Node("mainNode");
     protected static Node charNode = new Node ("charNode");
-    protected String gameState = "idle"; // idle, move, skill  
+    public static String gameState = "idle"; // idle, move, skill  
     
     public static Material greenMat; //TODO remove
     public static Material greyMat; //TODO remove
@@ -39,8 +45,15 @@ public class FakeMain2 extends SimpleApplication {
         
     public static Geometry[][] g;
     
-    protected GameBattle battle;
-    protected Creature hero;
+    public static GameBattle battle;
+    public static Creature hero;
+    
+    //public static Spatial ninja;
+    public static Nifty nifty;
+    //public static int posX = 0;
+    public static FakeMain2 app;
+    //protected int posZ = 0;
+    //protected static Scene scene1;
  
     @Override
     public void simpleInitApp() {
@@ -69,7 +82,9 @@ public class FakeMain2 extends SimpleApplication {
 private ActionListener actionListener = new ActionListener() {
  
     public void onAction(String name, boolean keyPressed, float tpf) {
-        
+      
+      //Equivalent du premier bouton
+      // TODO; effacer
       if (name.equals("MoveKey") && !keyPressed && gameState.equals("idle")){
           gameState = "move";
           battle.drawWithOverlayForCreatureMoves(hero);
@@ -114,6 +129,24 @@ private ActionListener actionListener = new ActionListener() {
   
     
     public void initScene() {
+        
+        NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
+                assetManager, inputManager, audioRenderer, guiViewPort);
+        
+        /**
+         * Create a new NiftyGUI object
+         */
+        nifty = niftyDisplay.getNifty();
+        /**
+         * Read your XML and initialize your custom ScreenController
+         */
+        nifty.fromXml("./Interface/screen.xml", "battle");
+// nifty.fromXml("Interface/helloworld.xml", "start", new MySettingsScreen(data));
+// attach the Nifty display to the gui view port as a processor
+        guiViewPort.addProcessor(niftyDisplay);
+// disable the fly cam
+        flyCam.setDragToRotate(true);
+//nifty.fromXml("Interface/screen.xml", "start", new GUIOverlay());
         
         mainNode.setLocalTranslation(new Vector3f(-4,4,-4));
         /***/

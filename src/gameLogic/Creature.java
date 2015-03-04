@@ -21,8 +21,8 @@ public class Creature {
     private static final int COST_OF_STEP = 2;
     private int level = 8;
     private String name = "noName";
-    private int health = 8;
-    private int maxHealth = 8;
+    private int health = 16;
+    private int maxHealth = 16;
     private int energy = 18;
     private int maxEnergy = 30;
     private int speed = 8;

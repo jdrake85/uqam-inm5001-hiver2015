@@ -102,7 +102,7 @@ public class GameBattle {
         gameboard.draw(currentOverlay);
     }
     
-    void drawWithOverlayForCreatureSkill(Creature creature, int skillNumber) {
+    public void drawWithOverlayForCreatureSkill(Creature creature, int skillNumber) {
         currentOverlay = getOverlayForCreatureSkill(creature, skillNumber);
         gameboard.draw(currentOverlay);
     }

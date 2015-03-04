@@ -41,7 +41,7 @@ public class FakeMain2 extends SimpleApplication {
     public static Material redMat; //TODO remove
     public static Material greyMat; //TODO remove
     public static Material redZombie;
-    private static int commandType = -1;
+    public static int commandType = -1;
     public static Geometry[][] g;
     public static GameBattle battle;
     public static Creature hero;

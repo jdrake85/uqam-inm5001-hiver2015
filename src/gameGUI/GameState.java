@@ -20,7 +20,9 @@ import mygame.Main;
 import static mygame.Main.posX;
 
 import gameLogic.FakeMain2;
-
+import static gameLogic.FakeMain2.battle;
+import static gameLogic.FakeMain2.gameState;
+import static gameLogic.FakeMain2.hero;
 
 /**
  *
@@ -60,35 +62,33 @@ public class GameState extends AbstractAppState implements ScreenController {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void left() {
-          gameState = "move";
-          FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.hero);
-        
-    }
-    
     public void hero1Skill1() {
-        left();
+        gameState = "skill";
+        FakeMain2.commandType = 1;
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(hero, 1);
     }
 
     public void hero1Skill2() {
-        
-        NiftyImage newImage = Main.nifty.getRenderEngine().createImage(Main.nifty.getScreen("battle"), "Interface/Images/face1.png", false);
-        Element image = Main.nifty.getCurrentScreen().findElementByName("imageTest");
-        image.getRenderer(ImageRenderer.class).setImage(newImage);
+        gameState = "skill";
+        FakeMain2.commandType = 2;
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(hero, 2);
     }
 
     public void hero1Skill3() {
-        Element myElem = Main.nifty.getCurrentScreen().findElementByName("text");
-        myElem.getRenderer(TextRenderer.class).setText("Hello");
+        gameState = "skill";
+        FakeMain2.commandType = 3;
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(hero, 3);
     }
 
     public void hero1Skill4() {
-        Element myElem = Main.nifty.getCurrentScreen().findElementByName("hero1Skill1");
-        myElem.disable();
+        gameState = "skill";
+        FakeMain2.commandType = 4;
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(hero, 4);
     }
 
     public void hero1move() {
-        Main.nifty.gotoScreen("mainMenu");
+        gameState = "move";
+        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.hero);
     }
 
     public void hero1endTurn() {
@@ -96,59 +96,77 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void hero2Skill1() {
-
+        gameState = "skill";
+        FakeMain2.commandType = 5;
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(hero, 5);
     }
 
     public void hero2Skill2() {
-
+        gameState = "skill";
+        FakeMain2.commandType = 6;
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(hero, 6);
     }
 
     public void hero2Skill3() {
-
+        gameState = "skill";
+        FakeMain2.commandType = 7;
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(hero, 7);
     }
 
     public void hero2Skill4() {
-
+        gameState = "skill";
+        FakeMain2.commandType = 8;
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(hero, 8);
     }
 
     public void hero2move() {
-
+        gameState = "move";
+        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.hero);
     }
 
     public void hero2endTurn() {
-
+        quitGame();
     }
 
     public void hero3Skill1() {
-
+        gameState = "skill";
+        FakeMain2.commandType = 9;
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(hero, 9);
     }
 
     public void hero3Skill2() {
-
+        gameState = "skill";
+        FakeMain2.commandType = 10;
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(hero, 10);
     }
 
     public void hero3Skill3() {
-
+        gameState = "skill";
+        FakeMain2.commandType = 11;
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(hero, 11);
     }
 
     public void hero3Skill4() {
-
+        gameState = "skill";
+        FakeMain2.commandType = 12;
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(hero, 12);
     }
 
     public void hero3move() {
-
+        gameState = "move";
+        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.hero);
     }
 
     public void hero3endTurn() {
-
+        quitGame();
     }
-    
-      public void startGame(String nextScreen) {
-    Main.nifty.gotoScreen("battle");  // switch to another screen
-    // start the game and do some more stuff...
-  }
- 
-  public void quitGame() {
-    Main.app.stop(); 
-  }
+
+    public void startGame(String nextScreen) {
+        Main.nifty.gotoScreen("battle");  // switch to another screen
+        // start the game and do some more stuff...
+    }
+
+    public void quitGame() {
+        FakeMain2.app.stop();
+    }
 }

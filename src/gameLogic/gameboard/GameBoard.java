@@ -170,6 +170,7 @@ public class GameBoard {
                 if (tiles[i][j].isOccupied()) {
                     Creature creature = tiles[i][j].getOccupier();
                     if (!creature.isAlive()) {
+                        creature.hideCreatureOn3DBoard();
                         tiles[i][j].removeOccupier();
                     }
                 }
@@ -270,6 +271,7 @@ public class GameBoard {
                 moveCreatureFromTo(coords, nextCoords);
                 previousCoords = coords;
                 coords = nextCoords;
+                creature.displayCreatureOn3DBoard(nextCoords.getXCoord(),nextCoords.getYCoord());  
             } else {
                 break;
             }
@@ -308,6 +310,7 @@ public class GameBoard {
                         FakeMain2.g[i][j].setMaterial(FakeMain2.greenMat);
                     } else {
                         lineDrawing += '#'; // Overlay is over occupied tile
+                        FakeMain2.g[i][j].setMaterial(FakeMain2.redMat);
                     }
                 } else {
                     lineDrawing += drawTile(i, j);

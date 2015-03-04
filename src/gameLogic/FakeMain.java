@@ -124,16 +124,16 @@ public class FakeMain {
         Creature zombie1 = new Creature("ZombieA1");
         Creature zombie2 = new Creature("ZombieA2");
         Creature zombie3 = new Creature("ZombieA3");
+        Creature zombie4 = new Creature("ZombieA4");
+        Creature zombie5 = new Creature("ZombieA5");
         
         battle.insertCreatureAt(zombie1, 1, 1);
         battle.insertCreatureAt(zombie2, 1, 2);
 
-        
-/*
-        battle.insertCreatureAt(zombie1, 6, 7);
-        battle.insertCreatureAt(zombie2, 6, 6);
-        battle.insertCreatureAt(zombie3, 7, 6);
-
+        battle.insertCreatureAt(zombie3, 3, 1);
+        battle.insertCreatureAt(zombie4, 3, 2);
+        battle.insertCreatureAt(zombie5, 3, 3);
+        /*
         for (int i = 0; i < 7; i++) {
             battle.insertCreatureAt(new Creature("ZombieB" + i), i, 1);
             battle.insertCreatureAt(new Creature("ZombieC" + i + 1), i + 1, 2);

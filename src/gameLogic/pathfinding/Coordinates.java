@@ -79,18 +79,18 @@ public class Coordinates {
         }
         return equality;
     }
-    
+
     public boolean quickEquals(Coordinates coord) {
         return xCoord == coord.getXCoord() && yCoord == coord.getYCoord();
     }
-    
+
     // Coordinates must be adjacent (one of the four surrounding cardinal coords
-    public Coordinates getNextCoordinatesInTheDirectionOf(Coordinates coords) { 
+    public Coordinates getNextCoordinatesInTheDirectionOf(Coordinates coords) {
         Coordinates nextCoords = null;
         if (this.areCardinalCoordinatesAdjacentTo(coords)) {
             int otherXCoord = coords.getXCoord();
             int otherYCoord = coords.getYCoord();
-            if (otherXCoord - xCoord > 0) { 
+            if (otherXCoord - xCoord > 0) {
                 nextCoords = new Coordinates(otherXCoord + 1, yCoord);
             } else if (otherXCoord - xCoord < 0) {
                 nextCoords = new Coordinates(otherXCoord - 1, yCoord);
@@ -102,14 +102,28 @@ public class Coordinates {
         }
         return nextCoords;
     }
-    
-    public boolean areCardinalCoordinatesAdjacentTo(Coordinates coords) { 
-        return (coords.equals(new Coordinates(xCoord, yCoord + 1)) ||
-                coords.equals(new Coordinates(xCoord + 1, yCoord)) ||
-                coords.equals(new Coordinates(xCoord, yCoord - 1)) ||
-                coords.equals(new Coordinates(xCoord - 1, yCoord)));
+
+    public Coordinates getAdjacentCoordinatesNearestTo(Coordinates coords) {
+        Coordinates adjacentCoords;
+        int xDiff = coords.getXCoord() - xCoord;
+        int yDiff = coords.getYCoord() - yCoord;
+        int xStep = xDiff > 0 ? 1 : -1;
+        int yStep = yDiff > 0 ? 1 : -1;
+        if (Math.abs(xDiff) > Math.abs(yDiff)) {
+            adjacentCoords = new Coordinates(xCoord + xStep, yCoord);
+        } else {
+            adjacentCoords = new Coordinates(xCoord, yCoord + yStep);
+        } 
+        return adjacentCoords;
     }
-    
+
+    public boolean areCardinalCoordinatesAdjacentTo(Coordinates coords) {
+        return (coords.equals(new Coordinates(xCoord, yCoord + 1))
+                || coords.equals(new Coordinates(xCoord + 1, yCoord))
+                || coords.equals(new Coordinates(xCoord, yCoord - 1))
+                || coords.equals(new Coordinates(xCoord - 1, yCoord)));
+    }
+
     public Coordinates[] getFourSurroundingCardinalCoordinates() {
         Coordinates[] surroundingCoords = new Coordinates[4];
         surroundingCoords[0] = new Coordinates(xCoord, yCoord + 1);
@@ -118,10 +132,10 @@ public class Coordinates {
         surroundingCoords[3] = new Coordinates(xCoord - 1, yCoord);
         return surroundingCoords;
     }
-    
+
     public boolean foundIn(Coordinates[] coordinatesArray) {
         boolean found = false;
-        for (Coordinates coord: coordinatesArray) {
+        for (Coordinates coord : coordinatesArray) {
             if (this.quickEquals(coord)) {
                 found = true;
                 break;
@@ -129,10 +143,25 @@ public class Coordinates {
         }
         return found;
     }
-    
+
     public int sumOfXYComponentDistancesTo(Coordinates coords) {
         int xDistance = Math.abs(xCoord - coords.getXCoord());
         int yDistance = Math.abs(yCoord - coords.getYCoord());
         return xDistance + yDistance;
+    }
+
+    public boolean isDiagonalTo(Coordinates coords) {
+        int otherXCoord = coords.getXCoord();
+        int otherYCoord = coords.getYCoord();
+        int xDiff = xCoord - otherXCoord;
+        int yDiff = yCoord - otherYCoord;
+        return (yCoord == otherYCoord + xDiff) || (yCoord == otherYCoord - xDiff)
+                || (xCoord == otherXCoord + yDiff) || (xCoord == otherXCoord - yDiff);
+    }
+
+    public boolean hasXOrYComponentWithinNUnitsOf(int units, Coordinates coords) {
+        int xDiff = xCoord - coords.getXCoord();
+        int yDiff = yCoord - coords.getYCoord();
+        return Math.abs(xDiff) <= units || Math.abs(yDiff) <= units;
     }
 }

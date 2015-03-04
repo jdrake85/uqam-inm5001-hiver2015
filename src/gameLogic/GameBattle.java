@@ -4,7 +4,6 @@
  */
 package gameLogic;
 
-import gameLogic.Creature;
 import gameLogic.gameboard.GameBoard;
 import gameLogic.gameboard.Tile;
 import gameLogic.pathfinding.Coordinates;
@@ -164,6 +163,8 @@ public class GameBattle {
 
     public void useCreatureSkillAt(Creature creature, int skillNumber, Coordinates coords) {
         Skill skill = creature.prepareSkill(skillNumber);
+        Coordinates originatingCoords = gameboard.getCreatureCoordinates(creature);
+        skill.setOriginatingFrom(originatingCoords);
         if (creatureCanUseSkillAt(creature, skillNumber, coords)) {
             creature.consumeEnergyForSkillNumber(skillNumber);
             skill.setTargetCoordinates(coords);

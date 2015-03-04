@@ -160,7 +160,7 @@ private ActionListener actionListener = new ActionListener() {
         greyMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         
         redZombie = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
-        redZombie.setColor("Color", new ColorRGBA(0.75f,0f,0f,0f));//R,B,G,Alphas
+        redZombie.setColor("Color", new ColorRGBA(0.75f,0f,0.75f,0f));//R,B,G,Alphas
         
         /**/
         Box plancher = new Box(4,0,4);

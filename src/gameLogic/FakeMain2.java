@@ -1,4 +1,6 @@
 package gameLogic;
+
+import level.board.*;
  
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
@@ -28,11 +30,12 @@ public class FakeMain2 extends SimpleApplication {
 
     protected Node pivot = new Node("pivot");
     protected Node mainNode = new Node("mainNode");
-    protected Node charNode = new Node ("charNode");
+    protected static Node charNode = new Node ("charNode");
     protected String gameState = "idle"; // idle, move, skill  
     
     public static Material greenMat; //TODO remove
     public static Material greyMat; //TODO remove
+    public static Material redZombie;
         
     public static Geometry[][] g;
     
@@ -73,25 +76,37 @@ private ActionListener actionListener = new ActionListener() {
       }
         
       if (name.equals("SelectTile") && !keyPressed && gameState.equals("move")) {
-
-        CollisionResults results = new CollisionResults();
-        Vector2f click2d = inputManager.getCursorPosition();
-        Vector3f click3d = cam.getWorldCoordinates(
+          CollisionResults results = new CollisionResults();
+          Vector2f click2d = inputManager.getCursorPosition();
+          Vector3f click3d = cam.getWorldCoordinates(
             new Vector2f(click2d.x, click2d.y), 0f).clone();
-        Vector3f dir = cam.getWorldCoordinates(
+          Vector3f dir = cam.getWorldCoordinates(
             new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
-        Ray ray = new Ray(click3d, dir);
-        pivot.collideWith(ray, results);
+          Ray ray = new Ray(click3d, dir);
+          pivot.collideWith(ray, results);
         
-        // 5. Use the results (we mark the hit object)
+        // Use the results (we mark the hit object)
         if (results.size() > 0) {
           // The closest collision point is what was truly hit:
           Geometry closest = results.getClosestCollision().getGeometry();
-          // Let's interact - we mark the hit with a red dot.
-          Material mx = new Material(assetManager, 
-                "Common/MatDefs/Misc/Unshaded.j3md");
-            mx.setColor("Color", new ColorRGBA(1f,1f,0f,1));//R,B,G,Alphas
-          closest.setMaterial(greenMat);
+          
+          Vector3f targetTile;
+          targetTile = closest.getLocalTranslation();
+          int commandX = (int) targetTile.getX();
+          int commandY = (int) targetTile.getZ();
+          
+          FakeMain.performTurn(0, commandX, commandY, hero, battle);
+          gameState = "idle";
+          /*
+          MyMaterial greenTile = new MyMaterial(assetManager);
+          greenTile.setGreenTileMat();
+          closest.setMaterial(greenTile.getMat());*/
+          for(int i=0;i<8;i++){
+            for(int j=0;j<8;j++){
+                g[i][j].setMaterial(greyMat);
+                g[i][j].setQueueBucket(Bucket.Translucent);
+            }
+        }
         }
       }
     }
@@ -102,6 +117,7 @@ private ActionListener actionListener = new ActionListener() {
         
         mainNode.setLocalTranslation(new Vector3f(-4,4,-4));
         /***/
+        
         greenMat = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
         greenMat.setColor("Color", new ColorRGBA(.1f,.75f,.1f,0.5f));//R,B,G,Alphas
         greenMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
@@ -109,6 +125,9 @@ private ActionListener actionListener = new ActionListener() {
         greyMat = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
         greyMat.setColor("Color", new ColorRGBA(.1f,.1f,.1f,1f));//R,B,G,Alphas
         greyMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        
+        redZombie = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
+        redZombie.setColor("Color", new ColorRGBA(0.75f,0f,0f,0f));//R,B,G,Alphas
         
         /**/
         Box plancher = new Box(4,0,4);
@@ -130,7 +149,7 @@ private ActionListener actionListener = new ActionListener() {
                 pivot.attachChild(g[i][j]);
             }
         }
-        /**/
+        /**
         Box ninja = new Box(0.2f,1.5f,0.2f);
         Geometry nin = new Geometry("Box", ninja);
 
@@ -140,7 +159,7 @@ private ActionListener actionListener = new ActionListener() {
         nin.setMaterial(mNin);
         nin.setLocalTranslation(new Vector3f(0,-1,0));
         charNode.attachChild(nin);
-        /***/
+        
         Box zombie1 = new Box(0.2f,1.5f,0.2f);
         Geometry zomb1 = new Geometry("Box", zombie1);
 
@@ -150,14 +169,14 @@ private ActionListener actionListener = new ActionListener() {
         zomb1.setMaterial(mZomb);
         zomb1.setLocalTranslation(new Vector3f(1,-1,1));
         charNode.attachChild(zomb1);
-        /***/
+        
         Box zombie2 = new Box(0.2f,1.5f,0.2f);
         Geometry zomb2 = new Geometry("Box", zombie2);
-
+        
         zomb2.setMaterial(mZomb);
         zomb2.setLocalTranslation(new Vector3f(1,-1,2));
         charNode.attachChild(zomb2);
-        /***/
+        ***/
 
         // ust add a light to make the model visible
         DirectionalLight sun = new DirectionalLight();

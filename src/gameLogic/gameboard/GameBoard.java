@@ -115,7 +115,9 @@ public class GameBoard {
             Tile initialTile = getTileAt(initialCoords);
             Tile destinationTile = getTileAt(destinationCoords);
             destinationTile.addOccupier(creature);
-            initialTile.removeOccupier();
+            initialTile.removeOccupier();  
+            creature.displayCreatureOn3DBoard(destinationCoords.getXCoord(),destinationCoords.getYCoord());           
+
         } else {
             System.out.println("Error: GameBattle request for invalid move");
         }
@@ -128,6 +130,8 @@ public class GameBoard {
             Tile destinationTile = getTileAt(destCoords);
             destinationTile.addOccupier(creature);
             initialTile.removeOccupier();
+            creature.displayCreatureOn3DBoard(destCoords.getXCoord(),destCoords.getYCoord());           
+
         } else {
             System.out.println("Error: GameBattle request for invalid move");
         }
@@ -300,6 +304,7 @@ public class GameBoard {
                 if (withOverlay && overlay[i][j]) {
                     if (tileDrawing == ' ') {
                         lineDrawing += '*'; // Overlay is over empty tile
+                        //TODO
                         FakeMain2.g[i][j].setMaterial(FakeMain2.greenMat);
                     } else {
                         lineDrawing += '#'; // Overlay is over occupied tile

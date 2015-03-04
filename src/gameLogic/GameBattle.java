@@ -110,13 +110,15 @@ public class GameBattle {
 
     public void insertCreatureAt(Creature creature, int xCoord, int yCoord) {
         gameboard.insertCreatureAt(creature, xCoord, yCoord);
+        creature.displayCreatureOn3DBoard(xCoord, yCoord);
         refreshCreatureList();
     }
     
     // Quick implementation
     public void removeCreatureAt(int xCoord, int yCoord) { 
         Tile tile = gameboard.getTileAt(xCoord, yCoord);
-        tile.removeOccupier(); 
+        tile.removeOccupier();
+        //TODO creature.hideCreatureOn3DBoard();
     }
 
     // Unit movement
@@ -147,6 +149,8 @@ public class GameBattle {
             System.out.println(pathChosen);
             
             gameboard.moveCreatureTo(creature, destCoords);
+            creature.displayCreatureOn3DBoard(destCoords.getXCoord(),destCoords.getYCoord());           
+            
         } else {
             System.out.println("Error: creature cannot move to " + destCoords);
         }

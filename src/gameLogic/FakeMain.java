@@ -4,6 +4,8 @@
  */
 package gameLogic;
 
+import com.jme3.scene.Geometry;
+import com.jme3.scene.shape.Box;
 import gameLogic.skills.nurse.*;
 import gameLogic.skills.hero.*;
 import gameLogic.skills.soldier.*;
@@ -101,22 +103,24 @@ public class FakeMain {
         System.out.println("------------------------------------");
     }
 
-    protected static boolean performTurn(int commandType, int commandX, int commandY, Creature hero, GameBattle battle) {
+    protected static boolean performTurn(int commandType, int commandX, int commandY, Creature creature, GameBattle battle) {
         boolean keepPlaying = true;
+        battle.setCreatureHavingTurn(creature);
         if (commandX == 8 || commandY == 8) {
             System.out.println("Energy boost +40!");
-            hero.setEnergy(hero.getEnergy() + 40);
+            creature.setEnergy(creature.getEnergy() + 40);
         } else if (commandX == -1 || commandY == -1) {
             keepPlaying = false;
         } else if (commandType == 0) {
             System.out.println("Moving to (" + commandX + ", " + commandY + ")...");
-            battle.moveCreatureTo(hero, new Coordinates(commandX, commandY));
+            battle.moveCreatureTo(creature, new Coordinates(commandX, commandY));
         } else if (commandType >= 1 && commandType <= 12) {
-            System.out.println("Using skill " + hero.prepareSkill(commandType) + " at (" + commandX + ", " + commandY + ")...");
-            battle.useCreatureSkillAt(hero, commandType, new Coordinates(commandX, commandY));
+            System.out.println("Using skill " + creature.prepareSkill(commandType) + " at (" + commandX + ", " + commandY + ")...");
+            battle.useCreatureSkillAt(creature, commandType, new Coordinates(commandX, commandY));
         } else {
             System.out.println("** Unrecognized commands; ending turn.");
         }
+        battle.refreshCreatureList();
         return keepPlaying;
     }
 
@@ -147,7 +151,7 @@ public class FakeMain {
     }
 
     protected static Creature initializeHero(GameBattle battle) {
-        Creature hero = new Creature("Hero");
+        Creature hero = new Creature("Hero", FakeMain2.heroMat);
         hero.setAlignment("good");
         battle.insertCreatureAt(hero, 0, 0);
         assignAllSkillsTo(hero);

@@ -5,6 +5,7 @@
 package gameLogic;
 
 
+import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
@@ -54,6 +55,11 @@ public class Creature {
         zomb1.setLocalTranslation(new Vector3f(1,-1,1));
         charNode.attachChild(zomb1);
         **/
+    }
+    
+    public Creature(String name, Material material) {
+        this(name);
+        geometry3D.setMaterial(material);
     }
     
     @Override

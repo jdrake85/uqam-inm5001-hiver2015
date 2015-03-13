@@ -41,10 +41,11 @@ public class FakeMain2 extends SimpleApplication {
     public static Material redMat; //TODO remove
     public static Material greyMat; //TODO remove
     public static Material redZombie;
+    public static Material heroMat;
     public static int commandType = -1;
     public static Geometry[][] g;
     public static GameBattle battle;
-    public static Creature hero;
+    public static Creature creaturePlayingTurn;
     //public static Spatial ninja;
     public static Nifty nifty;
     //public static int posX = 0;
@@ -61,54 +62,35 @@ public class FakeMain2 extends SimpleApplication {
 
         battle = new GameBattle();
 
-        hero = FakeMain.initializeHero(battle);
-        FakeMain.initializeScenario(battle, hero);
+        // Distinctive hero colours
+        heroMat = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md"); 
+        heroMat.setColor("Color", new ColorRGBA(0.75f,4f,3f,0f));
+        
+        creaturePlayingTurn = FakeMain.initializeHero(battle);
+        FakeMain.initializeScenario(battle, creaturePlayingTurn);
     }
 
     private void initKeys() {
-        inputManager.addMapping("Skill1", new KeyTrigger(KeyInput.KEY_1));
-        inputManager.addMapping("Skill2", new KeyTrigger(KeyInput.KEY_2));
-        inputManager.addMapping("Skill3", new KeyTrigger(KeyInput.KEY_3));
-        inputManager.addMapping("Skill4", new KeyTrigger(KeyInput.KEY_4));
-        inputManager.addMapping("Skill5", new KeyTrigger(KeyInput.KEY_5));
-        inputManager.addMapping("Skill6", new KeyTrigger(KeyInput.KEY_6));
-        inputManager.addMapping("Skill7", new KeyTrigger(KeyInput.KEY_7));
-        inputManager.addMapping("Skill8", new KeyTrigger(KeyInput.KEY_8));
-        inputManager.addMapping("Skill9", new KeyTrigger(KeyInput.KEY_9));
-        inputManager.addMapping("Skill10", new KeyTrigger(KeyInput.KEY_0));
-        inputManager.addMapping("Skill11", new KeyTrigger(KeyInput.KEY_MINUS));
-        inputManager.addMapping("Skill12", new KeyTrigger(KeyInput.KEY_EQUALS));
 
-
-
-
+        for (int i = 1; i <= 12; i++) {
+            String skillName = "Skill" + i;
+            inputManager.addMapping(skillName, new KeyTrigger(KeyInput.KEY_1 + i - 1));
+            inputManager.addListener(actionListener, skillName);
+        }
 
         inputManager.addMapping("MoveKey", new KeyTrigger(KeyInput.KEY_M));
         inputManager.addMapping("EnergyKey", new KeyTrigger(KeyInput.KEY_E));
         inputManager.addMapping("SelectTile",
                 new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT)); // trigger 2: left-button click
-
-        inputManager.addMapping("SelectTile", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-
-        inputManager.addListener(actionListener, "Skill1");
-        inputManager.addListener(actionListener, "Skill2");
-        inputManager.addListener(actionListener, "Skill3");
-        inputManager.addListener(actionListener, "Skill4");
-        inputManager.addListener(actionListener, "Skill5");
-        inputManager.addListener(actionListener, "Skill6");
-        inputManager.addListener(actionListener, "Skill7");
-        inputManager.addListener(actionListener, "Skill8");
-        inputManager.addListener(actionListener, "Skill9");
-        inputManager.addListener(actionListener, "Skill10");
-        inputManager.addListener(actionListener, "Skill11");
-        inputManager.addListener(actionListener, "Skill12");
-
-
-        inputManager.addListener(actionListener, "SelectTile");
-        inputManager.addListener(actionListener, "EnergyKey");
+        inputManager.addMapping("EndTurnKey", new KeyTrigger(KeyInput.KEY_Q));
+        
         inputManager.addListener(actionListener, "MoveKey");
+        inputManager.addListener(actionListener, "EnergyKey");
+        inputManager.addListener(actionListener, "SelectTile");
+        inputManager.addListener(actionListener, "EndTurnKey");
     }
+    
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
 
@@ -116,94 +98,38 @@ public class FakeMain2 extends SimpleApplication {
             // TODO; effacer
             if (name.equals("MoveKey") && !keyPressed && gameState.equals("idle")) {
                 gameState = "move";
-                battle.drawWithOverlayForCreatureMoves(hero);
-            }
-
-            if (name.equals("Skill1") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 1;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 1);
-            }
-
-            if (name.equals("Skill2") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 2;
-                battle.drawWithOverlayForCreatureSkill(hero, 2);
-            }
-
-            if (name.equals("Skill3") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 3;
-                battle.drawWithOverlayForCreatureSkill(hero, 3);
-            }
-
-            if (name.equals("Skill4") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 4;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 4);
+                battle.drawWithOverlayForCreatureMoves(creaturePlayingTurn);
             }
             
-            if (name.equals("Skill5") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 5;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 5);
+            if (name.equals("EndTurnKey") && !keyPressed && gameState.equals("idle")) {
+                battle.endTurn();
+                while (battle.isZombieTurn()) {
+                    battle.randomlyMoveZombie();
+                    System.out.println("Moving a zombie...");
+                    battle.endTurn();
+                    for (int i = 0; i < 8; i++) {
+                        for (int j = 0; j < 8; j++) {
+                            g[i][j].setMaterial(greyMat);
+                            g[i][j].setQueueBucket(Bucket.Translucent);
+                        }
+                    }
+                }
+                battle.draw();
             }
             
-            if (name.equals("Skill6") && !keyPressed && gameState.equals("idle")) {
+            if (name.substring(0,5).equals("Skill") && !keyPressed && gameState.equals("idle")) {
+                try {
+                    commandType = Integer.parseInt(name.substring(5));
+                } catch (Exception e) {
+                    commandType = 1;
+                }
                 gameState = "skill";
-                commandType = 6;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 6);
-            }
-            
-            if (name.equals("Skill7") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 7;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 7);
-            }
-            
-            if (name.equals("Skill8") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 8;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 8);
-            }
-            
-            if (name.equals("Skill9") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 9;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 9);
-            }
-            
-            if (name.equals("Skill10") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 10;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 10);
-            }
-            
-            if (name.equals("Skill11") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 11;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 11);
-            }
-            
-            if (name.equals("Skill12") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 12;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 12);
+                battle.drawWithOverlayForCreatureSkill(creaturePlayingTurn, commandType);
             }
 
             if (name.equals("EnergyKey") && !keyPressed && gameState.equals("idle")) {
-                hero.setEnergy(hero.getEnergy() + 20);
-                System.out.println(hero.getEnergy());
+                creaturePlayingTurn.setEnergy(creaturePlayingTurn.getEnergy() + 20);
+                System.out.println(creaturePlayingTurn.getEnergy());
             }
 
             if (name.equals("SelectTile") && !keyPressed && gameState.equals("skill")) {
@@ -226,7 +152,7 @@ public class FakeMain2 extends SimpleApplication {
                     int commandX = (int) targetTile.getX();
                     int commandY = (int) targetTile.getZ();
 
-                    FakeMain.performTurn(commandType, commandX, commandY, hero, battle);
+                    FakeMain.performTurn(commandType, commandX, commandY, creaturePlayingTurn, battle);
                     gameState = "idle";
                     commandType = 0;
                     /*
@@ -265,7 +191,7 @@ public class FakeMain2 extends SimpleApplication {
                     int commandX = (int) targetTile.getX();
                     int commandY = (int) targetTile.getZ();
 
-                    FakeMain.performTurn(0, commandX, commandY, hero, battle);
+                    FakeMain.performTurn(0, commandX, commandY, creaturePlayingTurn, battle);
                     gameState = "idle";
                     /*
                      MyMaterial greenTile = new MyMaterial(assetManager);
@@ -396,4 +322,6 @@ public class FakeMain2 extends SimpleApplication {
         flMat.setColor("Color", new ColorRGBA(0.25f, 0, 0.75f, 11f));//R,B,G,Alphas
         return flMat;
     }
+    
+    
 }

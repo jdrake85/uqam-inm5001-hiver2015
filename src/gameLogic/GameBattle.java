@@ -11,6 +11,7 @@ import gameLogic.pathfinding.CoordPath;
 import gameLogic.pathfinding.OptimalPaths;
 import gameLogic.skills.*;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
@@ -18,45 +19,55 @@ import java.util.List;
  */
 public class GameBattle {
 
-    //private Creature creatureHavingTurn; // TODO: Not used or implemented yet
+    private Creature creatureHavingTurn; // TODO: Not used or implemented yet
     private List<Creature> creatureList; // Fast access to creatures on gameboard
     private OptimalPaths paths;
     private GameBoard gameboard;
     private boolean[][] currentOverlay = null;
+    private Creature creaturesByTurn[] = null;
 
     public GameBattle() {
-        paths = new OptimalPaths(8,8);
+        paths = new OptimalPaths(8, 8);
         gameboard = new GameBoard();
+        creaturesByTurn = initializeBlankCreaturesByTurn();
     }
-    
+
+    private Creature[] initializeBlankCreaturesByTurn() {
+        Creature[] creatures = new Creature[5];
+        for (Creature creature : creatures) {
+            creature = null;
+        }
+        return creatures;
+    }
+
     public void displayCombattants() {
         refreshCreatureList();
         System.out.println("\nCOMBATTANTS:");
-        for (Creature creature: creatureList) {
+        for (Creature creature : creatureList) {
             creature.displayStats();
         }
         System.out.println();
     }
-    
-    public boolean[][] getOverlayForCreatureSkill(Creature creature, int skillNumber) { 
+
+    public boolean[][] getOverlayForCreatureSkill(Creature creature, int skillNumber) {
         Skill skill = creature.prepareSkill(skillNumber);
         Coordinates originatingCoords = gameboard.getCreatureCoordinates(creature);
         skill.setOriginatingFrom(originatingCoords);
         return gameboard.getSkillOverlay(skill);
     }
-  
+
     public boolean[][] getOverlayForCreatureMoves(Creature creature) {
         calculateOptimalPathsForCreature(creature);
         int stepCount = creature.maximumStepsAbleToWalk();
         return paths.getTilesReachableInAtMostNSteps(stepCount);
     }
-    
+
     private void calculateOptimalPathsForCreature(Creature creature) {
         Coordinates initCoords = gameboard.getCreatureCoordinates(creature);
         boolean[][] occupiedTiles = gameboard.getOccupiedTiles();
-        paths.calculateOptimalPathsStartingFromCoordinates(occupiedTiles , initCoords);
+        paths.calculateOptimalPathsStartingFromCoordinates(occupiedTiles, initCoords);
     }
-    
+
     public void displayOptimalPaths() {
         paths.displayOptimalPaths();
     }
@@ -64,6 +75,7 @@ public class GameBattle {
     public void refreshCreatureList() {
         gameboard.removeDeadCreatures();
         creatureList = gameboard.getFullCreatureList();
+        System.out.println("Creature list: " + creatureList);
     }
 
     public boolean containsGoodCreatures() {
@@ -101,7 +113,7 @@ public class GameBattle {
         currentOverlay = getOverlayForCreatureMoves(creature);
         gameboard.draw(currentOverlay);
     }
-    
+
     public void drawWithOverlayForCreatureSkill(Creature creature, int skillNumber) {
         currentOverlay = getOverlayForCreatureSkill(creature, skillNumber);
         gameboard.draw(currentOverlay);
@@ -112,9 +124,9 @@ public class GameBattle {
         creature.displayCreatureOn3DBoard(xCoord, yCoord);
         refreshCreatureList();
     }
-    
+
     // Quick implementation
-    public void removeCreatureAt(int xCoord, int yCoord) { 
+    public void removeCreatureAt(int xCoord, int yCoord) {
         Tile tile = gameboard.getTileAt(xCoord, yCoord);
         tile.removeOccupier();
         //TODO creature.hideCreatureOn3DBoard();
@@ -142,14 +154,14 @@ public class GameBattle {
 
     public void moveCreatureTo(Creature creature, Coordinates destCoords) {
         if (creatureCanMoveTo(creature, destCoords)) {
-            
+
             CoordPath pathChosen = paths.getPathForCreatureToCoordinates(creature, destCoords);
             creature.consumeEnergyForSteps(pathChosen.length() - 1);
             System.out.println(pathChosen);
-            
+
             gameboard.moveCreatureTo(creature, destCoords);
-            creature.displayCreatureOn3DBoard(destCoords.getXCoord(),destCoords.getYCoord());           
-            
+            creature.displayCreatureOn3DBoard(destCoords.getXCoord(), destCoords.getYCoord());
+
         } else {
             System.out.println("Error: creature cannot move to " + destCoords);
         }
@@ -179,7 +191,79 @@ public class GameBattle {
         currentOverlay = gameboard.getSkillOverlay(skill);
         int xCoord = coords.getXCoord();
         int yCoord = coords.getYCoord();
-        return creature.canPayEnergyCostForSkillNumber(skillNumber) 
+        return creature.canPayEnergyCostForSkillNumber(skillNumber)
                 && currentOverlay[xCoord][yCoord];
+    }
+
+    public void setCreatureHavingTurn(Creature creature) {
+        creatureHavingTurn = creature;
+    }
+
+    public void endTurn() {
+        refreshCreatureList();
+        Creature lastCreature = creatureHavingTurn;
+        creaturesByTurn[0] = null;
+        calculateCreatureTurnOrder();   
+        creatureHavingTurn = creaturesByTurn[0];
+        
+        System.out.println("Ending turn for " + lastCreature + ", passing to " + creatureHavingTurn);
+    }
+
+    private void calculateCreatureTurnOrder() {
+        int blankCreatureCounter = 0;
+        int numberOfTurns = creaturesByTurn.length;
+        for (int i = 0; i < numberOfTurns; i++) {
+            System.out.println("Creature by turn: " + creaturesByTurn[i]);
+            if (creaturesByTurn[i] == null) {
+                creaturesByTurn[i] = creatureList.get(blankCreatureCounter++);
+                System.out.println("Creature is now: " + creaturesByTurn[i]);
+            } else if (!creaturesByTurn[i].isAlive()) {
+                for (int j = i; j < numberOfTurns - 1; j++) { 
+                    creaturesByTurn[j] = creaturesByTurn[j + 1];
+                    System.out.println("Creature is now: " + creaturesByTurn[j]);
+                }
+            }
+        }
+    }
+    
+    public boolean isZombieTurn() {
+        return creatureHavingTurn.isAlignedTo("bad");
+    }
+    
+    public void randomlyMoveZombie() {
+        if (isZombieTurn()) {
+            moveCreatureRandomly(creatureHavingTurn);
+        }
+    }
+
+    public Creature[] getCreatureTurnOrder() {
+        return creaturesByTurn;
+    }
+
+    public void moveCreatureRandomly(Creature creature) {
+        if (creature.isAlignedTo("bad")) {
+            creature.setEnergy(12);
+        }
+        drawWithOverlayForCreatureMoves(creature);
+        int validMoves = 0;
+        // Counting valid moves (first pass)
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (currentOverlay[i][j]) {
+                    validMoves++;
+                }
+            }
+        }
+        Random generator = new Random();
+        int randomMove = generator.nextInt(validMoves);
+        int movesCounter = 0;
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (currentOverlay[i][j] && movesCounter++ == randomMove) {
+                    moveCreatureTo(creature, new Coordinates(i, j));
+                }
+            }
+        }
     }
 }

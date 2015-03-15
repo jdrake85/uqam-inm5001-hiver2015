@@ -75,7 +75,7 @@ public class GameBattle {
     public void refreshCreatureList() {
         gameboard.removeDeadCreatures();
         creatureList = gameboard.getFullCreatureList();
-        System.out.println("Creature list: " + creatureList);
+        System.out.println("Refreshing list of ALL creatures on the map: " + creatureList);
     }
 
     public boolean containsGoodCreatures() {
@@ -200,34 +200,94 @@ public class GameBattle {
     }
 
     public void endTurn() {
+        //System.out.println("Ending turn for creature: " + creatureHavingTurn);
         refreshCreatureList();
         Creature lastCreature = creatureHavingTurn;
-        creaturesByTurn[0] = null;
-        calculateCreatureTurnOrder();   
+        updateCreatureTurnOrderAfterEndOfTurn();   
         creatureHavingTurn = creaturesByTurn[0];
         
-        System.out.println("Ending turn for " + lastCreature + ", passing to " + creatureHavingTurn);
+        //System.out.println("Ending turn for " + lastCreature + ", passing to " + creatureHavingTurn);
+    }
+    
+    public void start() {
+        refreshCreatureList();
+        initializeCreatureTurnOrder();
+        creatureHavingTurn = creaturesByTurn[0];
+    }
+    
+    private void initializeCreatureTurnOrder() {
+        int maxTurns = Math.min(creaturesByTurn.length, creatureList.size());
+        for (int i = 0; i < maxTurns; i++) {
+            creaturesByTurn[i] = creatureList.get(i);
+            //System.out.println("Banner length creature " + i + ": " + creaturesByTurn[i]);
+        }
     }
 
-    private void calculateCreatureTurnOrder() {
-        int blankCreatureCounter = 0;
+    private void updateCreatureTurnOrderAfterEndOfTurn() {
+        shiftCreatureTurnOrderAfterEndOfTurn();
+        removeDeadCreaturesFromTurnOrder();
+        fillLastOpenTurnOrderPositions();
+        displayCreatureTurnOrder();
+    }
+    
+    private void shiftCreatureTurnOrderAfterEndOfTurn() {
+        int maxTurns = creaturesByTurn.length;
+        for (int i = 0; i < maxTurns - 1; i++) {
+            creaturesByTurn[i] = creaturesByTurn[i + 1];
+        }
+        creaturesByTurn[maxTurns - 1] = null;
+    }
+    
+    private void removeDeadCreaturesFromTurnOrder() {
         int numberOfTurns = creaturesByTurn.length;
         for (int i = 0; i < numberOfTurns; i++) {
-            System.out.println("Creature by turn: " + creaturesByTurn[i]);
             if (creaturesByTurn[i] == null) {
-                creaturesByTurn[i] = creatureList.get(blankCreatureCounter++);
-                System.out.println("Creature is now: " + creaturesByTurn[i]);
+                break;
             } else if (!creaturesByTurn[i].isAlive()) {
-                for (int j = i; j < numberOfTurns - 1; j++) { 
-                    creaturesByTurn[j] = creaturesByTurn[j + 1];
-                    System.out.println("Creature is now: " + creaturesByTurn[j]);
+                if (i < numberOfTurns - 1) {
+                    for (int j = i; j < numberOfTurns - 1; j++) {
+                       creaturesByTurn[j] = creaturesByTurn[j + 1];
+                    }
+                } else {
+                    creaturesByTurn[i] = null;
                 }
             }
         }
     }
     
+    //TODO: proper function
+    private void fillLastOpenTurnOrderPositions() {
+        int numberOfTurns = creaturesByTurn.length;
+        int blankCreatureCounter = 0;
+        for (int i = 0; i < numberOfTurns; i++) { 
+            if (creaturesByTurn[i] == null) {
+                if (creatureList.isEmpty()) {
+                    break;
+                } else {
+                    creaturesByTurn[i] = creatureList.get(blankCreatureCounter++);
+                }
+            }
+        }
+    }
+    
+    public Creature getCreatureHavingTurn() {
+        return creatureHavingTurn;
+    }
+    
     public boolean isZombieTurn() {
         return creatureHavingTurn.isAlignedTo("bad");
+    }
+    
+    public Creature[] getCreatureTurnOrder() {
+        return creaturesByTurn;
+    }
+    
+    public void displayCreatureTurnOrder() {
+        String output = "Refreshing TURN ORDER banner: ";
+        for (int i = 0; i < 5; i++) {
+            output += creaturesByTurn[i] + " ";
+        }
+        System.out.println(output);
     }
     
     public void randomlyMoveZombie() {
@@ -236,13 +296,9 @@ public class GameBattle {
         }
     }
 
-    public Creature[] getCreatureTurnOrder() {
-        return creaturesByTurn;
-    }
-
     public void moveCreatureRandomly(Creature creature) {
         if (creature.isAlignedTo("bad")) {
-            creature.setEnergy(12);
+            creature.setEnergy(12); // Make sure enemy creature can move somewhat each turn
         }
         drawWithOverlayForCreatureMoves(creature);
         int validMoves = 0;

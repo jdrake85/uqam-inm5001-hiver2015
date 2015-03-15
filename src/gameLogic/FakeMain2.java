@@ -68,6 +68,7 @@ public class FakeMain2 extends SimpleApplication {
         
         creaturePlayingTurn = FakeMain.initializeHero(battle);
         FakeMain.initializeScenario(battle, creaturePlayingTurn);
+        battle.start();
     }
 
     private void initKeys() {
@@ -105,6 +106,7 @@ public class FakeMain2 extends SimpleApplication {
                 battle.endTurn();
                 while (battle.isZombieTurn()) {
                     battle.randomlyMoveZombie();
+                    battle.draw();
                     System.out.println("Moving a zombie...");
                     battle.endTurn();
                     for (int i = 0; i < 8; i++) {
@@ -114,7 +116,7 @@ public class FakeMain2 extends SimpleApplication {
                         }
                     }
                 }
-                battle.draw();
+                
             }
             
             if (name.substring(0,5).equals("Skill") && !keyPressed && gameState.equals("idle")) {

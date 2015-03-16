@@ -17,7 +17,7 @@ import gameLogic.skills.Skill;
  *
  * @author User
  */
-public class Creature {
+public class Creature implements Comparable {
 
     private static final int COST_OF_STEP = 2;
     private int level = 8;
@@ -26,7 +26,8 @@ public class Creature {
     private int maxHealth = 16;
     private int energy = 18;
     private int maxEnergy = 30;
-    private int speed = 8;
+    private int speed = 10;
+    private int cumulativeTurnSpeed = speed;
     private int power = 8;
     private double defenseRating = 1;
     private Skill[] skills;
@@ -195,5 +196,40 @@ public class Creature {
 
     public void setEnergy(int energy) {
        this.energy = energy;
+    }
+    
+    public int getCumulativeTurnSpeed() {
+        return cumulativeTurnSpeed;
+    }
+    
+    public void incrementTurnSpeedAfterEndOfTurn() {
+        cumulativeTurnSpeed += speed;
+    }
+
+    public int compareTo(Object o) {
+        int comparison = 0;
+        //String compareSign = " = ";
+        if (o == null) {
+            throw new NullPointerException();
+        } else {
+            Creature otherCreature = (Creature) o;
+            int otherCumulativeSpeed = otherCreature.getCumulativeTurnSpeed();
+            if (cumulativeTurnSpeed < otherCumulativeSpeed) {
+                //compareSign = " < ";
+                comparison = -1; 
+            } else if (cumulativeTurnSpeed > otherCumulativeSpeed) {
+                //compareSign = " > ";
+                comparison = 1;
+            } else {
+                comparison = name.compareTo(otherCreature.toString());
+            }
+            //System.out.println(this + compareSign + otherCreature);
+        }
+        return comparison;
+    }
+    
+    public void setSpeed(int speed) {
+        this.speed = speed;
+        this.cumulativeTurnSpeed = speed;
     }
 }

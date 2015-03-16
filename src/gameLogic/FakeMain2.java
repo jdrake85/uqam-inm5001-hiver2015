@@ -50,6 +50,7 @@ public class FakeMain2 extends SimpleApplication {
     public static Nifty nifty;
     //public static int posX = 0;
     public static FakeMain2 app;
+    public static int turnCounter = 0;
     //protected int posZ = 0;
     //protected static Scene scene1;
 
@@ -63,12 +64,17 @@ public class FakeMain2 extends SimpleApplication {
         battle = new GameBattle();
 
         // Distinctive hero colours
-        heroMat = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md"); 
-        heroMat.setColor("Color", new ColorRGBA(0.75f,4f,3f,0f));
-        
+        heroMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        heroMat.setColor("Color", new ColorRGBA(0.75f, 4f, 3f, 0f));
+
         creaturePlayingTurn = FakeMain.initializeHero(battle);
         FakeMain.initializeScenario(battle, creaturePlayingTurn);
         battle.start();
+        creaturePlayingTurn = battle.getCreaturePlayingTurn();
+        while (battle.isZombieTurn()) {
+            playZombieTurn();
+            creaturePlayingTurn = battle.getCreaturePlayingTurn();
+        }
     }
 
     private void initKeys() {
@@ -85,13 +91,12 @@ public class FakeMain2 extends SimpleApplication {
                 new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT)); // trigger 2: left-button click
         inputManager.addMapping("EndTurnKey", new KeyTrigger(KeyInput.KEY_Q));
-        
+
         inputManager.addListener(actionListener, "MoveKey");
         inputManager.addListener(actionListener, "EnergyKey");
         inputManager.addListener(actionListener, "SelectTile");
         inputManager.addListener(actionListener, "EndTurnKey");
     }
-    
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
 
@@ -101,25 +106,20 @@ public class FakeMain2 extends SimpleApplication {
                 gameState = "move";
                 battle.drawWithOverlayForCreatureMoves(creaturePlayingTurn);
             }
-            
+
+            // Ending turn
             if (name.equals("EndTurnKey") && !keyPressed && gameState.equals("idle")) {
                 battle.endTurn();
+                creaturePlayingTurn = battle.getCreaturePlayingTurn();
+                // Enemy turn(s), if next
                 while (battle.isZombieTurn()) {
-                    battle.randomlyMoveZombie();
-                    battle.draw();
-                    System.out.println("Moving a zombie...");
-                    battle.endTurn();
-                    for (int i = 0; i < 8; i++) {
-                        for (int j = 0; j < 8; j++) {
-                            g[i][j].setMaterial(greyMat);
-                            g[i][j].setQueueBucket(Bucket.Translucent);
-                        }
-                    }
+                    playZombieTurn();
+                    creaturePlayingTurn = battle.getCreaturePlayingTurn();
                 }
-                
+
             }
-            
-            if (name.substring(0,5).equals("Skill") && !keyPressed && gameState.equals("idle")) {
+
+            if (name.substring(0, 5).equals("Skill") && !keyPressed && gameState.equals("idle")) {
                 try {
                     commandType = Integer.parseInt(name.substring(5));
                 } catch (Exception e) {
@@ -209,6 +209,19 @@ public class FakeMain2 extends SimpleApplication {
             }
         }
     };
+
+    private void playZombieTurn() {
+        System.out.println("MOVING " + creaturePlayingTurn);
+        battle.randomlyMoveZombie();
+        battle.draw();
+        battle.endTurn();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                g[i][j].setMaterial(greyMat);
+                g[i][j].setQueueBucket(Bucket.Translucent);
+            }
+        }
+    }
 
     public void initScene() {
 
@@ -324,6 +337,4 @@ public class FakeMain2 extends SimpleApplication {
         flMat.setColor("Color", new ColorRGBA(0.25f, 0, 0.75f, 11f));//R,B,G,Alphas
         return flMat;
     }
-    
-    
 }

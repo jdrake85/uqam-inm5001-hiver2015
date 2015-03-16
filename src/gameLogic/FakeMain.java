@@ -126,10 +126,17 @@ public class FakeMain {
 
     protected static void initializeScenario(GameBattle battle, Creature hero) {
         Creature zombie1 = new Creature("ZombieA1");
+        zombie1.setSpeed(8);
         Creature zombie2 = new Creature("ZombieA2");
+        zombie2.setSpeed(9);
         Creature zombie3 = new Creature("ZombieA3");
+        zombie3.setSpeed(10);
         Creature zombie4 = new Creature("ZombieA4");
+        zombie4.setSpeed(11);
         Creature zombie5 = new Creature("ZombieA5");
+        zombie5.setSpeed(12);
+        
+        hero.setSpeed(10);
         
         battle.insertCreatureAt(zombie1, 1, 1);
         battle.insertCreatureAt(zombie2, 1, 2);

@@ -296,31 +296,32 @@ public class GameBoard {
         draw(null);
     }
 
+    // ASCII drawing disabled
     public void draw(boolean[][] overlay) {
-        System.out.println();
+        //System.out.println();
         boolean withOverlay = overlay != null;
         for (int j = 7; j >= 0; j--) {
-            String lineDrawing = j + " | ";
+            //String lineDrawing = j + " | ";
             for (int i = 0; i < 8; i++) {
                 char tileDrawing = drawTile(i, j);
                 if (withOverlay && overlay[i][j]) {
                     if (tileDrawing == ' ') {
-                        lineDrawing += '*'; // Overlay is over empty tile
+                        //lineDrawing += '*'; // Overlay is over empty tile
                         //TODO
                         FakeMain2.g[i][j].setMaterial(FakeMain2.greenMat);
                     } else {
-                        lineDrawing += '#'; // Overlay is over occupied tile
+                        //lineDrawing += '#'; // Overlay is over occupied tile
                         FakeMain2.g[i][j].setMaterial(FakeMain2.redMat);
                     }
                 } else {
-                    lineDrawing += drawTile(i, j);
+                    //lineDrawing += drawTile(i, j);
                 }
-                lineDrawing += " | ";
+                //lineDrawing += " | ";
             }
-            System.out.println(lineDrawing);
+            //System.out.println(lineDrawing);
         }
-        drawXAxisDetails();
-        System.out.println();
+        //drawXAxisDetails();
+        //System.out.println();
     }
 
     private void drawXAxisDetails() {

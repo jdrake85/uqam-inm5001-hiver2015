@@ -4,20 +4,17 @@
  */
 package gameLogic;
 
-
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import gameLogic.skills.Skill;
 
-
-
 /**
  *
  * @author User
  */
-public class Creature implements Comparable {
+public class Creature {
 
     private static final int COST_OF_STEP = 2;
     private int level = 8;
@@ -34,55 +31,56 @@ public class Creature implements Comparable {
     private boolean isGood = false;
     private boolean isImpaired = false;
     private Geometry geometry3D;
-    
+    private int turnsAssigned = 0;
+
     public Creature(String name) {
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
         //TODO: clean up
-        Box box = new Box(0.2f,1.5f,0.2f);
+        Box box = new Box(0.2f, 1.5f, 0.2f);
         geometry3D = new Geometry(name, box);
         geometry3D.setMaterial(FakeMain2.redZombie);
 
         //FakeMain2.charNode.attachChild(geo);
-        
-        /**
-        Box zombie1 = new Box(0.2f,1.5f,0.2f);
-        Geometry zomb1 = new Geometry("Box", zombie1);
 
-        Material mZomb = new Material(assetManager, 
-                "Common/MatDefs/Misc/Unshaded.j3md");
-        mZomb.setColor("Color", new ColorRGBA(0.75f,0f,0f,0f));//R,B,G,Alphas
-        zomb1.setMaterial(mZomb);
-        zomb1.setLocalTranslation(new Vector3f(1,-1,1));
-        charNode.attachChild(zomb1);
-        **/
+        /**
+         * Box zombie1 = new Box(0.2f,1.5f,0.2f); Geometry zomb1 = new
+         * Geometry("Box", zombie1);
+         *
+         * Material mZomb = new Material(assetManager,
+         * "Common/MatDefs/Misc/Unshaded.j3md"); mZomb.setColor("Color", new
+         * ColorRGBA(0.75f,0f,0f,0f));//R,B,G,Alphas zomb1.setMaterial(mZomb);
+         * zomb1.setLocalTranslation(new Vector3f(1,-1,1));
+         * charNode.attachChild(zomb1);
+         *
+         */
     }
-    
+
     public Creature(String name, Material material) {
         this(name);
         geometry3D.setMaterial(material);
     }
-    
+
     @Override
     public String toString() {
         return name;
     }
-    
-    public void displayCreatureOn3DBoard(int xCoord, int yCoord){
+
+    public void displayCreatureOn3DBoard(int xCoord, int yCoord) {
         geometry3D.setLocalTranslation(new Vector3f(xCoord, -1, yCoord));
         FakeMain2.charNode.attachChild(geometry3D);
     }
-    
-    public void hideCreatureOn3DBoard(){
+
+    public void hideCreatureOn3DBoard() {
         geometry3D.removeFromParent();
     }
-    
+
     public void displayStats() {
         String output = name + ": HEALTH: " + health
                 + " / ENERGY: " + energy;
-        if (isGood) { 
-                output = "#####################################\n" + output;
-                output += "\n#####################################";
+        if (isGood) {
+            output = "#####################################\n" + output;
+            output += "\n#####################################";
         }
         System.out.println(output);
     }
@@ -104,12 +102,12 @@ public class Creature implements Comparable {
     public void consumeEnergyForSkillNumber(int skillNumber) {
         consumeEnergy(getEneryCostForSkillNumber(skillNumber));
     }
-    
+
     private void consumeEnergy(int energyConsumed) {
         if (canPayEnergyCostOf(energyConsumed)) {
-        energy -= energyConsumed;
-    } else {    // Debugging?
-        System.out.println("Error: not enough energy to perform action");
+            energy -= energyConsumed;
+        } else {    // Debugging?
+            System.out.println("Error: not enough energy to perform action");
         }
     }
 
@@ -129,7 +127,7 @@ public class Creature implements Comparable {
     public boolean canPayEnergyCostOf(int energy) {
         return this.energy >= energy;
     }
-    
+
     public int getEnergy() {
         return energy;
     }
@@ -137,7 +135,7 @@ public class Creature implements Comparable {
     public int getPower() {
         return power;
     }
-    
+
     public int maximumStepsAbleToWalk() {
         return (int) (energy / COST_OF_STEP);
     }
@@ -146,7 +144,7 @@ public class Creature implements Comparable {
         health -= (int) (damage / defenseRating);
         if (health < 0) {
             health = 0;
-        } else if (health > maxHealth){
+        } else if (health > maxHealth) {
             health = maxHealth;
         }
     }
@@ -158,7 +156,7 @@ public class Creature implements Comparable {
     public void isImpaired(boolean isImpaired) {
         this.isImpaired = isImpaired;
     }
-    
+
     public void becomeImpaired() {
         energy = maxEnergy / 2;
     }
@@ -181,7 +179,7 @@ public class Creature implements Comparable {
         }
         return matchingAlignment;
     }
-    
+
     public void setSkillAsNumber(Skill skill, int skillNumber) {
         if (1 <= skillNumber && skillNumber <= 12) {
             skills[skillNumber - 1] = skill;
@@ -189,47 +187,34 @@ public class Creature implements Comparable {
             System.err.println("Error: skill added with an out-of-bounds number");
         }
     }
-    
-    public Skill prepareSkill(int skillNumber) { 
+
+    public Skill prepareSkill(int skillNumber) {
         return skills[skillNumber - 1];
     }
 
     public void setEnergy(int energy) {
-       this.energy = energy;
+        this.energy = energy;
     }
-    
+
     public int getCumulativeTurnSpeed() {
         return cumulativeTurnSpeed;
     }
-    
+
     public void incrementTurnSpeedAfterEndOfTurn() {
         cumulativeTurnSpeed += speed;
     }
 
-    public int compareTo(Object o) {
-        int comparison = 0;
-        //String compareSign = " = ";
-        if (o == null) {
-            throw new NullPointerException();
-        } else {
-            Creature otherCreature = (Creature) o;
-            int otherCumulativeSpeed = otherCreature.getCumulativeTurnSpeed();
-            if (cumulativeTurnSpeed < otherCumulativeSpeed) {
-                //compareSign = " < ";
-                comparison = -1; 
-            } else if (cumulativeTurnSpeed > otherCumulativeSpeed) {
-                //compareSign = " > ";
-                comparison = 1;
-            } else {
-                comparison = name.compareTo(otherCreature.toString());
-            }
-            //System.out.println(this + compareSign + otherCreature);
-        }
-        return comparison;
-    }
-    
+
     public void setSpeed(int speed) {
         this.speed = speed;
         this.cumulativeTurnSpeed = speed;
+    }
+
+    public void incrementTurnsAssigned() {
+        turnsAssigned++;
+    }
+
+    public int getTurnsAssigned() {
+        return turnsAssigned;
     }
 }

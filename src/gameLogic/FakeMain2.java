@@ -114,7 +114,7 @@ public class FakeMain2 extends SimpleApplication {
                 // Enemy turn(s), if next
                 while (battle.isZombieTurn()) {
                     playZombieTurn();
-                    creaturePlayingTurn = battle.getCreaturePlayingTurn();
+                    creaturePlayingTurn = battle.getCreaturePlayingTurn();  
                 }
 
             }
@@ -211,7 +211,6 @@ public class FakeMain2 extends SimpleApplication {
     };
 
     private void playZombieTurn() {
-        System.out.println("MOVING " + creaturePlayingTurn);
         battle.randomlyMoveZombie();
         battle.draw();
         battle.endTurn();

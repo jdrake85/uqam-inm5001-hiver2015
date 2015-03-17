@@ -27,31 +27,12 @@ public class GameBattle {
     private OptimalPaths paths;
     private GameBoard gameboard;
     private boolean[][] currentOverlay = null;
-    private Creature creaturesByTurn[] = null;
-    private PriorityQueue<Creature> creaturePriority = null;
+    private PriorityQueue<CreatureSpeedTurnTriplet> creaturePriority = new PriorityQueue<CreatureSpeedTurnTriplet>();
     private int turnCounter = 1;
 
     public GameBattle() {
         paths = new OptimalPaths(8, 8);
         gameboard = new GameBoard();
-        creaturesByTurn = initializeBlankCreaturesByTurn();
-    }
-
-    private Creature[] initializeBlankCreaturesByTurn() {
-        Creature[] creatures = new Creature[5];
-        for (Creature creature : creatures) {
-            creature = null;
-        }
-        return creatures;
-    }
-
-    public void displayCombattants() {
-        refreshCreatureList();
-        System.out.println("\nCOMBATTANTS:");
-        for (Creature creature : creatureList) {
-            creature.displayStats();
-        }
-        System.out.println();
     }
 
     public boolean[][] getOverlayForCreatureSkill(Creature creature, int skillNumber) {
@@ -201,31 +182,61 @@ public class GameBattle {
                 && currentOverlay[xCoord][yCoord];
     }
 
-    public void setCreatureHavingTurn(Creature creature) {
-        creaturePlayingTurn = creature;
-    }
-
     public void start() {
         refreshCreatureList();
-        creaturePriority = new PriorityQueue<Creature>(creatureList);
+        while (creaturePriority.size() < 5) {
+            initializeCreaturePriority();
+        }
+        CreatureSpeedTurnTriplet startingPair = creaturePriority.peek();
+        // System.out.println("*** NEXT TURN: " + startingPair);
         System.out.println('\n' + "------------------" + '\n' + "TURN #" + turnCounter++ + '\n' + "------------------");
-        displayCreatureTurnOrder();
-        creaturePlayingTurn = creaturePriority.peek();
+        creaturePlayingTurn = startingPair.getCreature();
+        displayCreatureSpeedPairsForTurnOrder();
+    }
+
+    private void initializeCreaturePriority() {
+        for (Creature creature : creatureList) {
+            addCreatureToCreaturePriorityOnce(creature);
+        }
+    }
+
+    // Note: same creature can be added several times to the priority queue, each time having a higher speed value
+    private void addCreatureToCreaturePriorityOnce(Creature creature) {
+        creaturePriority.add(new CreatureSpeedTurnTriplet(creature));
+        creature.incrementTurnsAssigned();
+        creature.incrementTurnSpeedAfterEndOfTurn();
+    }
+
+    private void addCreatureToCreaturePriorityRecursivelyAtLeastOnceAccordingToSpeed(Creature creature) {
+        do {
+            addCreatureToCreaturePriorityOnce(creature);
+        } while (creature.getCumulativeTurnSpeed() < getMaximumCumulativeSpeedInCreaturePriority());
+    }
+
+    private int getMaximumCumulativeSpeedInCreaturePriority() {
+        int maximumCumulativeSpeed = 0;
+        for (Creature creature : creatureList) {
+            int cumulativeSpeed = creature.getCumulativeTurnSpeed();
+            if (cumulativeSpeed > maximumCumulativeSpeed) {
+                maximumCumulativeSpeed = cumulativeSpeed;
+            }
+        }
+        return maximumCumulativeSpeed;
     }
 
     public void endTurn() {
         refreshCreatureList();
-        Creature lastPlayingCreature = creaturePriority.poll(); // Pop creature who just played
-        lastPlayingCreature.incrementTurnSpeedAfterEndOfTurn();
-        creaturePriority.add(creaturePlayingTurn); // Push creature who just played, who is now 'slower'
+        creaturePriority.poll();
+        //System.out.println("*** TURN PLAYED BY: " + creaturePriority.poll()); // Pop creature who just played from priority queue
+        addCreatureToCreaturePriorityRecursivelyAtLeastOnceAccordingToSpeed(creaturePlayingTurn); // Push creature who just played, who is now 'slower'
+        CreatureSpeedTurnTriplet nextPair = creaturePriority.peek();
+        creaturePlayingTurn = nextPair.getCreature();
+        //System.out.println("*** NEXT TURN: " + nextPair);
         System.out.println('\n' + "------------------" + '\n' + "TURN #" + turnCounter++ + '\n' + "------------------");
-        displayCreatureTurnOrder();
-        creaturePlayingTurn = creaturePriority.peek();
+        displayCreatureSpeedPairsForTurnOrder();
     }
 
-
     private void removeDeadCreaturesFromTurnOrder() {
-        boolean deadCreatureFound = false;
         List<Creature> deadCreatures = null;
         for (Creature creature : creatureList) {
             if (!creature.isAlive()) {
@@ -235,13 +246,15 @@ public class GameBattle {
                 deadCreatures.add(creature);;
             }
         }
-        if (deadCreatures != null) {
-            for (Creature deadCreature : deadCreatures) {
-                creatureList.remove(deadCreature);
-                creaturePriority.remove(deadCreature);
-            }
-        }
-
+        // TODO: implement removal of dead creatures found in priority queue CreatureSpeed pairs
+        /*
+         if (deadCreatures != null) {
+         for (Creature deadCreature : deadCreatures) {
+         creatureList.remove(deadCreature);
+         creaturePriority.remove(deadCreature);
+         }
+         }
+         */
     }
 
     public boolean isZombieTurn() {
@@ -249,11 +262,15 @@ public class GameBattle {
     }
 
     public Creature[] getCreatureTurnOrder() {
-        Creature[] fullCreatureTurnOrder = new Creature[creatureList.size()];
+        int allCreatureCount = creatureList.size();
+        Creature[] fullCreatureTurnOrder = new Creature[allCreatureCount];
         creaturePriority.toArray(fullCreatureTurnOrder);
         Arrays.sort(fullCreatureTurnOrder);
         Creature[] fiveCreatureTurnOrder = new Creature[5];
-        System.arraycopy(fullCreatureTurnOrder, 0, fiveCreatureTurnOrder, 0, 5);
+        System.arraycopy(fullCreatureTurnOrder, 0, fiveCreatureTurnOrder, 0, Math.min(5, allCreatureCount));
+        for (int i = allCreatureCount; i < 5; i++) {
+            fiveCreatureTurnOrder[i] = null;
+        }
         return fiveCreatureTurnOrder;
     }
 
@@ -261,17 +278,38 @@ public class GameBattle {
         Creature[] creatureTurnOrder = getCreatureTurnOrder();
         System.out.print("TURN ORDER BANNER: ");
         for (Creature creature : creatureTurnOrder) {
-            System.out.print(creature + ": " + creature.getCumulativeTurnSpeed() + ", ");
+            if (creature != null) {
+                System.out.print(creature + ": " + creature.getTurnsAssigned() + " times speed of " + creature.getCumulativeTurnSpeed() + ", ");
+            }
         }
         System.out.println();
     }
-    
+
+    public void displayCreatureSpeedPairsForTurnOrder() {
+        CreatureSpeedTurnTriplet[] allCreatureSpeedTurnOrder = new CreatureSpeedTurnTriplet[creaturePriority.size()];
+        creaturePriority.toArray(allCreatureSpeedTurnOrder);
+        Arrays.sort(allCreatureSpeedTurnOrder);
+        CreatureSpeedTurnTriplet[] fiveCreatureSpeedTurnOrder = new CreatureSpeedTurnTriplet[5];
+        System.arraycopy(allCreatureSpeedTurnOrder, 0, fiveCreatureSpeedTurnOrder, 0, Math.min(5, creaturePriority.size()));
+        for (int i = creaturePriority.size(); i < 5; i++) {
+            fiveCreatureSpeedTurnOrder[i] = null;
+        }
+        System.out.print("TURN ORDER BANNER: ");
+        for (CreatureSpeedTurnTriplet pair : fiveCreatureSpeedTurnOrder) {
+            if (pair != null) {
+                System.out.print(pair.toString() + ", ");
+            }
+        }
+        System.out.println();
+    }
+
     public Creature getCreaturePlayingTurn() {
         return creaturePlayingTurn;
     }
 
     public void randomlyMoveZombie() {
         if (isZombieTurn()) {
+            System.out.println("Moving zombie: " + creaturePlayingTurn);
             moveCreatureRandomly(creaturePlayingTurn);
         }
     }

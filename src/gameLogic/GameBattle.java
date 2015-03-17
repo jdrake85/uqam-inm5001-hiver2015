@@ -155,7 +155,6 @@ public class GameBattle {
         }
     }
 
-    // TODO: implement pathfinding
     private boolean creatureCanMoveTo(Creature creature, Coordinates destCoords) {
         int availableSteps = creature.maximumStepsAbleToWalk();
         return paths.coordinatesReachableInAtMostDistanceOf(destCoords, availableSteps);
@@ -219,22 +218,12 @@ public class GameBattle {
     }
 
     private void addCreatureToCreaturePriorityRecursivelyAtLeastOnceAccordingToSpeed(Creature creature) {
+        int upperLimitSpeedThreshold = maxCumulativeCreatureSpeed + (2 * creature.getOriginalSpeed());
         do {
             addCreatureToCreaturePriorityOnce(creature);
-        } while (creature.getCumulativeTurnSpeed() < maxCumulativeCreatureSpeed);
+        } while (creature.getCumulativeTurnSpeed() <=  upperLimitSpeedThreshold);
     }
 
-    /* //TODO: no longer needed?
-     private int getMaximumCumulativeSpeedInCreaturePriority() {
-     int maximumCumulativeSpeed = 0;
-     for (Creature creature : creatureList) {
-     int cumulativeSpeed = creature.getCumulativeTurnSpeed();
-     if (cumulativeSpeed > maximumCumulativeSpeed) {
-     maximumCumulativeSpeed = cumulativeSpeed;
-     }
-     }
-     return maximumCumulativeSpeed;
-     }*/
     public void endTurn() {
         refreshCreatureList();
         creaturePriority.poll();
@@ -258,15 +247,6 @@ public class GameBattle {
             }
         }
         if (deadCreatures != null) {
-            /*
-            int turnOrderCount = creaturePriority.size();
-            CreatureSpeedTurnTriplet[] turnOrderCreaturesTriplets = new CreatureSpeedTurnTriplet[turnOrderCount];
-            creaturePriority.toArray(turnOrderCreaturesTriplets);
-
-            Creature[] turnOrderCreatures = new Creature[turnOrderCount];
-            for (int i = 0; i < turnOrderCount; i++) {
-                turnOrderCreatures[i] = turnOrderCreaturesTriplets[i].getCreature();
-            }*/
             for (Creature deadCreature : deadCreatures) {
                 creatureList.remove(deadCreature);
                 gameboard.removeDeadCreatures();
@@ -275,16 +255,6 @@ public class GameBattle {
                 }
             }
         }
-    }
-
-    private int numberOfInstanceOfSpecificCreatureInArray(Creature targetCreature, Creature[] creatureArray) {
-        int counter = 0;
-        for (Creature creature : creatureArray) {
-            if (creature.equals(targetCreature)) {
-                counter++;
-            }
-        }
-        return counter;
     }
 
     public boolean isZombieTurn() {

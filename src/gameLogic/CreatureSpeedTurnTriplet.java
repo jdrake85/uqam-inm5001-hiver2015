@@ -19,7 +19,7 @@ public class CreatureSpeedTurnTriplet implements Comparable {
         speed = creature.getCumulativeTurnSpeed();
         turnCount = creature.getTurnsAssigned();
     }
-    
+     
     public Creature getCreature() {
         return creature;
     }
@@ -61,6 +61,20 @@ public class CreatureSpeedTurnTriplet implements Comparable {
             //System.out.println("                            " + this + compareSign + otherTriplet);
         }
         return comparison;
+    }
+    
+    // Note: non standard equals, because its implementation will be used only to quickly remove triplits from a PriorityQueue
+    @Override
+    public boolean equals(Object o) {
+        boolean equality = false;
+        if (o == null) {
+            throw new NullPointerException();
+        } else {
+            CreatureSpeedTurnTriplet otherTriplet = (CreatureSpeedTurnTriplet) o;
+            Creature otherCreature = otherTriplet.getCreature();
+            equality = creature.equals(otherCreature);
+        }
+        return equality;
     }
     
     @Override

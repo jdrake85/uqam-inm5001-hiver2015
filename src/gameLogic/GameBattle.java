@@ -28,6 +28,8 @@ public class GameBattle {
     private GameBoard gameboard;
     private boolean[][] currentOverlay = null;
     private PriorityQueue<CreatureSpeedTurnTriplet> creaturePriority = new PriorityQueue<CreatureSpeedTurnTriplet>();
+    private int maxCumulativeCreatureSpeed = 0;
+    private int minCumulativeCreatureSpeed = Integer.MAX_VALUE;
     private int turnCounter = 1;
 
     public GameBattle() {
@@ -168,6 +170,9 @@ public class GameBattle {
             skill.setTargetCoordinates(coords);
             gameboard.performTargetedSkill(skill);
             removeDeadCreaturesFromTurnOrder();
+            while (creaturePriority.size() < 5) { 
+                addCreatureListOnceToCreaturePriority();
+            }
         } else if (!creature.canPayEnergyCostForSkillNumber(skillNumber)) {
             System.out.println("Not enough energy!");
         }
@@ -185,7 +190,7 @@ public class GameBattle {
     public void start() {
         refreshCreatureList();
         while (creaturePriority.size() < 5) {
-            initializeCreaturePriority();
+            addCreatureListOnceToCreaturePriority();
         }
         CreatureSpeedTurnTriplet startingPair = creaturePriority.peek();
         // System.out.println("*** NEXT TURN: " + startingPair);
@@ -194,7 +199,7 @@ public class GameBattle {
         displayCreatureSpeedPairsForTurnOrder();
     }
 
-    private void initializeCreaturePriority() {
+    private void addCreatureListOnceToCreaturePriority() {
         for (Creature creature : creatureList) {
             addCreatureToCreaturePriorityOnce(creature);
         }
@@ -203,6 +208,12 @@ public class GameBattle {
     // Note: same creature can be added several times to the priority queue, each time having a higher speed value
     private void addCreatureToCreaturePriorityOnce(Creature creature) {
         creaturePriority.add(new CreatureSpeedTurnTriplet(creature));
+        int cumulativeSpeed = creature.getCumulativeTurnSpeed();
+        if (cumulativeSpeed > maxCumulativeCreatureSpeed) {
+            maxCumulativeCreatureSpeed = cumulativeSpeed;
+        } else if (cumulativeSpeed < minCumulativeCreatureSpeed) {
+            minCumulativeCreatureSpeed = cumulativeSpeed;
+        }
         creature.incrementTurnsAssigned();
         creature.incrementTurnSpeedAfterEndOfTurn();
     }
@@ -210,20 +221,20 @@ public class GameBattle {
     private void addCreatureToCreaturePriorityRecursivelyAtLeastOnceAccordingToSpeed(Creature creature) {
         do {
             addCreatureToCreaturePriorityOnce(creature);
-        } while (creature.getCumulativeTurnSpeed() < getMaximumCumulativeSpeedInCreaturePriority());
+        } while (creature.getCumulativeTurnSpeed() < maxCumulativeCreatureSpeed);
     }
 
-    private int getMaximumCumulativeSpeedInCreaturePriority() {
-        int maximumCumulativeSpeed = 0;
-        for (Creature creature : creatureList) {
-            int cumulativeSpeed = creature.getCumulativeTurnSpeed();
-            if (cumulativeSpeed > maximumCumulativeSpeed) {
-                maximumCumulativeSpeed = cumulativeSpeed;
-            }
-        }
-        return maximumCumulativeSpeed;
-    }
-
+    /* //TODO: no longer needed?
+     private int getMaximumCumulativeSpeedInCreaturePriority() {
+     int maximumCumulativeSpeed = 0;
+     for (Creature creature : creatureList) {
+     int cumulativeSpeed = creature.getCumulativeTurnSpeed();
+     if (cumulativeSpeed > maximumCumulativeSpeed) {
+     maximumCumulativeSpeed = cumulativeSpeed;
+     }
+     }
+     return maximumCumulativeSpeed;
+     }*/
     public void endTurn() {
         refreshCreatureList();
         creaturePriority.poll();
@@ -243,18 +254,37 @@ public class GameBattle {
                 if (deadCreatures == null) {
                     deadCreatures = new ArrayList<Creature>();
                 }
-                deadCreatures.add(creature);;
+                deadCreatures.add(creature);
             }
         }
-        // TODO: implement removal of dead creatures found in priority queue CreatureSpeed pairs
-        /*
-         if (deadCreatures != null) {
-         for (Creature deadCreature : deadCreatures) {
-         creatureList.remove(deadCreature);
-         creaturePriority.remove(deadCreature);
-         }
-         }
-         */
+        if (deadCreatures != null) {
+            /*
+            int turnOrderCount = creaturePriority.size();
+            CreatureSpeedTurnTriplet[] turnOrderCreaturesTriplets = new CreatureSpeedTurnTriplet[turnOrderCount];
+            creaturePriority.toArray(turnOrderCreaturesTriplets);
+
+            Creature[] turnOrderCreatures = new Creature[turnOrderCount];
+            for (int i = 0; i < turnOrderCount; i++) {
+                turnOrderCreatures[i] = turnOrderCreaturesTriplets[i].getCreature();
+            }*/
+            for (Creature deadCreature : deadCreatures) {
+                creatureList.remove(deadCreature);
+                gameboard.removeDeadCreatures();
+                while (creaturePriority.remove(new CreatureSpeedTurnTriplet(deadCreature))) {
+                    // Do nothing
+                }
+            }
+        }
+    }
+
+    private int numberOfInstanceOfSpecificCreatureInArray(Creature targetCreature, Creature[] creatureArray) {
+        int counter = 0;
+        for (Creature creature : creatureArray) {
+            if (creature.equals(targetCreature)) {
+                counter++;
+            }
+        }
+        return counter;
     }
 
     public boolean isZombieTurn() {

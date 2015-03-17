@@ -217,4 +217,8 @@ public class Creature {
     public int getTurnsAssigned() {
         return turnsAssigned;
     }
+    
+    public int getOriginalSpeed() {
+        return speed;
+    }
 }

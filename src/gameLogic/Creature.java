@@ -7,6 +7,7 @@ package gameLogic;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import gameLogic.skills.Skill;
 
@@ -30,7 +31,7 @@ public class Creature {
     private Skill[] skills;
     private boolean isGood = false;
     private boolean isImpaired = false;
-    private Geometry geometry3D;
+    private Spatial geometry3D;
     private int turnsAssigned = 0;
 
     public Creature(String name) {
@@ -40,6 +41,7 @@ public class Creature {
         Box box = new Box(0.2f, 1.5f, 0.2f);
         geometry3D = new Geometry(name, box);
         geometry3D.setMaterial(FakeMain2.redZombie);
+        FakeMain2.charNode.attachChild(geometry3D);
 
         //FakeMain2.charNode.attachChild(geo);
 
@@ -57,8 +59,12 @@ public class Creature {
     }
 
     public Creature(String name, Material material) {
-        this(name);
+        //this(name);
+        this.name = name;
+        skills = new Skill[12]; // TODO: eventually set to 4
+        geometry3D = FakeMain2.heroScene; // WIP; node is assigned to Spatial..
         geometry3D.setMaterial(material);
+        FakeMain2.charNode.attachChild(geometry3D);
     }
 
     @Override
@@ -68,7 +74,7 @@ public class Creature {
 
     public void displayCreatureOn3DBoard(int xCoord, int yCoord) {
         geometry3D.setLocalTranslation(new Vector3f(xCoord, -1, yCoord));
-        FakeMain2.charNode.attachChild(geometry3D);
+        //FakeMain2.charNode.attachChild(geometry3D);
     }
 
     public void hideCreatureOn3DBoard() {

@@ -89,6 +89,7 @@ public class GameState extends AbstractAppState implements ScreenController {
     public void hero1move() {
         gameState = "move";
         FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.creaturePlayingTurn);
+        FakeMain2.animateMove();
     }
 
     public void hero1endTurn() {

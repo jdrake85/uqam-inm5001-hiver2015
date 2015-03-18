@@ -1,10 +1,13 @@
 package gameLogic;
 
+import com.jme3.animation.AnimChannel;
+import com.jme3.animation.AnimControl;
 import level.board.*;
 
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.app.SimpleApplication;
+import com.jme3.asset.plugins.FileLocator;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
@@ -53,6 +56,10 @@ public class FakeMain2 extends SimpleApplication {
     public static int turnCounter = 0;
     //protected int posZ = 0;
     //protected static Scene scene1;
+    //New variables
+    public static Node heroScene;
+    public static AnimControl ac;
+    public static AnimChannel channel;
 
     @Override
     public void simpleInitApp() {
@@ -66,6 +73,14 @@ public class FakeMain2 extends SimpleApplication {
         // Distinctive hero colours
         heroMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         heroMat.setColor("Color", new ColorRGBA(0.75f, 4f, 3f, 0f));
+        
+        //load temp hero mexh + animation
+        assetManager.registerLocator("assets/Models/Hero/", FileLocator.class);
+        heroScene = (Node) assetManager.loadModel("HeroScene.scene");
+        heroScene.setLocalScale(.015f);
+        ac = findAnimControl(heroScene);
+        channel = ac.createChannel();
+        animateIdle();
 
         creaturePlayingTurn = FakeMain.initializeHero(battle);
         FakeMain.initializeScenario(battle, creaturePlayingTurn);
@@ -105,6 +120,7 @@ public class FakeMain2 extends SimpleApplication {
             if (name.equals("MoveKey") && !keyPressed && gameState.equals("idle")) {
                 gameState = "move";
                 battle.drawWithOverlayForCreatureMoves(creaturePlayingTurn);
+                animateMove();
             }
 
             // Ending turn
@@ -156,6 +172,7 @@ public class FakeMain2 extends SimpleApplication {
 
                     FakeMain.performTurn(commandType, commandX, commandY, creaturePlayingTurn, battle);
                     gameState = "idle";
+                    animateIdle();
                     commandType = 0;
                     /*
                      MyMaterial greenTile = new MyMaterial(assetManager);
@@ -195,6 +212,7 @@ public class FakeMain2 extends SimpleApplication {
 
                     FakeMain.performTurn(0, commandX, commandY, creaturePlayingTurn, battle);
                     gameState = "idle";
+                    FakeMain2.animateIdle();
                     /*
                      MyMaterial greenTile = new MyMaterial(assetManager);
                      greenTile.setGreenTileMat();
@@ -335,5 +353,41 @@ public class FakeMain2 extends SimpleApplication {
         Material flMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         flMat.setColor("Color", new ColorRGBA(0.25f, 0, 0.75f, 11f));//R,B,G,Alphas
         return flMat;
+    }
+    
+    public static void animateMove() {
+        try{
+            // create a channel and start the wobble animation
+            channel.setAnim("Hop");
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static void animateIdle() {
+        try{
+            // create a channel and start the wobble animation
+            channel.setAnim("Idle");
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+     public static AnimControl findAnimControl(final Spatial parent) {
+        final AnimControl animControl = parent.getControl(AnimControl.class);
+        if (animControl != null) {
+            return animControl;
+        }
+ 
+        if (parent instanceof Node) {
+            for (final Spatial s : ((Node) parent).getChildren()) {
+                final AnimControl animControl2 = findAnimControl(s);
+                if (animControl2 != null) {
+                    return animControl2;
+                }
+            }
+        }
+ 
+        return null;
     }
 }

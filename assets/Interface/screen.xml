@@ -5,7 +5,7 @@
     <!-- +++++++++++++++++++++++++++++++++++++++ -->
     <screen id="battle" controller="gameGUI.GameState">
         <layer id="background" backgroundColor="#0001" childLayout="center">
-            <panel id="body" width="1280px" height="720px" backgroundColor="#fff3" childLayout="center" align="center" valign="center">
+            <panel id="body" width="100%" height="100%" backgroundColor="#fff3" childLayout="center" align="center" valign="center">
                 <panel id="turnBanner" width="10%" height="100%" backgroundColor="#fff3" childLayout="vertical" align="left" valign="center">
                     <panel id="charTurn1" width="100%" height="20%" backgroundColor="#f003" childLayout="vertical"  align="center" valign="top">
                         <image filename="Interface/Images/face1.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >

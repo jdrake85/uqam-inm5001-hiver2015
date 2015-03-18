@@ -66,5 +66,23 @@ public class CoordPath {
             reversePath.pushEndCoordinates(coords);
         }
         return reversePath;
-    }    
+    }
+    
+    public static CoordPath generateStraightPathOfLengthNFromAdjacentCoordinates(Coordinates firstCoords, Coordinates secondCoords, int length) {
+        CoordPath path = null;
+        if (secondCoords.areCardinalCoordinatesAdjacentTo(firstCoords)) {
+            int initXCoord = firstCoords.getXCoord();
+            int initYCoord = firstCoords.getYCoord();
+            int xStep = secondCoords.getXCoord() - initXCoord;
+            int yStep = secondCoords.getYCoord() - initYCoord;
+            path = new CoordPath();
+            path.pushEndCoordinates(firstCoords);
+            path.pushEndCoordinates(secondCoords);
+            for (int i = 2; i < length; i++) {
+                path.pushEndCoordinates(
+                        new Coordinates(initXCoord + (i * xStep), initYCoord + (i * yStep)));
+            }
+        }
+        return path;
+    }
 }

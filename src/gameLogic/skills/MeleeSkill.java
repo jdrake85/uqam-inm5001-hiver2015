@@ -5,8 +5,6 @@
 package gameLogic.skills;
 
 import gameLogic.pathfinding.Coordinates;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -22,13 +20,7 @@ public abstract class MeleeSkill extends Skill{
         super(name, energyCost, power, hasKnockback, hasImpair);
     }
     
-    public boolean usableRangeIncludesCoordinates(Coordinates targetCoords) {
+    public boolean usableRangeIncludesCoordinates(Coordinates coords) {
         return originatingCoords.areCardinalCoordinatesAdjacentTo(targetCoords);
-    }
-    
-    public List<Coordinates> generateAffectedCoordinatesFrom(Coordinates targetCoords) {
-        ArrayList<Coordinates> coordsList = new ArrayList<Coordinates>();
-        coordsList.add(targetCoords);
-        return coordsList;
     }
 }

@@ -6,6 +6,7 @@ package gameLogic.skills;
 
 import gameLogic.Creature;
 import gameLogic.pathfinding.Coordinates;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,20 +39,19 @@ public abstract class Skill {
     public String toString() {
         return name;
     }
-    
+
     public abstract int performOn(Creature creature);
-    
+
     public boolean performableWithEnergyPointsAt(int energyPoints, Coordinates targetCoords) {
         return (energyPoints >= energyCost) && usableRangeIncludesCoordinates(targetCoords);
     }
-    
-    public abstract boolean usableRangeIncludesCoordinates(Coordinates targetCoords);
 
+    public abstract boolean usableRangeIncludesCoordinates(Coordinates targetCoords);
 
     public int getEnergyCost() {
         return energyCost;
     }
-    
+
     public boolean hasKnockback() {
         return hasKnockback;
     }
@@ -59,22 +59,26 @@ public abstract class Skill {
     public int getDamage() {
         return power;
     }
-    
+
     public void setOriginatingFrom(Coordinates coordinates) {
         originatingCoords = coordinates;
     }
-    
+
     public Coordinates getOriginatingFrom() {
         return originatingCoords;
     }
-    
+
     public void setTargetCoordinates(Coordinates coords) {
         targetCoords = coords;
     }
-    
+
     public Coordinates getTargetCoordinates() {
         return targetCoords;
     }
 
-    public abstract List<Coordinates> generateAffectedCoordinatesFrom(Coordinates targetCoords);
+    public List<Coordinates> generateAffectedCoordinatesFrom(Coordinates targetCoords) {
+        ArrayList<Coordinates> coordsList = new ArrayList<Coordinates>();
+        coordsList.add(targetCoords);
+        return coordsList;
+    }
 }

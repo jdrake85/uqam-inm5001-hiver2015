@@ -4,6 +4,8 @@
  */
 package gameLogic;
 
+import com.jme3.scene.Geometry;
+import com.jme3.scene.shape.Box;
 import gameLogic.skills.nurse.*;
 import gameLogic.skills.hero.*;
 import gameLogic.skills.soldier.*;
@@ -36,52 +38,52 @@ public class FakeMain {
         int commandY;
 
         boolean keepPlaying = true;
-/*
-        while (battle.containsBadCreatures() && turnCounter <= TURN_LIMIT && keepPlaying) {
-            System.out.println();
-            System.out.println("------------------------------------");
-            System.out.println("--- TURN #" + turnCounter++ + " out of " + TURN_LIMIT + "   ---");
-            System.out.println("------------------------------------");
-            System.out.println();
+        /*
+         while (battle.containsBadCreatures() && turnCounter <= TURN_LIMIT && keepPlaying) {
+         System.out.println();
+         System.out.println("------------------------------------");
+         System.out.println("--- TURN #" + turnCounter++ + " out of " + TURN_LIMIT + "   ---");
+         System.out.println("------------------------------------");
+         System.out.println();
 
-            battle.draw();
-            battle.displayCombattants();
-            displaySkills();
+         battle.draw();
+         battle.displayCombattants();
+         displaySkills();
 
             
-            System.out.print("STEP 1: SELECT COMMAND TYPE: 0 to move, or 1-12 for skills: ");
-            try {
-                commandType = scan.nextInt();
-            } catch (Exception e) {
-                System.out.println('\n' + "** Invalid choice; forcing move.");
-                commandType = 0;
-            }
+         System.out.print("STEP 1: SELECT COMMAND TYPE: 0 to move, or 1-12 for skills: ");
+         try {
+         commandType = scan.nextInt();
+         } catch (Exception e) {
+         System.out.println('\n' + "** Invalid choice; forcing move.");
+         commandType = 0;
+         }
 
-            if (commandType == 0) {
-                System.out.println("MOVEMENT:");
-                battle.drawWithOverlayForCreatureMoves(hero);
-            } else if (commandType >= 1 && commandType <= 12) {
-                System.out.println("USING SKILL " + commandType + ": " + hero.prepareSkill(commandType));
-                battle.drawWithOverlayForCreatureSkill(hero, commandType);
-            }
+         if (commandType == 0) {
+         System.out.println("MOVEMENT:");
+         battle.drawWithOverlayForCreatureMoves(hero);
+         } else if (commandType >= 1 && commandType <= 12) {
+         System.out.println("USING SKILL " + commandType + ": " + hero.prepareSkill(commandType));
+         battle.drawWithOverlayForCreatureSkill(hero, commandType);
+         }
 
-            System.out.println("STEP 2: SELECT VALID COORDINATES: ");
-            try {
-                System.out.print("     X = ");
-                commandX = scan.nextInt();
-                System.out.print("     Y = ");
-                commandY = scan.nextInt();
-                System.out.println();
-                keepPlaying = performTurn(commandType, commandX, commandY, hero, battle);
-            } catch (Exception e) {
-                System.out.println('\n' + "** Invalid coordinates; ending turn.");
-            }
+         System.out.println("STEP 2: SELECT VALID COORDINATES: ");
+         try {
+         System.out.print("     X = ");
+         commandX = scan.nextInt();
+         System.out.print("     Y = ");
+         commandY = scan.nextInt();
+         System.out.println();
+         keepPlaying = performTurn(commandType, commandX, commandY, hero, battle);
+         } catch (Exception e) {
+         System.out.println('\n' + "** Invalid coordinates; ending turn.");
+         }
 
-           battle.refreshCreatureList();
-        }
+         battle.refreshCreatureList();
+         }
 
-        scan.close();
-        System.out.println("Victory");*/
+         scan.close();
+         System.out.println("Victory");*/
     }
 
     private static void displayGameInstructions() {
@@ -101,51 +103,60 @@ public class FakeMain {
         System.out.println("------------------------------------");
     }
 
-    protected static boolean performTurn(int commandType, int commandX, int commandY, Creature hero, GameBattle battle) {
+    protected static boolean performTurn(int commandType, int commandX, int commandY, Creature creature, GameBattle battle) {
         boolean keepPlaying = true;
         if (commandX == 8 || commandY == 8) {
             System.out.println("Energy boost +40!");
-            hero.setEnergy(hero.getEnergy() + 40);
+            creature.setEnergy(creature.getEnergy() + 40);
         } else if (commandX == -1 || commandY == -1) {
             keepPlaying = false;
         } else if (commandType == 0) {
             System.out.println("Moving to (" + commandX + ", " + commandY + ")...");
-            battle.moveCreatureTo(hero, new Coordinates(commandX, commandY));
+            battle.moveCreatureTo(creature, new Coordinates(commandX, commandY));
         } else if (commandType >= 1 && commandType <= 12) {
-            System.out.println("Using skill " + hero.prepareSkill(commandType) + " at (" + commandX + ", " + commandY + ")...");
-            battle.useCreatureSkillAt(hero, commandType, new Coordinates(commandX, commandY));
+            System.out.println("Using skill " + creature.prepareSkill(commandType) + " at (" + commandX + ", " + commandY + ")...");
+            battle.useCreatureSkillAt(creature, commandType, new Coordinates(commandX, commandY));
         } else {
             System.out.println("** Unrecognized commands; ending turn.");
         }
+        battle.refreshCreatureList();
         return keepPlaying;
     }
 
     protected static void initializeScenario(GameBattle battle, Creature hero) {
         Creature zombie1 = new Creature("ZombieA1");
+        zombie1.setSpeed(8);
         Creature zombie2 = new Creature("ZombieA2");
+        zombie2.setSpeed(9);
         Creature zombie3 = new Creature("ZombieA3");
-        
+        zombie3.setSpeed(10);
+        Creature zombie4 = new Creature("ZombieA4");
+        zombie4.setSpeed(11);
+        Creature zombie5 = new Creature("ZombieA5");
+        zombie5.setSpeed(12);
+
+        hero.setSpeed(10);
+
         battle.insertCreatureAt(zombie1, 1, 1);
         battle.insertCreatureAt(zombie2, 1, 2);
+        battle.insertCreatureAt(zombie3, 3, 1);
+        battle.insertCreatureAt(zombie4, 3, 2);
+        battle.insertCreatureAt(zombie5, 3, 3);
+        /*
+         for (int i = 0; i < 7; i++) {
+         battle.insertCreatureAt(new Creature("ZombieB" + i), i, 1);
+         battle.insertCreatureAt(new Creature("ZombieC" + i + 1), i + 1, 2);
+         battle.insertCreatureAt(new Creature("ZombieD" + i + 1), i + 1, 3);
+         battle.insertCreatureAt(new Creature("ZombieE" + i + 1), i + 1, 4);
+         battle.insertCreatureAt(new Creature("ZombieF" + i), i, 5);
+         }
 
-        
-/*
-        battle.insertCreatureAt(zombie1, 6, 7);
-        battle.insertCreatureAt(zombie2, 6, 6);
-        battle.insertCreatureAt(zombie3, 7, 6);
-
-        for (int i = 0; i < 7; i++) {
-            battle.insertCreatureAt(new Creature("ZombieB" + i), i, 1);
-            battle.insertCreatureAt(new Creature("ZombieC" + i + 1), i + 1, 3);
-            battle.insertCreatureAt(new Creature("ZombieD" + i), i, 5);
-        }
-
-        battle.removeCreatureAt(4, 3);
-        battle.removeCreatureAt(0, 5);*/
+         battle.removeCreatureAt(4, 3);
+         battle.removeCreatureAt(0, 5);*/
     }
 
     protected static Creature initializeHero(GameBattle battle) {
-        Creature hero = new Creature("Hero");
+        Creature hero = new Creature("Hero", FakeMain2.heroMat);
         hero.setAlignment("good");
         battle.insertCreatureAt(hero, 0, 0);
         assignAllSkillsTo(hero);
@@ -159,30 +170,30 @@ public class FakeMain {
         hero.setSkillAsNumber(new Knockback(4, 4), 4);
         hero.setSkillAsNumber(new Heal(5, 4), 5);
         hero.setSkillAsNumber(new Innoculation(6, 4), 6);
-        hero.setSkillAsNumber(new Strike(7, 4), 7); // TODO
+        hero.setSkillAsNumber(new MustardGas(7, 4), 7);
         hero.setSkillAsNumber(new Push(8, 4), 8);
         hero.setSkillAsNumber(new AimedShot(9, 4), 9);
-        hero.setSkillAsNumber(new Strike(10, 4), 10); // TODO
+        hero.setSkillAsNumber(new ShootEmAll(10, 4), 10);
         hero.setSkillAsNumber(new Stab(11, 4), 11);
         hero.setSkillAsNumber(new CutThroat(12, 1), 12);
 
     }
-    
+
     protected static void displaySkills() {
         System.out.println();/*
-        System.out.println("SKILLS:");
-        System.out.println("1 - Strike");
-        System.out.println("2 - Home Run");
-        System.out.println("3 - Spinning Pipe");
-        System.out.println("4 - Knockback");
-        System.out.println("5 - Heal");
-        System.out.println("6 - Innoculation");
-        // TODO: Skill 7
-        System.out.println("8 - Push");
-        System.out.println("9 - Aimed Shot");
-        // TODO: Skill 10
-        System.out.println("11 - Stab");
-        System.out.println("12 - Cut Throat");*/
+         System.out.println("SKILLS:");
+         System.out.println("1 - Strike");
+         System.out.println("2 - Home Run");
+         System.out.println("3 - Spinning Pipe");
+         System.out.println("4 - Knockback");
+         System.out.println("5 - Heal");
+         System.out.println("6 - Innoculation");
+         System.out.println("7 - Mustard Gas");
+         System.out.println("8 - Push");
+         System.out.println("9 - Aimed Shot");
+         System.out.println("10 - Shoot 'Em All");
+         System.out.println("11 - Stab");
+         System.out.println("12 - Cut Throat");*/
         System.out.println();
     }
 }

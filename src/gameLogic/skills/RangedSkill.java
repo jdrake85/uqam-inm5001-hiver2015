@@ -25,14 +25,8 @@ public abstract class RangedSkill extends Skill{
        return range;
    }
     
-    public boolean usableRangeIncludesCoordinates(Coordinates targetCoords) {
-        return targetCoords != originatingCoords && 
-                originatingCoords.sumOfXYComponentDistancesTo(targetCoords) <= range;
-    }
-    
-    public List<Coordinates> generateAffectedCoordinatesFrom(Coordinates targetCoords) {
-        ArrayList<Coordinates> coordsList = new ArrayList<Coordinates>();
-        coordsList.add(targetCoords);
-        return coordsList;
+    public boolean usableRangeIncludesCoordinates(Coordinates coords) {
+        return !originatingCoords.equals(coords) && 
+                originatingCoords.sumOfXYComponentDistancesTo(coords) <= range;
     }
 }

@@ -116,7 +116,7 @@ public class GameBoard {
             Tile destinationTile = getTileAt(destinationCoords);
             destinationTile.addOccupier(creature);
             initialTile.removeOccupier();  
-            creature.displayCreatureOn3DBoard(destinationCoords.getXCoord(),destinationCoords.getYCoord());           
+            //creature.displayCreatureOn3DBoard(destinationCoords.getXCoord(),destinationCoords.getYCoord());           
 
         } else {
             System.out.println("Error: GameBattle request for invalid move");
@@ -126,11 +126,12 @@ public class GameBoard {
     public void moveCreatureTo(Creature creature, Coordinates destCoords) {
         if (validDestinationTileAt(destCoords)) {
             Coordinates initCoords = getCreatureCoordinates(creature);
+            System.out.println("GAMEBOARD: Moving from " + initCoords + " to " + destCoords);
             Tile initialTile = getTileAt(initCoords);
             Tile destinationTile = getTileAt(destCoords);
             destinationTile.addOccupier(creature);
             initialTile.removeOccupier();
-            creature.displayCreatureOn3DBoard(destCoords.getXCoord(),destCoords.getYCoord());           
+            //creature.displayCreatureOn3DBoard(destCoords.getXCoord(),destCoords.getYCoord());           
 
         } else {
             System.out.println("Error: GameBattle request for invalid move");

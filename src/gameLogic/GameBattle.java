@@ -4,6 +4,8 @@
  */
 package gameLogic;
 
+import com.jme3.cinematic.MotionPath;
+import com.jme3.math.Vector3f;
 import gameLogic.gameboard.GameBoard;
 import gameLogic.gameboard.Tile;
 import gameLogic.pathfinding.Coordinates;
@@ -141,14 +143,36 @@ public class GameBattle {
     }
 
     public void moveCreatureTo(Creature creature, Coordinates destCoords) {
-        if (creatureCanMoveTo(creature, destCoords)) {
+        if (creatureCanMoveTo(creature, destCoords) ) {
+            MotionPath path = new MotionPath();
 
             CoordPath pathChosen = paths.getPathForCreatureToCoordinates(creature, destCoords);
             creature.consumeEnergyForSteps(pathChosen.length() - 1);
             System.out.println(pathChosen);
-
+            
+            //Coordinates initCoords;
+            //Coordinates nextCoords = pathChosen.popFirstCoordinates();
+            
+            while (!pathChosen.isEmpty()){
+                Coordinates coord = pathChosen.popFirstCoordinates();
+                path.addWayPoint(new Vector3f(coord.getXCoord(), -1, coord.getYCoord()));
+            }
+            
+            creature.moveCreatureOn3DBoard(path);
             gameboard.moveCreatureTo(creature, destCoords);
-            creature.displayCreatureOn3DBoard(destCoords.getXCoord(), destCoords.getYCoord());
+            
+            
+            // Walk animation
+            /*
+            do {
+                
+                initCoords = nextCoords;
+                nextCoords = pathChosen.popFirstCoordinates();
+                gameboard.moveCreatureTo(creature, nextCoords);
+                System.out.println("BATTLE(3D): Moving from " + initCoords + " to " + nextCoords);
+                creature.moveCreatureOn3DBoard(initCoords.getXCoord(), initCoords.getYCoord(), nextCoords.getXCoord(), nextCoords.getYCoord());
+            } while (!pathChosen.isEmpty()); */
+            
 
         } else {
             System.out.println("Error: creature cannot move to " + destCoords);

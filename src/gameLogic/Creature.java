@@ -4,7 +4,11 @@
  */
 package gameLogic;
 
+import com.jme3.cinematic.MotionPath;
+import com.jme3.cinematic.events.MotionEvent;
 import com.jme3.material.Material;
+import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
@@ -80,6 +84,27 @@ public class Creature {
     public void hideCreatureOn3DBoard() {
         geometry3D.removeFromParent();
     }
+    
+   public void moveCreatureOn3DBoard(MotionPath path) {
+       //geometry3D.setLocalTranslation(new Vector3f(xDest, -1, yDest));
+       //System.out.println("** ANIMATION **");
+       MotionEvent motionControl = new MotionEvent(geometry3D, path);
+       motionControl.setDirectionType(MotionEvent.Direction.PathAndRotation);
+       motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
+       motionControl.setInitialDuration(10f);
+       motionControl.setSpeed(5f);
+       motionControl.play();
+       
+       /*
+       int maxFrame = 9999999;
+       float translationX = (xDest - xInit);// / (float) maxFrame;
+       float translationY = (yDest - yInit);// / (float) maxFrame;
+       Vector3f v = geometry3D.getLocalTranslation();
+      
+       for (int i = 0; i < maxFrame; i++) {
+           geometry3D.setLocalTranslation(v.x + translationX , v.y , v.z + translationY);
+       }*/
+   } 
 
     public void displayStats() {
         String output = name + ": HEALTH: " + health

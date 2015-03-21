@@ -85,16 +85,14 @@ public class Creature {
         geometry3D.removeFromParent();
     }
     
-   public void moveCreatureOn3DBoard(MotionPath path) {
+   public MotionEvent generateMotionEventForMovingCreatureOn3DBoard(MotionPath path) {
        //geometry3D.setLocalTranslation(new Vector3f(xDest, -1, yDest));
        //System.out.println("** ANIMATION **");
        MotionEvent motionControl = new MotionEvent(geometry3D, path);
        motionControl.setDirectionType(MotionEvent.Direction.PathAndRotation);
        motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
-       motionControl.setInitialDuration(10f);
        motionControl.setSpeed(5f);
-       motionControl.play();
-       
+       return motionControl;
        /*
        int maxFrame = 9999999;
        float translationX = (xDest - xInit);// / (float) maxFrame;
@@ -240,6 +238,10 @@ public class Creature {
         this.speed = speed;
         this.cumulativeTurnSpeed = speed;
     }
+    
+    public void setCumulativeSpeed(int cumulativeSpeed) {
+       cumulativeTurnSpeed = cumulativeSpeed;
+    }
 
     public void incrementTurnsAssigned() {
         turnsAssigned++;
@@ -252,4 +254,6 @@ public class Creature {
     public int getOriginalSpeed() {
         return speed;
     }
+    
+    
 }

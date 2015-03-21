@@ -5,6 +5,7 @@
 package gameLogic;
 
 import com.jme3.cinematic.MotionPath;
+import com.jme3.cinematic.events.MotionEvent;
 import com.jme3.math.Vector3f;
 import gameLogic.gameboard.GameBoard;
 import gameLogic.gameboard.Tile;
@@ -142,7 +143,8 @@ public class GameBattle {
         return validMove;
     }
 
-    public void moveCreatureTo(Creature creature, Coordinates destCoords) {
+    public MotionEvent moveCreatureTo(Creature creature, Coordinates destCoords) {
+        MotionEvent motionEvent = null;
         if (creatureCanMoveTo(creature, destCoords) ) {
             MotionPath path = new MotionPath();
 
@@ -158,8 +160,9 @@ public class GameBattle {
                 path.addWayPoint(new Vector3f(coord.getXCoord(), -1, coord.getYCoord()));
             }
             
-            creature.moveCreatureOn3DBoard(path);
+            motionEvent = creature.generateMotionEventForMovingCreatureOn3DBoard(path);
             gameboard.moveCreatureTo(creature, destCoords);
+            
             
             
             // Walk animation
@@ -177,11 +180,12 @@ public class GameBattle {
         } else {
             System.out.println("Error: creature cannot move to " + destCoords);
         }
+        return motionEvent;
     }
 
     private boolean creatureCanMoveTo(Creature creature, Coordinates destCoords) {
         int availableSteps = creature.maximumStepsAbleToWalk();
-        return paths.coordinatesReachableInAtMostDistanceOf(destCoords, availableSteps);
+         return paths.coordinatesReachableInAtMostDistanceOf(destCoords, availableSteps);
     }
 
     public void useCreatureSkillAt(Creature creature, int skillNumber, Coordinates coords) {
@@ -212,9 +216,11 @@ public class GameBattle {
 
     public void start() {
         refreshCreatureList();
+        forceGoodCreaturesToBeInitialyFastest();
         while (creaturePriority.size() < 5) {
             addCreatureListOnceToCreaturePriority();
         }
+        
         CreatureSpeedTurnTriplet startingPair = creaturePriority.peek();
         // System.out.println("*** NEXT TURN: " + startingPair);
         System.out.println('\n' + "------------------" + '\n' + "TURN #" + turnCounter++ + '\n' + "------------------");
@@ -246,6 +252,15 @@ public class GameBattle {
         do {
             addCreatureToCreaturePriorityOnce(creature);
         } while (creature.getCumulativeTurnSpeed() <=  upperLimitSpeedThreshold);
+    }
+    
+    private void forceGoodCreaturesToBeInitialyFastest() {
+        int goodCreatureCounter = 0;
+        for (Creature creature: creatureList) {
+            if (creature.isAlignedTo("good")) {
+                creature.setCumulativeSpeed(++goodCreatureCounter);
+            }
+        }
     }
 
     public void endTurn() {
@@ -331,17 +346,12 @@ public class GameBattle {
         return creaturePlayingTurn;
     }
 
-    public void randomlyMoveZombie() {
-        if (isZombieTurn()) {
-            System.out.println("Moving zombie: " + creaturePlayingTurn);
-            moveCreatureRandomly(creaturePlayingTurn);
-        }
-    }
-
-    public void moveCreatureRandomly(Creature creature) {
+    public MotionEvent moveCreatureRandomly(Creature creature) {
         if (creature.isAlignedTo("bad")) {
+            
             creature.setEnergy(12); // Make sure enemy creature can move somewhat each turn
         }
+        System.out.println("Moving creature randomly: " + creaturePlayingTurn);
         drawWithOverlayForCreatureMoves(creature);
         int validMoves = 0;
         // Counting valid moves (first pass)
@@ -355,13 +365,16 @@ public class GameBattle {
         Random generator = new Random();
         int randomMove = generator.nextInt(validMoves);
         int movesCounter = 0;
+        MotionEvent motionEvent = null;
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (currentOverlay[i][j] && movesCounter++ == randomMove) {
-                    moveCreatureTo(creature, new Coordinates(i, j));
+                    motionEvent = moveCreatureTo(creature, new Coordinates(i, j));
+                    break;
                 }
             }
         }
+        return motionEvent;
     }
 }

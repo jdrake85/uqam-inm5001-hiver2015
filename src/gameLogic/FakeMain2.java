@@ -8,6 +8,8 @@ import com.jme3.material.RenderState.BlendMode;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.plugins.FileLocator;
+import com.jme3.cinematic.PlayState;
+import com.jme3.cinematic.events.MotionEvent;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
@@ -48,7 +50,7 @@ public class FakeMain2 extends SimpleApplication {
     public static int commandType = -1;
     public static Geometry[][] g;
     public static GameBattle battle;
-    public static Creature creaturePlayingTurn;
+    public static Creature creatureInCommand;
     //public static Spatial ninja;
     public static Nifty nifty;
     //public static int posX = 0;
@@ -60,6 +62,7 @@ public class FakeMain2 extends SimpleApplication {
     public static Node heroScene;
     public static AnimControl ac;
     public static AnimChannel channel;
+    public MotionEvent currentMotionEvent = null;
 
     @Override
     public void simpleInitApp() {
@@ -73,7 +76,7 @@ public class FakeMain2 extends SimpleApplication {
         // Distinctive hero colours
         heroMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         heroMat.setColor("Color", new ColorRGBA(0.75f, 4f, 3f, 0f));
-        
+
         //load temp hero mexh + animation
         assetManager.registerLocator("assets/Models/Hero/", FileLocator.class);
         heroScene = (Node) assetManager.loadModel("HeroScene.scene");
@@ -82,14 +85,10 @@ public class FakeMain2 extends SimpleApplication {
         channel = ac.createChannel();
         animateIdle();
 
-        creaturePlayingTurn = FakeMain.initializeHero(battle);
-        FakeMain.initializeScenario(battle, creaturePlayingTurn);
+        creatureInCommand = FakeMain.initializeHero(battle);
+        FakeMain.initializeScenario(battle, creatureInCommand);
         battle.start();
-        creaturePlayingTurn = battle.getCreaturePlayingTurn();
-        while (battle.isZombieTurn()) {
-            playZombieTurn();
-            creaturePlayingTurn = battle.getCreaturePlayingTurn();
-        }
+        creatureInCommand = battle.getCreaturePlayingTurn();
     }
 
     private void initKeys() {
@@ -119,19 +118,16 @@ public class FakeMain2 extends SimpleApplication {
             // TODO; effacer
             if (name.equals("MoveKey") && !keyPressed && gameState.equals("idle")) {
                 gameState = "move";
-                battle.drawWithOverlayForCreatureMoves(creaturePlayingTurn);
+                commandType = 0;
+                battle.drawWithOverlayForCreatureMoves(creatureInCommand);
                 animateMove();
             }
 
             // Ending turn
             if (name.equals("EndTurnKey") && !keyPressed && gameState.equals("idle")) {
                 battle.endTurn();
-                creaturePlayingTurn = battle.getCreaturePlayingTurn();
+                creatureInCommand = battle.getCreaturePlayingTurn();
                 // Enemy turn(s), if next
-                while (battle.isZombieTurn()) {
-                    playZombieTurn();
-                    creaturePlayingTurn = battle.getCreaturePlayingTurn();  
-                }
 
             }
 
@@ -142,12 +138,12 @@ public class FakeMain2 extends SimpleApplication {
                     commandType = 1;
                 }
                 gameState = "skill";
-                battle.drawWithOverlayForCreatureSkill(creaturePlayingTurn, commandType);
+                battle.drawWithOverlayForCreatureSkill(creatureInCommand, commandType);
             }
 
             if (name.equals("EnergyKey") && !keyPressed && gameState.equals("idle")) {
-                creaturePlayingTurn.setEnergy(creaturePlayingTurn.getEnergy() + 20);
-                System.out.println(creaturePlayingTurn.getEnergy());
+                creatureInCommand.setEnergy(creatureInCommand.getEnergy() + 20);
+                System.out.println(creatureInCommand.getEnergy());
             }
 
             if (name.equals("SelectTile") && !keyPressed && gameState.equals("skill")) {
@@ -170,10 +166,11 @@ public class FakeMain2 extends SimpleApplication {
                     int commandX = (int) targetTile.getX();
                     int commandY = (int) targetTile.getZ();
 
-                    FakeMain.performTurn(commandType, commandX, commandY, creaturePlayingTurn, battle);
+                    MotionEvent nextMotionEvent = FakeMain.performTurn(commandType, commandX, commandY, creatureInCommand, battle);
+                    setAndPlayNextMotionEvent(nextMotionEvent);
+
                     gameState = "idle";
                     animateIdle();
-                    commandType = 0;
                     /*
                      MyMaterial greenTile = new MyMaterial(assetManager);
                      greenTile.setGreenTileMat();
@@ -210,7 +207,10 @@ public class FakeMain2 extends SimpleApplication {
                     int commandX = (int) targetTile.getX();
                     int commandY = (int) targetTile.getZ();
 
-                    FakeMain.performTurn(0, commandX, commandY, creaturePlayingTurn, battle);
+
+                    MotionEvent nextMotionEvent = FakeMain.performTurn(0, commandX, commandY, creatureInCommand, battle);
+                    setAndPlayNextMotionEvent(nextMotionEvent);
+
                     gameState = "idle";
                     FakeMain2.animateIdle();
                     /*
@@ -229,15 +229,16 @@ public class FakeMain2 extends SimpleApplication {
     };
 
     private void playZombieTurn() {
-        battle.randomlyMoveZombie();
+        MotionEvent nextMotionEvent = battle.moveCreatureRandomly(creatureInCommand);
+        setAndPlayNextMotionEvent(nextMotionEvent);
         battle.draw();
-        battle.endTurn();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 g[i][j].setMaterial(greyMat);
                 g[i][j].setQueueBucket(Bucket.Translucent);
             }
         }
+        battle.endTurn();
     }
 
     public void initScene() {
@@ -354,31 +355,31 @@ public class FakeMain2 extends SimpleApplication {
         flMat.setColor("Color", new ColorRGBA(0.25f, 0, 0.75f, 11f));//R,B,G,Alphas
         return flMat;
     }
-    
+
     public static void animateMove() {
-        try{
+        try {
             // create a channel and start the wobble animation
             channel.setAnim("Hop");
         } catch (final Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     public static void animateIdle() {
-        try{
+        try {
             // create a channel and start the wobble animation
             channel.setAnim("Idle");
         } catch (final Exception e) {
             e.printStackTrace();
         }
     }
-    
-     public static AnimControl findAnimControl(final Spatial parent) {
+
+    public static AnimControl findAnimControl(final Spatial parent) {
         final AnimControl animControl = parent.getControl(AnimControl.class);
         if (animControl != null) {
             return animControl;
         }
- 
+
         if (parent instanceof Node) {
             for (final Spatial s : ((Node) parent).getChildren()) {
                 final AnimControl animControl2 = findAnimControl(s);
@@ -387,7 +388,34 @@ public class FakeMain2 extends SimpleApplication {
                 }
             }
         }
- 
+
         return null;
+    }
+
+    public void setAndPlayNextMotionEvent(MotionEvent nextMotionEvent) {
+        currentMotionEvent = nextMotionEvent;
+        if (currentMotionEvent != null) {
+            System.out.println("PLAYING MOTION EVENT: " + currentMotionEvent + '\n');
+            currentMotionEvent.play();
+        }
+    }
+
+    @Override
+    public void simpleUpdate(float tpf) {
+        if (currentMotionEvent == null || currentMotionEvent.getPlayState().equals(PlayState.Stopped)) {
+            //System.out.print("Playing...");
+            if (battle.isZombieTurn() && !gameState.equals("enemyBusy")) {
+                //System.out.println("zombie turn!");
+                gameState = "enemyBusy";
+                playZombieTurn();
+                creatureInCommand = battle.getCreaturePlayingTurn();
+                gameState = "enemyIdle";
+            } else if (!(battle.isZombieTurn() || gameState.equals("move") || gameState.equals("skill"))) {
+                //System.out.println("player turn!");
+                gameState = "idle";
+            } else {
+                //System.out.println("nothing, GAME IS BUSY!");
+            }
+        }
     }
 }

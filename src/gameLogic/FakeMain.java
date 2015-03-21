@@ -4,6 +4,7 @@
  */
 package gameLogic;
 
+import com.jme3.cinematic.events.MotionEvent;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import gameLogic.skills.nurse.*;
@@ -103,8 +104,9 @@ public class FakeMain {
         System.out.println("------------------------------------");
     }
 
-    protected static boolean performTurn(int commandType, int commandX, int commandY, Creature creature, GameBattle battle) {
+    protected static MotionEvent performTurn(int commandType, int commandX, int commandY, Creature creature, GameBattle battle) {
         boolean keepPlaying = true;
+        MotionEvent motionEvent = null;
         if (commandX == 8 || commandY == 8) {
             System.out.println("Energy boost +40!");
             creature.setEnergy(creature.getEnergy() + 40);
@@ -112,7 +114,7 @@ public class FakeMain {
             keepPlaying = false;
         } else if (commandType == 0) {
             System.out.println("Moving to (" + commandX + ", " + commandY + ")...");
-            battle.moveCreatureTo(creature, new Coordinates(commandX, commandY));
+            motionEvent = battle.moveCreatureTo(creature, new Coordinates(commandX, commandY));
         } else if (commandType >= 1 && commandType <= 12) {
             System.out.println("Using skill " + creature.prepareSkill(commandType) + " at (" + commandX + ", " + commandY + ")...");
             battle.useCreatureSkillAt(creature, commandType, new Coordinates(commandX, commandY));
@@ -120,7 +122,7 @@ public class FakeMain {
             System.out.println("** Unrecognized commands; ending turn.");
         }
         battle.refreshCreatureList();
-        return keepPlaying;
+        return motionEvent;
     }
 
     protected static void initializeScenario(GameBattle battle, Creature hero) {

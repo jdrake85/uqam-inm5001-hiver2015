@@ -129,6 +129,11 @@ public class OptimalPaths {
         int yCoord = coords.getYCoord();
         return dCoords[xCoord][yCoord];
     }
+    
+    public int getCalculatedPathDistanceForCoordinates(Coordinates coords) { 
+        DijkstraCoord dCoord = coordinatesToDijkstraCoordinates(coords);
+        return dCoord.getDistance();
+    }
 
     public CoordPath getPathForCreatureToCoordinates(Creature creature, Coordinates destCoords) {
         CoordPath path = new CoordPath();

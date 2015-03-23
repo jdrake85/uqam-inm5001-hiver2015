@@ -4,14 +4,11 @@
  */
 package gameLogic.pathfinding;
 
-import gameLogic.Creature;
-import java.util.ArrayList;
-
 /**
  *
  * @author User
  */
-public class Coordinates{
+public class Coordinates implements Comparable {
 
     int xCoord = -1;
     int yCoord = -1;
@@ -166,8 +163,6 @@ public class Coordinates{
         return Math.abs(xDiff) <= units || Math.abs(yDiff) <= units;
     }
 
-    // TODO: if used, must implement Comparable
-    /*
     public int compareTo(Object o) {
         int comparison = 0;
         if (o == null) {
@@ -183,5 +178,5 @@ public class Coordinates{
             }
         }
         return comparison;
-    }*/
+    }
 }

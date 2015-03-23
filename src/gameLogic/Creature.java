@@ -224,6 +224,10 @@ public class Creature {
     public void setEnergy(int energy) {
         this.energy = energy;
     }
+    
+    public void setPower(int power) {
+        this.power = power;
+    }
 
     public int getCumulativeTurnSpeed() {
         return cumulativeTurnSpeed;
@@ -255,5 +259,23 @@ public class Creature {
         return speed;
     }
     
+    public boolean isGood() {
+        return isGood;
+    }
     
+    public void initializeTurnEnergy() {
+        if (isImpaired) {
+            energy = maxEnergy / 2;
+        } else {
+            energy = maxEnergy;
+        }
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public int getMaxHealth() {
+        return maxHealth;
+    }
 }

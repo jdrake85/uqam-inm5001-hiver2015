@@ -117,7 +117,7 @@ public class FakeMain {
             motionEvent = battle.moveCreatureTo(creature, new Coordinates(commandX, commandY));
         } else if (commandType >= 1 && commandType <= 12) {
             System.out.println("Using skill " + creature.prepareSkill(commandType) + " at (" + commandX + ", " + commandY + ")...");
-            battle.useCreatureSkillAt(creature, commandType, new Coordinates(commandX, commandY));
+            motionEvent = battle.useCreatureSkillAt(creature, commandType, new Coordinates(commandX, commandY));
         } else {
             System.out.println("** Unrecognized commands; ending turn.");
         }
@@ -126,20 +126,25 @@ public class FakeMain {
     }
 
     protected static void initializeScenario(GameBattle battle, Creature hero) {
-        Creature zombie1 = new Creature("ZombieA1");
+        Creature zombie1 = new Zombie("ZombieA1");
         zombie1.setSpeed(8);
-        Creature zombie2 = new Creature("ZombieA2");
+        
+        Creature zombie2 = new Zombie("ZombieA2");
         zombie2.setSpeed(9);
-        Creature zombie3 = new Creature("ZombieA3");
+        
+        Creature zombie3 = new Zombie("ZombieA3");
         zombie3.setSpeed(10);
-        Creature zombie4 = new Creature("ZombieA4");
+        
+        Creature zombie4 = new Zombie("ZombieA4");
         zombie4.setSpeed(11);
-        Creature zombie5 = new Creature("ZombieA5");
+        
+        Creature zombie5 = new Zombie("ZombieA5");
         zombie5.setSpeed(12);
 
         hero.setSpeed(10);
 
         battle.insertCreatureAt(zombie1, 1, 1);
+        
         battle.insertCreatureAt(zombie2, 1, 2);
         battle.insertCreatureAt(zombie3, 3, 1);
         battle.insertCreatureAt(zombie4, 3, 2);

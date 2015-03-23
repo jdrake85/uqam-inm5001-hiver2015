@@ -28,6 +28,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import de.lessvoid.nifty.Nifty;
+import gameLogic.pathfinding.Coordinates;
 import mygame.Main;
 import static mygame.Main.nifty;
 import mygame.Scene;
@@ -229,15 +230,41 @@ public class FakeMain2 extends SimpleApplication {
     };
 
     private void playZombieTurn() {
-        MotionEvent nextMotionEvent = battle.moveCreatureRandomly(creatureInCommand);
-        setAndPlayNextMotionEvent(nextMotionEvent);
-        battle.draw();
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                g[i][j].setMaterial(greyMat);
-                g[i][j].setQueueBucket(Bucket.Translucent);
+        creatureInCommand.initializeTurnEnergy();
+        Coordinates attackPosition = battle.getCoordinatesForBestClosestTarget((Zombie) creatureInCommand);
+        MotionEvent nextMotionEvent = null;
+        if (attackPosition != null) {
+            nextMotionEvent = battle.moveCreatureTo(creatureInCommand, attackPosition);
+            setAndPlayNextMotionEvent(nextMotionEvent);
+            battle.draw();
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    g[i][j].setMaterial(greyMat);
+                    g[i][j].setQueueBucket(Bucket.Translucent);
+                }
+            }
+        } 
+        
+        
+        
+
+        Creature zombieTarget = battle.getTargetAdjacentToZombie(creatureInCommand);
+        // TODO: remove after debugging
+        if (attackPosition == null && zombieTarget == null) {
+            System.out.println("*** ERROR: " + creatureInCommand + " could not calculate how to approach a hero");
+        }
+        
+        if (zombieTarget != null) {
+            while (creatureInCommand.canPayEnergyCostForSkillNumber(1) && zombieTarget.isAlive()) {
+                battle.haveZombieAttackAnyAdjacentGoodCreatures(creatureInCommand); // TODO: target already calculated...
+            }
+            if (!zombieTarget.isAlive()) {
+                gameState = "gameOver";
+                battle.activateGameOver();
+                System.out.println("Game over!");
             }
         }
+
         battle.endTurn();
     }
 
@@ -402,19 +429,16 @@ public class FakeMain2 extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        if (currentMotionEvent == null || currentMotionEvent.getPlayState().equals(PlayState.Stopped)) {
-            //System.out.print("Playing...");
-            if (battle.isZombieTurn() && !gameState.equals("enemyBusy")) {
-                //System.out.println("zombie turn!");
-                gameState = "enemyBusy";
-                playZombieTurn();
-                creatureInCommand = battle.getCreaturePlayingTurn();
-                gameState = "enemyIdle";
-            } else if (!(battle.isZombieTurn() || gameState.equals("move") || gameState.equals("skill"))) {
-                //System.out.println("player turn!");
-                gameState = "idle";
-            } else {
-                //System.out.println("nothing, GAME IS BUSY!");
+        if (!battle.isGameOver()) {
+            if (currentMotionEvent == null || currentMotionEvent.getPlayState().equals(PlayState.Stopped)) {
+                if (battle.isZombieTurn() && !gameState.equals("enemyBusy")) {
+                    gameState = "enemyBusy";
+                    playZombieTurn();
+                    creatureInCommand = battle.getCreaturePlayingTurn();
+                    gameState = "enemyIdle";
+                } else if (!(battle.isZombieTurn() || gameState.equals("move") || gameState.equals("skill"))) {
+                    gameState = "idle";
+                }
             }
         }
     }

@@ -370,77 +370,73 @@ public class GameBattle {
     // If zombie already has a target, a different target is only considered if actually closer
     public Coordinates getCoordinatesForBestClosestTarget(Zombie zombie) {
         Coordinates nextMove = null;
-        if (zombieIsAdjacentToAGoodCreature(zombie) && zombie.getCurrentTarget() == null) {
-            zombie.setCurrentTarget(getTargetAdjacentToZombie(zombie));
-            zombie.setStepsToCurrentTarget(1);
-            System.out.print("*** First time adjacent calculations...");
+        if (zombieIsAdjacentToAGoodCreature(zombie)) {
+            if (zombie.getStepsToCurrentTarget() > 1) {
+                zombie.setCurrentTarget(getTargetAdjacentToZombie(zombie));
+                zombie.setStepsToCurrentTarget(1);
+                //System.out.println("*** " + zombie + " is NOW adjacent to " + getTargetAdjacentToZombie(zombie));
+            } else {
+                //System.out.println("*** " + zombie + " WAS AND STILL IS adjacent to " + getTargetAdjacentToZombie(zombie));
+            }
         } else {
             boolean[][] availableMoves = getCalculatedOverlayForCreatureMoves(zombie);
             List<Coordinates> enemyCoordinates = getCoordinatesListOfAllEnemies(zombie);
             TreeMap<Coordinates, Creature> coordsLeadingToEnemies = generateInitialCoordinatesLeadingToEnemies(enemyCoordinates);
             List<Coordinates> desirableCoordinatesToReach;
             List<Coordinates> reachableDesirableCoordinates = new ArrayList<Coordinates>();
-            int stepsToTarget = 0;
+            int additionnalStepsToTarget = 0;
             do {
                 desirableCoordinatesToReach = updateCoordinatesLeadingToEnemiesByAddingCardinalCoordinates(coordsLeadingToEnemies);
                 //System.out.println("Current known coordinates: " + coordsLeadingToEnemies.keySet());
-                stepsToTarget++;
-                //System.out.println("Round of coordinates to walk to: " + desirableCoordinatesToReach);
-                /*// Display:
-                String line;
-                for (int j = 0; j < 8; j++) {
-                    line = j + "|";
-                    for (int i = 0; i < 8; i++) {
-                        if (availableMoves[i][j]) {
-                            line += " ";
-                        } else {
-                            line += "X";
-                        }
-                        line += "|";
+                additionnalStepsToTarget++;
+                for (Coordinates coords : desirableCoordinatesToReach) {
+                    int xCoord = coords.getXCoord();
+                    int yCoord = coords.getYCoord();
+                    if (availableMoves[xCoord][yCoord]) {
+                        availableMoves[xCoord][yCoord] = false; // The move no longer needs to be considered available
+                        reachableDesirableCoordinates.add(coords);
                     }
-                    System.out.println(line);}*/
-                    for (Coordinates coords : desirableCoordinatesToReach) {
-                        int xCoord = coords.getXCoord();
-                        int yCoord = coords.getYCoord();
-
-                        if (availableMoves[xCoord][yCoord]) {
-                            availableMoves[xCoord][yCoord] = false; // The move no longer needs to be considered available
-                            reachableDesirableCoordinates.add(coords);
-                        }
-                    }
+                }
             } while (reachableDesirableCoordinates.isEmpty() && overlayContainsATrueValue(availableMoves));
             System.out.println("Reachable desirable coordinates: " + reachableDesirableCoordinates);
             // Re-evalute target if closer to moves overlay than previously chosen target
-            boolean oldTargetStillReachable = false;
+            nextMove = selectSingleClosestReachableCoordinates(zombie, reachableDesirableCoordinates);
             Creature oldTarget = zombie.getCurrentTarget();
             if (oldTarget != null) {
+                int bestOverlayDistanceForSameTarget = Integer.MAX_VALUE;
                 for (Coordinates reachableCoords : reachableDesirableCoordinates) {
                     if (oldTarget.equals(coordsLeadingToEnemies.get(reachableCoords))) {
-                        //System.out.println("   ...old target can be reached from " + reachableCoords);
-                        oldTargetStillReachable = true;
-                        nextMove = reachableCoords;
-                        //break;
+                        int currentOverlayDistance = paths.getCalculatedPathDistanceForCoordinates(reachableCoords);
+                        if (currentOverlayDistance < bestOverlayDistanceForSameTarget) {
+                            //System.out.print(reachableCoords + " is " + currentOverlayDistance + " tiles away from " + zombie + "...");
+                            bestOverlayDistanceForSameTarget = currentOverlayDistance;
+                        }
                     }
                 }
-            }
-            if (!oldTargetStillReachable || stepsToTarget < zombie.getStepsToCurrentTarget()) {
-                nextMove = selectSingleClosestReachableCoordinates(zombie, reachableDesirableCoordinates);
-                if (nextMove != null) {
+                if (nextMove != null
+                        && (bestOverlayDistanceForSameTarget == Integer.MAX_VALUE || paths.getCalculatedPathDistanceForCoordinates(nextMove) < bestOverlayDistanceForSameTarget)) {
                     Creature nextTarget = coordsLeadingToEnemies.get(nextMove);
                     zombie.setCurrentTarget(nextTarget);
+                    zombie.setStepsToCurrentTarget(additionnalStepsToTarget);
+                    //System.out.println("...but " + nextMove + " is closer to an enemy, being " + additionnalStepsToTarget + " steps from new target, " + nextTarget);
                 }
+
             } else {
-                //nextMove = null; 
-                Creature nextTarget = zombie.getCurrentTarget();
-                System.out.println(zombie + " is still pursuing " + nextTarget + ", found at " + gameboard.getCreatureCoordinates(nextTarget));
+                Creature nextTarget = coordsLeadingToEnemies.get(nextMove);
+                zombie.setCurrentTarget(nextTarget);
+                zombie.setStepsToCurrentTarget(additionnalStepsToTarget);
+                //System.out.println("Acquiring first target: moving to " + nextMove + " to be " + additionnalStepsToTarget + " steps from first target, " + nextTarget);
             }
-            zombie.setStepsToCurrentTarget(stepsToTarget);
+            zombie.setStepsToCurrentTarget(additionnalStepsToTarget);
         }
-        System.out.println("...will be moving to " + nextMove);
+        /*
+        if (nextMove != null) {
+            System.out.println("...will be moving to " + nextMove + " to pursue " + zombie.getCurrentTarget());
+        }*/
         return nextMove;
     }
 
-    // Returns a list of the new coordinates added
+// Returns a list of the new coordinates added
     private List<Coordinates> updateCoordinatesLeadingToEnemiesByAddingCardinalCoordinates(TreeMap<Coordinates, Creature> coordsLeadingToEnemies) {
         Set<Coordinates> previouslyKnownCoordsSet = coordsLeadingToEnemies.keySet();
         List<Coordinates> nextValidCoordsList = new ArrayList<Coordinates>();

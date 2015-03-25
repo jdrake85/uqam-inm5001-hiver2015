@@ -207,10 +207,11 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void lastInfo() {
-        if (alwaysVisible) {
-            alwaysVisible = false;
+        Element myElem = FakeMain2.nifty.getScreen("battle").findElementByName("infoText");
+        if (myElem.isVisible()){
+            myElem.hide();
         } else {
-            alwaysVisible = true;
+            myElem.show();
         }
     }
 

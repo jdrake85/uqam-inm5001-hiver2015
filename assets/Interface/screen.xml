@@ -49,7 +49,6 @@
                             </panel>
                         </panel> 
                         <panel id="midAreaSpacer" width="100%" height="79%" backgroundColor="#0000" childLayout="vertical" align="center" valign="center">
-                            <interact onMouseOver="mouseOut()"/> 
                         </panel> 
                         <panel id="infoArea" width="100%" height="16%" backgroundColor="#fff0" childLayout="vertical" align="center" valign="bottom">
                             <text id="infoText" font="Interface/Fonts/Arial.fnt" width="90%" height="90%" color="#fff" text="This area should contain info recieved after actions, wrapping this text has also been enabled." align="center" valign="center" wrap="true"/>
@@ -58,7 +57,7 @@
                 </panel> 
                 <panel id="characters" width="16%" height="100%" backgroundColor="#fff3" childLayout="vertical" align="right" valign="center">
                     <panel id="hero1" width="100%" height="33.3%" backgroundColor="#f003" childLayout="vertical" align="center" valign="top">
-                    <interact onMouseOver="showHero1Stats()"/>                    
+                        <interact onMouseOver="showHero1Stats()"/>                    
                         <panel id="hero1PicNstats" width="100%" height="64%" backgroundColor="#0ff3" childLayout="horizontal" align="center" valign="top">
                             <panel id="hero1stats" width="20%" height="100%" backgroundColor="#f0f3" childLayout="horizontal" align="left">                      
                                 <panel id="hero1hp" width="50%" height="100%" backgroundColor="#f0f3" childLayout="vertical" align="left">

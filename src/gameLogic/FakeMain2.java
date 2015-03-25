@@ -2,7 +2,7 @@ package gameLogic;
 
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
-import level.board.*;
+import level.board.*;   
 
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.renderer.queue.RenderQueue.Bucket;

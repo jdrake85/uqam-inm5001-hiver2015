@@ -172,6 +172,22 @@ public class FakeMain {
         assignAllSkillsTo(hero);
         return hero;
     }
+    
+    protected static Creature initializeNurse(GameBattle battle) {
+        Creature nurse = new Creature("Nurse", FakeMain2.heroMat);
+        nurse.setAlignment("good");
+        battle.insertCreatureAt(nurse, 0, 1);
+        assignAllSkillsTo(nurse);
+        return nurse;
+    }
+    
+    protected static Creature initializeSoldier(GameBattle battle) {
+        Creature soldier = new Creature("Soldier", FakeMain2.heroMat);
+        soldier.setAlignment("good");
+        battle.insertCreatureAt(soldier, 1, 0);
+        assignAllSkillsTo(soldier);
+        return soldier;
+    }
 
     protected static void assignAllSkillsTo(Creature hero) {
         hero.setSkillAsNumber(new Strike(1, 4), 1);

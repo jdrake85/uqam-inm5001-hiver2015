@@ -24,10 +24,10 @@ public class Creature {
     private static final int COST_OF_STEP = 2;
     private int level = 8;
     private String name = "noName";
-    private int health = 16;
     private int maxHealth = 16;
-    private int energy = 18;
+    private int health = maxHealth;
     private int maxEnergy = 30;
+    private int energy = maxEnergy;
     private int speed = 10;
     private int cumulativeTurnSpeed = speed;
     private int power = 8;
@@ -225,6 +225,14 @@ public class Creature {
         this.energy = energy;
     }
     
+    public void setMaxEnergy(int maxEnergy) { 
+        this.maxEnergy = energy = maxEnergy;
+    }
+    
+    public int getMaxEnergy() {
+        return maxEnergy;
+    }
+    
     public void setPower(int power) {
         this.power = power;
     }
@@ -277,5 +285,9 @@ public class Creature {
 
     public int getMaxHealth() {
         return maxHealth;
+    }
+    
+    public void setMaxHealth(int maxHealth) {
+        this.maxHealth = health = maxHealth;
     }
 }

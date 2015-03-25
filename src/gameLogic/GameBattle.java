@@ -159,6 +159,7 @@ public class GameBattle {
 
     public MotionEvent moveCreatureTo(Creature creature, Coordinates destCoords) {
         MotionEvent motionEvent = null;
+        int initialEnergy = creature.getEnergy();
         if (creatureCanMoveTo(creature, destCoords)) {
             MotionPath path = new MotionPath();
 
@@ -176,6 +177,7 @@ public class GameBattle {
 
             motionEvent = creature.generateMotionEventForMovingCreatureOn3DBoard(path);
             gameboard.moveCreatureTo(creature, destCoords);
+            System.out.println("Energy left: " + creature.getEnergy() + '/' + initialEnergy);
 
 
 
@@ -199,7 +201,9 @@ public class GameBattle {
 
     private boolean creatureCanMoveTo(Creature creature, Coordinates destCoords) {
         int availableSteps = creature.maximumStepsAbleToWalk();
-        return paths.coordinatesReachableInAtMostDistanceOf(destCoords, availableSteps);
+        boolean destinationReachable = paths.coordinatesReachableInAtMostDistanceOf(destCoords, availableSteps);
+        Coordinates creatureCoords = gameboard.getCreatureCoordinates(creature);
+        return destinationReachable && !creatureCoords.equals(destCoords);
     }
 
     public MotionEvent useCreatureSkillAt(Creature creature, int skillNumber, Coordinates coords) {

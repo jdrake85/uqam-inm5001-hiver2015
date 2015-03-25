@@ -102,6 +102,7 @@ public class FakeMain2 extends SimpleApplication {
 
         inputManager.addMapping("MoveKey", new KeyTrigger(KeyInput.KEY_M));
         inputManager.addMapping("EnergyKey", new KeyTrigger(KeyInput.KEY_E));
+        inputManager.addMapping("RestoreHealthKey", new KeyTrigger(KeyInput.KEY_R));
         inputManager.addMapping("SelectTile",
                 new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT)); // trigger 2: left-button click
@@ -109,6 +110,7 @@ public class FakeMain2 extends SimpleApplication {
 
         inputManager.addListener(actionListener, "MoveKey");
         inputManager.addListener(actionListener, "EnergyKey");
+        inputManager.addListener(actionListener, "RestoreHealthKey");
         inputManager.addListener(actionListener, "SelectTile");
         inputManager.addListener(actionListener, "EndTurnKey");
     }
@@ -145,6 +147,11 @@ public class FakeMain2 extends SimpleApplication {
             if (name.equals("EnergyKey") && !keyPressed && gameState.equals("idle")) {
                 creatureInCommand.setEnergy(creatureInCommand.getEnergy() + 20);
                 System.out.println(creatureInCommand.getEnergy());
+            }
+            
+            if (name.equals("RestoreHealthKey") && !keyPressed && gameState.equals("idle")) {
+                creatureInCommand.receiveDamage(-16);
+                System.out.println(creatureInCommand + " is now at " + creatureInCommand.getHealth() + " health!");
             }
 
             if (name.equals("SelectTile") && !keyPressed && gameState.equals("skill")) {

@@ -121,7 +121,8 @@ public class OptimalPaths {
     }
     
     public boolean coordinatesReachableInAtMostDistanceOf(Coordinates coords, int distance) { 
-        return coordinatesToDijkstraCoordinates(coords).getDistance() <= distance;
+        DijkstraCoord dCoord = coordinatesToDijkstraCoordinates(coords);
+        return (dCoord != null) && (dCoord.getDistance() <= distance);
     }
     
     private DijkstraCoord coordinatesToDijkstraCoordinates(Coordinates coords) { 

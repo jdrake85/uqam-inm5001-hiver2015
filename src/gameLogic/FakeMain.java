@@ -126,19 +126,22 @@ public class FakeMain {
     }
 
     protected static void initializeScenario(GameBattle battle, Creature hero) {
-        Creature zombie1 = new Zombie("ZombieA1");
+        Creature zombie1 = new Zombie("ZombieA1: Fast and Energetic");
         zombie1.setSpeed(8);
         
-        Creature zombie2 = new Zombie("ZombieA2");
-        zombie2.setSpeed(9);
         
-        Creature zombie3 = new Zombie("ZombieA3");
+        Creature zombie2 = new Zombie("ZombieA2: Fast and Lazy");
+        zombie2.setSpeed(9);
+        zombie2.setMaxEnergy(zombie1.getMaxEnergy()/2);
+        
+        Creature zombie3 = new Zombie("ZombieA3: Even");
         zombie3.setSpeed(10);
         
-        Creature zombie4 = new Zombie("ZombieA4");
+        Creature zombie4 = new Zombie("ZombieA4: Slow and Lazy");
         zombie4.setSpeed(11);
+        zombie4.setMaxEnergy(zombie1.getMaxEnergy()/2);
         
-        Creature zombie5 = new Zombie("ZombieA5");
+        Creature zombie5 = new Zombie("ZombieA5: Slow and Energetic");
         zombie5.setSpeed(12);
 
         hero.setSpeed(10);

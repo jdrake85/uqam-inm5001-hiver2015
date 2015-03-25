@@ -24,6 +24,7 @@ import gameLogic.FakeMain2;
 import static gameLogic.FakeMain2.battle;
 import static gameLogic.FakeMain2.gameState;
 import static gameLogic.FakeMain2.creatureInCommand;
+import java.util.ArrayList;
 
 /**
  *

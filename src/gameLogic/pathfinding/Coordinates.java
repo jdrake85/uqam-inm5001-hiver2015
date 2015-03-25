@@ -4,13 +4,11 @@
  */
 package gameLogic.pathfinding;
 
-import java.util.ArrayList;
-
 /**
  *
  * @author User
  */
-public class Coordinates {
+public class Coordinates implements Comparable {
 
     int xCoord = -1;
     int yCoord = -1;
@@ -163,5 +161,22 @@ public class Coordinates {
         int xDiff = xCoord - coords.getXCoord();
         int yDiff = yCoord - coords.getYCoord();
         return Math.abs(xDiff) <= units || Math.abs(yDiff) <= units;
+    }
+
+    public int compareTo(Object o) {
+        int comparison = 0;
+        if (o == null) {
+            throw new NullPointerException();
+        } else {
+            Coordinates otherCoords = (Coordinates) o;
+            int otherXCoord = otherCoords.getXCoord();
+            int otherYCoord = otherCoords.getYCoord();
+            if (xCoord < otherXCoord || (xCoord == otherXCoord && yCoord < otherYCoord)) {
+                comparison = -1; 
+            } else if (xCoord > otherXCoord || (xCoord == otherXCoord && yCoord > otherYCoord)) {
+                comparison = 1;
+            }
+        }
+        return comparison;
     }
 }

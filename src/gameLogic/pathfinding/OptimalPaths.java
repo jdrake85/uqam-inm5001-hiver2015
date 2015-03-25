@@ -121,13 +121,19 @@ public class OptimalPaths {
     }
     
     public boolean coordinatesReachableInAtMostDistanceOf(Coordinates coords, int distance) { 
-        return coordinatesToDijkstraCoordinates(coords).getDistance() <= distance;
+        DijkstraCoord dCoord = coordinatesToDijkstraCoordinates(coords);
+        return (dCoord != null) && (dCoord.getDistance() <= distance);
     }
     
     private DijkstraCoord coordinatesToDijkstraCoordinates(Coordinates coords) { 
         int xCoord = coords.getXCoord();
         int yCoord = coords.getYCoord();
         return dCoords[xCoord][yCoord];
+    }
+    
+    public int getCalculatedPathDistanceForCoordinates(Coordinates coords) { 
+        DijkstraCoord dCoord = coordinatesToDijkstraCoordinates(coords);
+        return dCoord.getDistance();
     }
 
     public CoordPath getPathForCreatureToCoordinates(Creature creature, Coordinates destCoords) {

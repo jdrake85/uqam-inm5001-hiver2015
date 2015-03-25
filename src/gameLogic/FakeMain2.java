@@ -1,10 +1,15 @@
 package gameLogic;
 
+import com.jme3.animation.AnimChannel;
+import com.jme3.animation.AnimControl;
 import level.board.*;
 
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.app.SimpleApplication;
+import com.jme3.asset.plugins.FileLocator;
+import com.jme3.cinematic.PlayState;
+import com.jme3.cinematic.events.MotionEvent;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
@@ -23,6 +28,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import de.lessvoid.nifty.Nifty;
+import gameLogic.pathfinding.Coordinates;
 import mygame.Main;
 import static mygame.Main.nifty;
 import mygame.Scene;
@@ -41,16 +47,23 @@ public class FakeMain2 extends SimpleApplication {
     public static Material redMat; //TODO remove
     public static Material greyMat; //TODO remove
     public static Material redZombie;
+    public static Material heroMat;
     public static int commandType = -1;
     public static Geometry[][] g;
     public static GameBattle battle;
-    public static Creature hero;
+    public static Creature creatureInCommand;
     //public static Spatial ninja;
     public static Nifty nifty;
     //public static int posX = 0;
     public static FakeMain2 app;
+    public static int turnCounter = 0;
     //protected int posZ = 0;
     //protected static Scene scene1;
+    //New variables
+    public static Node heroScene;
+    public static AnimControl ac;
+    public static AnimChannel channel;
+    public MotionEvent currentMotionEvent = null;
 
     @Override
     public void simpleInitApp() {
@@ -61,53 +74,45 @@ public class FakeMain2 extends SimpleApplication {
 
         battle = new GameBattle();
 
-        hero = FakeMain.initializeHero(battle);
-        FakeMain.initializeScenario(battle, hero);
+        // Distinctive hero colours
+        heroMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        heroMat.setColor("Color", new ColorRGBA(0.75f, 4f, 3f, 0f));
+
+        //load temp hero mexh + animation
+        assetManager.registerLocator("assets/Models/Hero/", FileLocator.class);
+        heroScene = (Node) assetManager.loadModel("HeroScene.scene");
+        heroScene.setLocalScale(.015f);
+        ac = findAnimControl(heroScene);
+        channel = ac.createChannel();
+        animateIdle();
+
+        creatureInCommand = FakeMain.initializeHero(battle);
+        FakeMain.initializeScenario(battle, creatureInCommand);
+        battle.start();
+        creatureInCommand = battle.getCreaturePlayingTurn();
     }
 
     private void initKeys() {
-        inputManager.addMapping("Skill1", new KeyTrigger(KeyInput.KEY_1));
-        inputManager.addMapping("Skill2", new KeyTrigger(KeyInput.KEY_2));
-        inputManager.addMapping("Skill3", new KeyTrigger(KeyInput.KEY_3));
-        inputManager.addMapping("Skill4", new KeyTrigger(KeyInput.KEY_4));
-        inputManager.addMapping("Skill5", new KeyTrigger(KeyInput.KEY_5));
-        inputManager.addMapping("Skill6", new KeyTrigger(KeyInput.KEY_6));
-        inputManager.addMapping("Skill7", new KeyTrigger(KeyInput.KEY_7));
-        inputManager.addMapping("Skill8", new KeyTrigger(KeyInput.KEY_8));
-        inputManager.addMapping("Skill9", new KeyTrigger(KeyInput.KEY_9));
-        inputManager.addMapping("Skill10", new KeyTrigger(KeyInput.KEY_0));
-        inputManager.addMapping("Skill11", new KeyTrigger(KeyInput.KEY_MINUS));
-        inputManager.addMapping("Skill12", new KeyTrigger(KeyInput.KEY_EQUALS));
 
-
-
-
+        for (int i = 1; i <= 12; i++) {
+            String skillName = "Skill" + i;
+            inputManager.addMapping(skillName, new KeyTrigger(KeyInput.KEY_1 + i - 1));
+            inputManager.addListener(actionListener, skillName);
+        }
 
         inputManager.addMapping("MoveKey", new KeyTrigger(KeyInput.KEY_M));
         inputManager.addMapping("EnergyKey", new KeyTrigger(KeyInput.KEY_E));
+        inputManager.addMapping("RestoreHealthKey", new KeyTrigger(KeyInput.KEY_R));
         inputManager.addMapping("SelectTile",
                 new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT)); // trigger 2: left-button click
+        inputManager.addMapping("EndTurnKey", new KeyTrigger(KeyInput.KEY_Q));
 
-        inputManager.addMapping("SelectTile", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-
-        inputManager.addListener(actionListener, "Skill1");
-        inputManager.addListener(actionListener, "Skill2");
-        inputManager.addListener(actionListener, "Skill3");
-        inputManager.addListener(actionListener, "Skill4");
-        inputManager.addListener(actionListener, "Skill5");
-        inputManager.addListener(actionListener, "Skill6");
-        inputManager.addListener(actionListener, "Skill7");
-        inputManager.addListener(actionListener, "Skill8");
-        inputManager.addListener(actionListener, "Skill9");
-        inputManager.addListener(actionListener, "Skill10");
-        inputManager.addListener(actionListener, "Skill11");
-        inputManager.addListener(actionListener, "Skill12");
-
-
-        inputManager.addListener(actionListener, "SelectTile");
-        inputManager.addListener(actionListener, "EnergyKey");
         inputManager.addListener(actionListener, "MoveKey");
+        inputManager.addListener(actionListener, "EnergyKey");
+        inputManager.addListener(actionListener, "RestoreHealthKey");
+        inputManager.addListener(actionListener, "SelectTile");
+        inputManager.addListener(actionListener, "EndTurnKey");
     }
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
@@ -116,94 +121,37 @@ public class FakeMain2 extends SimpleApplication {
             // TODO; effacer
             if (name.equals("MoveKey") && !keyPressed && gameState.equals("idle")) {
                 gameState = "move";
-                battle.drawWithOverlayForCreatureMoves(hero);
+                commandType = 0;
+                battle.drawWithOverlayForCreatureMoves(creatureInCommand);
+                animateMove();
             }
 
-            if (name.equals("Skill1") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 1;
+            // Ending turn
+            if (name.equals("EndTurnKey") && !keyPressed && gameState.equals("idle")) {
+                battle.endTurn();
+                creatureInCommand = battle.getCreaturePlayingTurn();
+                // Enemy turn(s), if next
 
-                battle.drawWithOverlayForCreatureSkill(hero, 1);
             }
 
-            if (name.equals("Skill2") && !keyPressed && gameState.equals("idle")) {
+            if (name.substring(0, 5).equals("Skill") && !keyPressed && gameState.equals("idle")) {
+                try {
+                    commandType = Integer.parseInt(name.substring(5));
+                } catch (Exception e) {
+                    commandType = 1;
+                }
                 gameState = "skill";
-                commandType = 2;
-                battle.drawWithOverlayForCreatureSkill(hero, 2);
-            }
-
-            if (name.equals("Skill3") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 3;
-                battle.drawWithOverlayForCreatureSkill(hero, 3);
-            }
-
-            if (name.equals("Skill4") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 4;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 4);
-            }
-            
-            if (name.equals("Skill5") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 5;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 5);
-            }
-            
-            if (name.equals("Skill6") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 6;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 6);
-            }
-            
-            if (name.equals("Skill7") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 7;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 7);
-            }
-            
-            if (name.equals("Skill8") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 8;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 8);
-            }
-            
-            if (name.equals("Skill9") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 9;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 9);
-            }
-            
-            if (name.equals("Skill10") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 10;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 10);
-            }
-            
-            if (name.equals("Skill11") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 11;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 11);
-            }
-            
-            if (name.equals("Skill12") && !keyPressed && gameState.equals("idle")) {
-                gameState = "skill";
-                commandType = 12;
-
-                battle.drawWithOverlayForCreatureSkill(hero, 12);
+                battle.drawWithOverlayForCreatureSkill(creatureInCommand, commandType);
             }
 
             if (name.equals("EnergyKey") && !keyPressed && gameState.equals("idle")) {
-                hero.setEnergy(hero.getEnergy() + 20);
-                System.out.println(hero.getEnergy());
+                creatureInCommand.setEnergy(creatureInCommand.getEnergy() + 20);
+                System.out.println(creatureInCommand.getEnergy());
+            }
+            
+            if (name.equals("RestoreHealthKey") && !keyPressed && gameState.equals("idle")) {
+                creatureInCommand.receiveDamage(-16);
+                System.out.println(creatureInCommand + " is now at " + creatureInCommand.getHealth() + " health!");
             }
 
             if (name.equals("SelectTile") && !keyPressed && gameState.equals("skill")) {
@@ -226,9 +174,11 @@ public class FakeMain2 extends SimpleApplication {
                     int commandX = (int) targetTile.getX();
                     int commandY = (int) targetTile.getZ();
 
-                    FakeMain.performTurn(commandType, commandX, commandY, hero, battle);
+                    MotionEvent nextMotionEvent = FakeMain.performTurn(commandType, commandX, commandY, creatureInCommand, battle);
+                    setAndPlayNextMotionEvent(nextMotionEvent);
+
                     gameState = "idle";
-                    commandType = 0;
+                    animateIdle();
                     /*
                      MyMaterial greenTile = new MyMaterial(assetManager);
                      greenTile.setGreenTileMat();
@@ -265,8 +215,12 @@ public class FakeMain2 extends SimpleApplication {
                     int commandX = (int) targetTile.getX();
                     int commandY = (int) targetTile.getZ();
 
-                    FakeMain.performTurn(0, commandX, commandY, hero, battle);
+
+                    MotionEvent nextMotionEvent = FakeMain.performTurn(0, commandX, commandY, creatureInCommand, battle);
+                    setAndPlayNextMotionEvent(nextMotionEvent);
+
                     gameState = "idle";
+                    FakeMain2.animateIdle();
                     /*
                      MyMaterial greenTile = new MyMaterial(assetManager);
                      greenTile.setGreenTileMat();
@@ -281,6 +235,45 @@ public class FakeMain2 extends SimpleApplication {
             }
         }
     };
+
+    private void playZombieTurn() {
+        creatureInCommand.initializeTurnEnergy();
+        Coordinates attackPosition = battle.getCoordinatesForBestClosestTarget((Zombie) creatureInCommand);
+        MotionEvent nextMotionEvent = null;
+        if (attackPosition != null) {
+            nextMotionEvent = battle.moveCreatureTo(creatureInCommand, attackPosition);
+            setAndPlayNextMotionEvent(nextMotionEvent);
+            battle.draw();
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    g[i][j].setMaterial(greyMat);
+                    g[i][j].setQueueBucket(Bucket.Translucent);
+                }
+            }
+        } 
+        
+        
+        
+
+        Creature zombieTarget = battle.getTargetAdjacentToZombie(creatureInCommand);
+        // TODO: remove after debugging
+        if (attackPosition == null && zombieTarget == null) {
+            System.out.println("*** ERROR: " + creatureInCommand + " could not calculate how to approach a hero");
+        }
+        
+        if (zombieTarget != null) {
+            while (creatureInCommand.canPayEnergyCostForSkillNumber(1) && zombieTarget.isAlive()) {
+                battle.haveZombieAttackAnyAdjacentGoodCreatures(creatureInCommand); // TODO: target already calculated...
+            }
+            if (!zombieTarget.isAlive()) {
+                gameState = "gameOver";
+                battle.activateGameOver();
+                System.out.println("Game over!");
+            }
+        }
+
+        battle.endTurn();
+    }
 
     public void initScene() {
 
@@ -395,5 +388,65 @@ public class FakeMain2 extends SimpleApplication {
         Material flMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         flMat.setColor("Color", new ColorRGBA(0.25f, 0, 0.75f, 11f));//R,B,G,Alphas
         return flMat;
+    }
+
+    public static void animateMove() {
+        try {
+            // create a channel and start the wobble animation
+            channel.setAnim("Hop");
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void animateIdle() {
+        try {
+            // create a channel and start the wobble animation
+            channel.setAnim("Idle");
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static AnimControl findAnimControl(final Spatial parent) {
+        final AnimControl animControl = parent.getControl(AnimControl.class);
+        if (animControl != null) {
+            return animControl;
+        }
+
+        if (parent instanceof Node) {
+            for (final Spatial s : ((Node) parent).getChildren()) {
+                final AnimControl animControl2 = findAnimControl(s);
+                if (animControl2 != null) {
+                    return animControl2;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public void setAndPlayNextMotionEvent(MotionEvent nextMotionEvent) {
+        currentMotionEvent = nextMotionEvent;
+        if (currentMotionEvent != null) {
+            System.out.println("PLAYING MOTION EVENT: " + currentMotionEvent + '\n');
+            currentMotionEvent.play();
+        }
+    }
+
+    @Override
+    public void simpleUpdate(float tpf) {
+        if (!battle.isGameOver()) {
+            if (currentMotionEvent == null || currentMotionEvent.getPlayState().equals(PlayState.Stopped)) {
+                if (battle.isZombieTurn() && !gameState.equals("enemyBusy")) {
+                    gameState = "enemyBusy";
+                    playZombieTurn();
+                    creatureInCommand = battle.getCreaturePlayingTurn();
+                    gameState = "enemyIdle";
+                } else if (!(battle.isZombieTurn() || gameState.equals("move") || gameState.equals("skill"))) {
+                    gameState = "idle";
+                }
+            }
+        }
     }
 }

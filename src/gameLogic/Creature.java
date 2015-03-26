@@ -11,6 +11,7 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import gameLogic.skills.Skill;
@@ -19,7 +20,7 @@ import gameLogic.skills.Skill;
  *
  * @author User
  */
-public class Creature {
+public class Creature extends Geometry {
 
     private static final int COST_OF_STEP = 2;
     private int level = 8;
@@ -41,25 +42,11 @@ public class Creature {
     public Creature(String name) {
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
-        //TODO: clean up
         Box box = new Box(0.2f, 1.5f, 0.2f);
         geometry3D = new Geometry(name, box);
         geometry3D.setMaterial(FakeMain2.redZombie);
         FakeMain2.charNode.attachChild(geometry3D);
 
-        //FakeMain2.charNode.attachChild(geo);
-
-        /**
-         * Box zombie1 = new Box(0.2f,1.5f,0.2f); Geometry zomb1 = new
-         * Geometry("Box", zombie1);
-         *
-         * Material mZomb = new Material(assetManager,
-         * "Common/MatDefs/Misc/Unshaded.j3md"); mZomb.setColor("Color", new
-         * ColorRGBA(0.75f,0f,0f,0f));//R,B,G,Alphas zomb1.setMaterial(mZomb);
-         * zomb1.setLocalTranslation(new Vector3f(1,-1,1));
-         * charNode.attachChild(zomb1);
-         *
-         */
     }
 
     public Creature(String name, Material material) {
@@ -69,6 +56,18 @@ public class Creature {
         geometry3D = FakeMain2.heroScene; // WIP; node is assigned to Spatial..
         geometry3D.setMaterial(material);
         FakeMain2.charNode.attachChild(geometry3D);
+    }
+    
+    public Creature(String name, Material material, Node node) {
+        this.name = name;
+        skills = new Skill[12]; // TODO: eventually set to 4
+        geometry3D = node;
+        geometry3D.setMaterial(material);
+        FakeMain2.charNode.attachChild(geometry3D);
+    }
+    
+    public Spatial getSpatial() { 
+        return geometry3D;
     }
 
     @Override

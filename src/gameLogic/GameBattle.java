@@ -327,7 +327,6 @@ public class GameBattle {
 
     public Creature[] getCreatureTurnOrder() {
         int queueSize = creaturePriority.size();
-        //System.out.println("*** creature count: " + allCreatureCount);
         CreatureSpeedTurnTriplet[] allTurnOrderTriplets = new CreatureSpeedTurnTriplet[queueSize];
         creaturePriority.toArray(allTurnOrderTriplets);
         Arrays.sort(allTurnOrderTriplets);
@@ -378,10 +377,7 @@ public class GameBattle {
             if (zombie.getStepsToCurrentTarget() > 1) {
                 zombie.setCurrentTarget(getTargetAdjacentToZombie(zombie));
                 zombie.setStepsToCurrentTarget(1);
-                //System.out.println("*** " + zombie + " is NOW adjacent to " + getTargetAdjacentToZombie(zombie));
-            } else {
-                //System.out.println("*** " + zombie + " WAS AND STILL IS adjacent to " + getTargetAdjacentToZombie(zombie));
-            }
+            } 
         } else {
             boolean[][] availableMoves = getCalculatedOverlayForCreatureMoves(zombie);
             List<Coordinates> enemyCoordinates = getCoordinatesListOfAllEnemies(zombie);
@@ -391,7 +387,6 @@ public class GameBattle {
             int additionnalStepsToTarget = 0;
             do {
                 desirableCoordinatesToReach = updateCoordinatesLeadingToEnemiesByAddingCardinalCoordinates(coordsLeadingToEnemies);
-                //System.out.println("Current known coordinates: " + coordsLeadingToEnemies.keySet());
                 additionnalStepsToTarget++;
                 for (Coordinates coords : desirableCoordinatesToReach) {
                     int xCoord = coords.getXCoord();
@@ -412,7 +407,6 @@ public class GameBattle {
                     if (oldTarget.equals(coordsLeadingToEnemies.get(reachableCoords))) {
                         int currentOverlayDistance = paths.getCalculatedPathDistanceForCoordinates(reachableCoords);
                         if (currentOverlayDistance < bestOverlayDistanceForSameTarget) {
-                            //System.out.print(reachableCoords + " is " + currentOverlayDistance + " tiles away from " + zombie + "...");
                             bestOverlayDistanceForSameTarget = currentOverlayDistance;
                         }
                     }
@@ -422,21 +416,15 @@ public class GameBattle {
                     Creature nextTarget = coordsLeadingToEnemies.get(nextMove);
                     zombie.setCurrentTarget(nextTarget);
                     zombie.setStepsToCurrentTarget(additionnalStepsToTarget);
-                    //System.out.println("...but " + nextMove + " is closer to an enemy, being " + additionnalStepsToTarget + " steps from new target, " + nextTarget);
                 }
 
             } else {
                 Creature nextTarget = coordsLeadingToEnemies.get(nextMove);
                 zombie.setCurrentTarget(nextTarget);
                 zombie.setStepsToCurrentTarget(additionnalStepsToTarget);
-                //System.out.println("Acquiring first target: moving to " + nextMove + " to be " + additionnalStepsToTarget + " steps from first target, " + nextTarget);
             }
             zombie.setStepsToCurrentTarget(additionnalStepsToTarget);
         }
-        /*
-        if (nextMove != null) {
-            System.out.println("...will be moving to " + nextMove + " to pursue " + zombie.getCurrentTarget());
-        }*/
         return nextMove;
     }
 
@@ -587,10 +575,18 @@ public class GameBattle {
         }
         return target;
     }
+    
+    public boolean zombieIsAdjacentToTarget(Zombie zombie) { 
+        Creature targetCreature = zombie.getCurrentTarget();
+        Coordinates targetCoords = gameboard.getCreatureCoordinates(targetCreature);
+        Coordinates zombieCoords = gameboard.getCreatureCoordinates(zombie);
+        return targetCoords.areCardinalCoordinatesAdjacentTo(zombieCoords);
+    }
 
-    public MotionEvent haveZombieAttackAnyAdjacentGoodCreatures(Creature zombie) {
+    public MotionEvent haveZombieAttackAdjacentTarget(Zombie zombie) {
         int zombieSkill = 1;
-        Coordinates targetCoords = getCoordsOfFirstGoodCreatureAdjacentToZombie(zombie);
+        Creature targetCreature = zombie.getCurrentTarget();
+        Coordinates targetCoords = gameboard.getCreatureCoordinates(targetCreature);
         MotionEvent attackEvent;
         if (targetCoords != null) {
             attackEvent = useCreatureSkillAt(zombie, zombieSkill, targetCoords);

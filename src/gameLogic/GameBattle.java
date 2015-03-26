@@ -326,14 +326,14 @@ public class GameBattle {
     }
 
     public Creature[] getCreatureTurnOrder() {
-        int allCreatureCount = creatureList.size();
-        Creature[] fullCreatureTurnOrder = new Creature[allCreatureCount];
-        creaturePriority.toArray(fullCreatureTurnOrder);
-        Arrays.sort(fullCreatureTurnOrder);
+        int queueSize = creaturePriority.size();
+        //System.out.println("*** creature count: " + allCreatureCount);
+        CreatureSpeedTurnTriplet[] allTurnOrderTriplets = new CreatureSpeedTurnTriplet[queueSize];
+        creaturePriority.toArray(allTurnOrderTriplets);
+        Arrays.sort(allTurnOrderTriplets);
         Creature[] fiveCreatureTurnOrder = new Creature[5];
-        System.arraycopy(fullCreatureTurnOrder, 0, fiveCreatureTurnOrder, 0, Math.min(5, allCreatureCount));
-        for (int i = allCreatureCount; i < 5; i++) {
-            fiveCreatureTurnOrder[i] = null;
+        for (int i = 0; i < 5; i++) {
+            fiveCreatureTurnOrder[i] = allTurnOrderTriplets[i].getCreature();
         }
         return fiveCreatureTurnOrder;
     }

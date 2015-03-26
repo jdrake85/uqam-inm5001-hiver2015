@@ -100,6 +100,7 @@ public class FakeMain2 extends SimpleApplication {
             inputManager.addListener(actionListener, skillName);
         }
 
+        inputManager.addMapping("BannerRefresh", new KeyTrigger(KeyInput.KEY_B));
         inputManager.addMapping("MoveKey", new KeyTrigger(KeyInput.KEY_M));
         inputManager.addMapping("EnergyKey", new KeyTrigger(KeyInput.KEY_E));
         inputManager.addMapping("RestoreHealthKey", new KeyTrigger(KeyInput.KEY_R));
@@ -108,6 +109,7 @@ public class FakeMain2 extends SimpleApplication {
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT)); // trigger 2: left-button click
         inputManager.addMapping("EndTurnKey", new KeyTrigger(KeyInput.KEY_Q));
 
+        inputManager.addListener(actionListener, "BannerRefresh");
         inputManager.addListener(actionListener, "MoveKey");
         inputManager.addListener(actionListener, "EnergyKey");
         inputManager.addListener(actionListener, "RestoreHealthKey");
@@ -133,6 +135,18 @@ public class FakeMain2 extends SimpleApplication {
                 // Enemy turn(s), if next
 
             }
+            
+            // Ending turn
+            if (name.equals("BannerRefresh") && !keyPressed && gameState.equals("idle")) {
+                Creature[] priorityBanner = battle.getCreatureTurnOrder();
+                System.out.print("PRIORITY BANNER: ");
+                for (Creature creature: priorityBanner) { 
+                    System.out.print(creature + ", ");
+                }
+                System.out.println();
+            }
+            
+            
 
             if (name.substring(0, 5).equals("Skill") && !keyPressed && gameState.equals("idle")) {
                 try {
@@ -254,7 +268,7 @@ public class FakeMain2 extends SimpleApplication {
         
         
         
-
+        //Debugging
         Creature zombieTarget = battle.getTargetAdjacentToZombie(creatureInCommand);
         // TODO: remove after debugging
         if (attackPosition == null && zombieTarget == null) {
@@ -265,6 +279,7 @@ public class FakeMain2 extends SimpleApplication {
             while (creatureInCommand.canPayEnergyCostForSkillNumber(1) && zombieTarget.isAlive()) {
                 battle.haveZombieAttackAnyAdjacentGoodCreatures(creatureInCommand); // TODO: target already calculated...
             }
+            // TODO: remove
             if (!zombieTarget.isAlive()) {
                 gameState = "gameOver";
                 battle.activateGameOver();

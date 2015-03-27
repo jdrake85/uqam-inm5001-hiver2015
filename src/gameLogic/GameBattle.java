@@ -4,6 +4,8 @@
  */
 package gameLogic;
 
+import gameLogic.creatures.CreatureSpeedTurnTriplet;
+import gameLogic.creatures.Zombie;
 import com.jme3.cinematic.MotionPath;
 import com.jme3.cinematic.events.MotionEvent;
 import com.jme3.math.Vector3f;
@@ -42,6 +44,14 @@ public class GameBattle {
     public GameBattle() {
         paths = new OptimalPaths(8, 8);
         gameboard = new GameBoard();
+    }
+    
+    public GameBattle(int level) {
+        this();
+    }
+    
+    public void clearCombattants() {
+        gameboard.clearGameBoard();
     }
 
     public boolean[][] getCalculatedOverlayForCreatureSkill(Creature creature, int skillNumber) {

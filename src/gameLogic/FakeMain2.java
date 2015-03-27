@@ -1,5 +1,6 @@
 package gameLogic;
 
+import gameLogic.creatures.Zombie;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.material.RenderState.BlendMode;
@@ -40,7 +41,7 @@ public class FakeMain2 extends SimpleApplication {
     protected Node pivot = new Node("pivot");
     protected Node mainNode = new Node("mainNode");
     protected static Node charNode = new Node("charNode");
-    public static String gameState = "idle"; // idle, move, skill  
+    public static String gameState = "outOfLevel"; // idle, move, skill, outOfLevel, enemyBusy, enemyIdle
     public static Material greenMat; //TODO remove
     public static Material redMat; //TODO remove
     public static Material greyMat; //TODO remove
@@ -73,6 +74,7 @@ public class FakeMain2 extends SimpleApplication {
     public static boolean playedPreBattleCinematic = false;
     public static boolean battleInProgress = false;
     public static boolean playedPostBattleCinematic = false;
+    int level = 1;
 
     @Override
     public void simpleInitApp() {
@@ -80,8 +82,6 @@ public class FakeMain2 extends SimpleApplication {
         flyCam.setEnabled(false);
         initScene();
         initKeys();
-
-        battle = new GameBattle();
 
         // HERO GRAPHICS
         heroMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -112,11 +112,8 @@ public class FakeMain2 extends SimpleApplication {
         channelSoldier = acSoldier.createChannel();
         //animateIdle();
 
-        Creature hero = initializeHero(FakeMain2.battle);
-        Creature nurse = initializeNurse(FakeMain2.battle);
-        Creature soldier = initializeSoldier(battle);
-
-        initializeScenario(FakeMain2.battle);
+        // Specifiy starting level here (first level is 1)
+        level = 1;
     }
 
     private void initKeys() {
@@ -146,133 +143,136 @@ public class FakeMain2 extends SimpleApplication {
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
 
-            //Equivalent du premier bouton
-            // TODO; effacer
-            if (name.equals("MoveKey") && !keyPressed && gameState.equals("idle")) {
-                gameState = "move";
-                commandType = 0;
-                battle.drawWithOverlayForCreatureMoves(creatureInCommand);
-                animateMove(creatureInCommand);
-            }
-
-            // Ending turn
-            if (name.equals("EndTurnKey") && !keyPressed && gameState.equals("idle")) {
-                battle.endTurn();
-                creatureInCommand = battle.getCreaturePlayingTurn();
-                // Enemy turn(s), if next
-
-            }
-
-            // Ending turn
-            if (name.equals("BannerRefresh") && !keyPressed && gameState.equals("idle")) {
-                Creature[] priorityBanner = battle.getCreatureTurnOrder();
-                System.out.print("PRIORITY BANNER: ");
-                for (Creature creature : priorityBanner) {
-                    System.out.print(creature + ", ");
+            if (noMotionEventPlaying()) {
+                //Equivalent du premier bouton
+                // TODO; effacer
+                if (name.equals("MoveKey") && !keyPressed && gameState.equals("idle")) {
+                    gameState = "move";
+                    commandType = 0;
+                    battle.drawWithOverlayForCreatureMoves(creatureInCommand);
+                    animateMove(creatureInCommand);
                 }
-                System.out.println();
-            }
 
-            if (name.substring(0, 5).equals("Skill") && !keyPressed && gameState.equals("idle")) {
-                try {
-                    commandType = Integer.parseInt(name.substring(5));
-                } catch (Exception e) {
-                    commandType = 1;
+                // Ending turn
+                if (name.equals("EndTurnKey") && !keyPressed && gameState.equals("idle")) {
+                    battle.endTurn();
+                    creatureInCommand = battle.getCreaturePlayingTurn();
+                    // Enemy turn(s), if next
+
                 }
-                gameState = "skill";
-                battle.drawWithOverlayForCreatureSkill(creatureInCommand, commandType);
-            }
 
-            if (name.equals("EnergyKey") && !keyPressed && gameState.equals("idle")) {
-                creatureInCommand.setEnergy(creatureInCommand.getEnergy() + 20);
-                System.out.println(creatureInCommand.getEnergy());
-            }
+                // Ending turn
+                if (name.equals("BannerRefresh") && !keyPressed && gameState.equals("idle")) {
+                    Creature[] priorityBanner = battle.getCreatureTurnOrder();
+                    System.out.print("PRIORITY BANNER: ");
+                    for (Creature creature : priorityBanner) {
+                        System.out.print(creature + ", ");
+                    }
+                    System.out.println();
+                }
 
-            if (name.equals("RestoreHealthKey") && !keyPressed && gameState.equals("idle")) {
-                creatureInCommand.receiveDamage(-16);
-                System.out.println(creatureInCommand + " is now at " + creatureInCommand.getHealth() + " health!");
-            }
+                if (name.substring(0, 5).equals("Skill") && !keyPressed && gameState.equals("idle")) {
+                    try {
+                        commandType = Integer.parseInt(name.substring(5));
+                    } catch (Exception e) {
+                        commandType = 1;
+                    }
+                    gameState = "skill";
+                    battle.drawWithOverlayForCreatureSkill(creatureInCommand, commandType);
+                }
 
-            if (name.equals("SelectTile") && !keyPressed && gameState.equals("skill")) {
-                CollisionResults results = new CollisionResults();
-                Vector2f click2d = inputManager.getCursorPosition();
-                Vector3f click3d = cam.getWorldCoordinates(
-                        new Vector2f(click2d.x, click2d.y), 0f).clone();
-                Vector3f dir = cam.getWorldCoordinates(
-                        new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
-                Ray ray = new Ray(click3d, dir);
-                pivot.collideWith(ray, results);
+                if (name.equals("EnergyKey") && !keyPressed && gameState.equals("idle")) {
+                    creatureInCommand.setEnergy(creatureInCommand.getEnergy() + 20);
+                    System.out.println(creatureInCommand.getEnergy());
+                }
 
-                // Use the results (we mark the hit object)
-                if (results.size() > 0) {
-                    // The closest collision point is what was truly hit:
-                    Geometry closest = results.getClosestCollision().getGeometry();
+                if (name.equals("RestoreHealthKey") && !keyPressed && gameState.equals("idle")) {
+                    creatureInCommand.receiveDamage(-16);
+                    System.out.println(creatureInCommand + " is now at " + creatureInCommand.getHealth() + " health!");
+                }
 
-                    Vector3f targetTile;
-                    targetTile = closest.getLocalTranslation();
-                    int commandX = (int) targetTile.getX();
-                    int commandY = (int) targetTile.getZ();
+                if (name.equals("SelectTile") && !keyPressed && gameState.equals("skill")) {
+                    CollisionResults results = new CollisionResults();
+                    Vector2f click2d = inputManager.getCursorPosition();
+                    Vector3f click3d = cam.getWorldCoordinates(
+                            new Vector2f(click2d.x, click2d.y), 0f).clone();
+                    Vector3f dir = cam.getWorldCoordinates(
+                            new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
+                    Ray ray = new Ray(click3d, dir);
+                    pivot.collideWith(ray, results);
 
-                    MotionEvent nextMotionEvent = FakeMain2.performTurn(FakeMain2.commandType, commandX, commandY, FakeMain2.creatureInCommand, FakeMain2.battle);
-                    setAndPlayNextMotionEvent(nextMotionEvent);
+                    // Use the results (we mark the hit object)
+                    if (results.size() > 0) {
+                        // The closest collision point is what was truly hit:
+                        Geometry closest = results.getClosestCollision().getGeometry();
 
-                    gameState = "idle";
-                    animateIdle();
+                        Vector3f targetTile;
+                        targetTile = closest.getLocalTranslation();
+                        int commandX = (int) targetTile.getX();
+                        int commandY = (int) targetTile.getZ();
 
-                    /*
-                     MyMaterial greenTile = new MyMaterial(assetManager);
-                     greenTile.setGreenTileMat();
-                     closest.setMaterial(greenTile.getMat());*/
-                    for (int i = 0; i < 8; i++) {
-                        for (int j = 0; j < 8; j++) {
-                            g[i][j].setMaterial(greyMat);
-                            g[i][j].setQueueBucket(Bucket.Translucent);
+                        MotionEvent nextMotionEvent = FakeMain2.performTurn(FakeMain2.commandType, commandX, commandY, FakeMain2.creatureInCommand, FakeMain2.battle);
+                        setAndPlayNextMotionEvent(nextMotionEvent);
+
+                        gameState = "idle";
+                        animateIdle();
+
+                        /*
+                         MyMaterial greenTile = new MyMaterial(assetManager);
+                         greenTile.setGreenTileMat();
+                         closest.setMaterial(greenTile.getMat());*/
+                        for (int i = 0; i < 8; i++) {
+                            for (int j = 0; j < 8; j++) {
+                                g[i][j].setMaterial(greyMat);
+                                g[i][j].setQueueBucket(Bucket.Translucent);
+                            }
+                        }
+                        if (battle.isWon()) {
+                            System.out.println("<PLACEHOLDER FUNCTION>: battle is won");
+                            gameState = "loadPostBattleCinematic";
+                            battleInProgress = false;
+                        } else {
+                            battle.refreshCreatureList();
                         }
                     }
-                    if (battle.isWon()) {
-                        System.out.println("<PLACEHOLDER FUNCTION>: battle is won");
-                        battleInProgress = false;
-                    } else {
-                        battle.refreshCreatureList();
-                    }
                 }
-            }
 
 
-            if (name.equals("SelectTile") && !keyPressed && gameState.equals("move")) {
-                CollisionResults results = new CollisionResults();
-                Vector2f click2d = inputManager.getCursorPosition();
-                Vector3f click3d = cam.getWorldCoordinates(
-                        new Vector2f(click2d.x, click2d.y), 0f).clone();
-                Vector3f dir = cam.getWorldCoordinates(
-                        new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
-                Ray ray = new Ray(click3d, dir);
-                pivot.collideWith(ray, results);
+                if (name.equals("SelectTile") && !keyPressed && gameState.equals("move")) {
+                    CollisionResults results = new CollisionResults();
+                    Vector2f click2d = inputManager.getCursorPosition();
+                    Vector3f click3d = cam.getWorldCoordinates(
+                            new Vector2f(click2d.x, click2d.y), 0f).clone();
+                    Vector3f dir = cam.getWorldCoordinates(
+                            new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
+                    Ray ray = new Ray(click3d, dir);
+                    pivot.collideWith(ray, results);
 
-                // Use the results (we mark the hit object)
-                if (results.size() > 0) {
-                    // The closest collision point is what was truly hit:
-                    Geometry closest = results.getClosestCollision().getGeometry();
+                    // Use the results (we mark the hit object)
+                    if (results.size() > 0) {
+                        // The closest collision point is what was truly hit:
+                        Geometry closest = results.getClosestCollision().getGeometry();
 
-                    Vector3f targetTile;
-                    targetTile = closest.getLocalTranslation();
-                    int commandX = (int) targetTile.getX();
-                    int commandY = (int) targetTile.getZ();
+                        Vector3f targetTile;
+                        targetTile = closest.getLocalTranslation();
+                        int commandX = (int) targetTile.getX();
+                        int commandY = (int) targetTile.getZ();
 
 
-                    MotionEvent nextMotionEvent = FakeMain2.performTurn(0, commandX, commandY, FakeMain2.creatureInCommand, FakeMain2.battle);
-                    setAndPlayNextMotionEvent(nextMotionEvent);
+                        MotionEvent nextMotionEvent = FakeMain2.performTurn(0, commandX, commandY, FakeMain2.creatureInCommand, FakeMain2.battle);
+                        setAndPlayNextMotionEvent(nextMotionEvent);
 
-                    gameState = "idle";
-                    FakeMain2.animateIdle();
-                    /*
-                     MyMaterial greenTile = new MyMaterial(assetManager);
-                     greenTile.setGreenTileMat();
-                     closest.setMaterial(greenTile.getMat());*/
-                    for (int i = 0; i < 8; i++) {
-                        for (int j = 0; j < 8; j++) {
-                            g[i][j].setMaterial(greyMat);
-                            g[i][j].setQueueBucket(Bucket.Translucent);
+                        gameState = "idle";
+                        FakeMain2.animateIdle();
+                        /*
+                         MyMaterial greenTile = new MyMaterial(assetManager);
+                         greenTile.setGreenTileMat();
+                         closest.setMaterial(greenTile.getMat());*/
+                        for (int i = 0; i < 8; i++) {
+                            for (int j = 0; j < 8; j++) {
+                                g[i][j].setMaterial(greyMat);
+                                g[i][j].setQueueBucket(Bucket.Translucent);
+                            }
                         }
                     }
                 }
@@ -311,7 +311,8 @@ public class FakeMain2 extends SimpleApplication {
 
         if (gameOver) {
             System.out.println("<PLACEHOLDER FUNCTION>: battle is lost, return to main menu");
-            gameState = "finished";
+            gameState = "outOfLevel";
+            level--;
         } else {
             battle.endTurn();
         }
@@ -496,20 +497,14 @@ public class FakeMain2 extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        if (!gameState.equals("finished")) {
+        if (!gameState.equals("outOfLevel")) {
             if (battleInProgress) {
-                if (battle.isWon()) {
-                    System.out.println("<PLACEHOLDER FUNCTION / SIMPLE UPDATE>: battle is won");
-                    gameState = "finished";
-                } else if (battle.isLost()) {
-                    System.out.println("<PLACEHOLDER FUNCTION / SIMPLE UPDATE>: battle is lost, return to main menu");
-                    gameState = "finished";
-                } else {
-                    if (currentMotionEvent == null || currentMotionEvent.getPlayState().equals(PlayState.Stopped)) {
+                if (!battle.isWon()) {
+                    if (noMotionEventPlaying()) {
                         if (battle.isZombieTurn() && !gameState.equals("enemyBusy")) {
                             gameState = "enemyBusy";
                             playZombieTurn();
-                            if (!gameState.equals("finished")) {
+                            if (!gameState.equals("outOfLevel")) {
                                 creatureInCommand = battle.getCreaturePlayingTurn();
                                 gameState = "enemyIdle";
                             }
@@ -525,26 +520,34 @@ public class FakeMain2 extends SimpleApplication {
                 creatureInCommand = battle.getCreaturePlayingTurn();
                 battleInProgress = true;
             } else if (!playedPostBattleCinematic) {
+                battleInProgress = false;
                 System.out.println("<PLACEHOLDER FUNCTION / SIMPLE UPDATE>: play POST battle cinematic now");
                 playedPostBattleCinematic = true;
-            } else {
-                playedPreBattleCinematic = battleInProgress = playedPostBattleCinematic = false;
-                gameState = "finished";
-                System.out.println("<PLACEHOLDER FUNCTION / SIMPLE UPDATE>: load next level now");
+                gameState = "outOfLevel";
             }
         } else {
-            //app.stop();
+            if (level < 9) {
+                System.out.println();
+                System.out.println("---------------------------------");
+                System.out.println("## LOADING LEVEL " + level + " ##");
+                System.out.println("---------------------------------");
+                System.out.println();
+                playedPreBattleCinematic = battleInProgress = playedPostBattleCinematic = false;
+                initializeBattleForLevel(level++);
+                gameState = "idle";
+            } else if (level == 9) {
+                System.out.println("Congratulations!");
+                app.stop();
+            }
+
         }
     }
 
     protected static MotionEvent performTurn(int commandType, int commandX, int commandY, Creature creature, GameBattle battle) {
-        boolean keepPlaying = true;
         MotionEvent motionEvent = null;
         if (commandX == 8 || commandY == 8) {
             System.out.println("Energy boost +40!");
             creature.setEnergy(creature.getEnergy() + 40);
-        } else if (commandX == -1 || commandY == -1) {
-            keepPlaying = false;
         } else if (commandType == 0) {
             System.out.println("Moving to (" + commandX + ", " + commandY + ")...");
             motionEvent = battle.moveCreatureTo(creature, new Coordinates(commandX, commandY));
@@ -554,10 +557,331 @@ public class FakeMain2 extends SimpleApplication {
         } else {
             System.out.println("** Unrecognized commands; ending turn.");
         }
-        battle.refreshCreatureList();
         return motionEvent;
     }
 
+    private boolean noMotionEventPlaying() {
+        return currentMotionEvent == null || currentMotionEvent.getPlayState().equals(PlayState.Stopped);
+    }
+
+    private void initializeBattleForLevel(int level) {
+        switch (level) {
+            case 1:
+                initializeLevel1();
+                break;
+            case 2:
+                initializeLevel2();
+                break;
+            case 3:
+                initializeLevel3();
+                break;
+            case 4:
+                initializeLevel4();
+                break;
+            case 5:
+                initializeLevel5();
+                break;
+            case 6:
+                initializeLevel6();
+                break;
+            case 7:
+                initializeLevel7();
+                break;
+            case 8:
+                initializeLevel8();
+                break;
+            default:
+                System.out.println("Error loading level; loading first level.");
+                initializeLevel1();
+                break;
+        }
+    }
+
+    // Level 1: 'Freedom'
+    private void initializeLevel1() {
+        battle = new GameBattle();
+
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        hero.setAlignment("good");
+        hero.setSkillAsNumber(new Strike(1, 4), 1);
+        battle.insertCreatureAt(hero, 1, 4);
+
+
+        Creature zombie1 = new Zombie("Zombie");
+        battle.insertCreatureAt(zombie1, 6, 4);
+
+        // TODO: remove later
+        assignAllSkillsTo(hero);
+    }
+
+    // Level 2: 'Damsel in Distress'
+    private void initializeLevel2() {
+        battle = new GameBattle();
+
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        hero.setAlignment("good");
+        hero.setSkillAsNumber(new Strike(1, 4), 1);
+        battle.insertCreatureAt(hero, 1, 4);
+
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
+        nurse.setAlignment("good");
+        nurse.setSkillAsNumber(new Heal(5, 4), 5);
+        nurse.setSkillAsNumber(new Push(8, 4), 8);
+
+        battle.insertCreatureAt(nurse, 7, 0);
+
+        Creature zombie1 = new Zombie("Zombie");
+        battle.insertCreatureAt(zombie1, 6, 1);
+
+        // TODO: remove later
+        assignAllSkillsTo(hero);
+        assignAllSkillsTo(nurse);
+    }
+
+    // Level 3: 'Getting through'
+    private void initializeLevel3() {
+        battle = new GameBattle();
+
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        hero.setAlignment("good");
+        hero.setSkillAsNumber(new Strike(1, 4), 1);
+        hero.setSkillAsNumber(new HomeRun(2, 4), 2);
+        battle.insertCreatureAt(hero, 3, 6);
+
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
+        nurse.setAlignment("good");
+        nurse.setSkillAsNumber(new Heal(5, 4), 5);
+        nurse.setSkillAsNumber(new Push(8, 4), 8);
+        battle.insertCreatureAt(nurse, 3, 4);
+
+        Creature zombie1 = new Zombie("Zombie1");
+        Creature zombie2 = new Zombie("Zombie2");
+        Creature zombie3 = new Zombie("Zombie3");
+        battle.insertCreatureAt(zombie1, 1, 2);
+        battle.insertCreatureAt(zombie2, 5, 2);
+        battle.insertCreatureAt(zombie3, 3, 1);
+
+        // TODO: remove later
+        assignAllSkillsTo(hero);
+        assignAllSkillsTo(nurse);
+    }
+
+    // Level 4: 'Pincer Attack'
+    private void initializeLevel4() {
+        battle = new GameBattle();
+
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        hero.setAlignment("good");
+        hero.setSkillAsNumber(new Strike(1, 4), 1);
+        hero.setSkillAsNumber(new HomeRun(2, 4), 2);
+        battle.insertCreatureAt(hero, 3, 3);
+
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
+        nurse.setAlignment("good");
+        nurse.setSkillAsNumber(new Heal(5, 4), 5);
+        nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
+        nurse.setSkillAsNumber(new Push(8, 4), 8);
+        battle.insertCreatureAt(nurse, 3, 4);
+
+        Creature zombie1 = new Zombie("Zombie1");
+        Creature zombie2 = new Zombie("Zombie2");
+        Creature zombie3 = new Zombie("Zombie3");
+        Creature zombie4 = new Zombie("Zombie4");
+        battle.insertCreatureAt(zombie1, 1, 1);
+        battle.insertCreatureAt(zombie2, 1, 6);
+        battle.insertCreatureAt(zombie3, 6, 6);
+        battle.insertCreatureAt(zombie4, 6, 1);
+
+        // TODO: remove later
+        assignAllSkillsTo(hero);
+        assignAllSkillsTo(nurse);
+    }
+
+    // Level 5: 'Making Friends'
+    private void initializeLevel5() {
+        battle = new GameBattle();
+
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        hero.setAlignment("good");
+        hero.setSkillAsNumber(new Strike(1, 4), 1);
+        hero.setSkillAsNumber(new HomeRun(2, 4), 2);
+        battle.insertCreatureAt(hero, 1, 6);
+
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
+        nurse.setAlignment("good");
+        nurse.setSkillAsNumber(new Heal(5, 4), 5);
+        nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
+        nurse.setSkillAsNumber(new Push(8, 4), 8);
+        battle.insertCreatureAt(nurse, 2, 7);
+
+        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, soldierScene);
+        soldier.setAlignment("good");
+        soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
+        soldier.setSkillAsNumber(new Stab(11, 4), 11);
+        battle.insertCreatureAt(soldier, 7, 0);
+
+        Creature zombie1 = new Zombie("Zombie1");
+        Creature zombie2 = new Zombie("Zombie2");
+        Creature zombie3 = new Zombie("Zombie3");
+        Creature zombie4 = new Zombie("Zombie4");
+        battle.insertCreatureAt(zombie1, 2, 4);
+        battle.insertCreatureAt(zombie2, 2, 5);
+        battle.insertCreatureAt(zombie3, 6, 0);
+        battle.insertCreatureAt(zombie4, 7, 1);
+
+        // TODO: remove later
+        assignAllSkillsTo(hero);
+        assignAllSkillsTo(nurse);
+        assignAllSkillsTo(soldier);
+    }
+
+    // Level 6: 'Showdown'
+    private void initializeLevel6() {
+        battle = new GameBattle();
+
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        hero.setAlignment("good");
+        hero.setSkillAsNumber(new Strike(1, 4), 1);
+        hero.setSkillAsNumber(new HomeRun(2, 4), 2);
+        hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
+        battle.insertCreatureAt(hero, 5, 4);
+
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
+        nurse.setAlignment("good");
+        nurse.setSkillAsNumber(new Heal(5, 4), 5);
+        nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
+        nurse.setSkillAsNumber(new Push(8, 4), 8);
+        battle.insertCreatureAt(nurse, 6, 3);
+
+        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, soldierScene);
+        soldier.setAlignment("good");
+        soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
+        soldier.setSkillAsNumber(new Stab(11, 4), 11);
+        battle.insertCreatureAt(soldier, 6, 5);
+
+        Creature zombie1 = new Zombie("Zombie1");
+        Creature zombie2 = new Zombie("Zombie2");
+        Creature zombie3 = new Zombie("Zombie3");
+        Creature zombie4 = new Zombie("Zombie4");
+        Creature zombie5 = new Zombie("Zombie5");
+        Creature zombie6 = new Zombie("Zombie6");
+        battle.insertCreatureAt(zombie1, 1, 1);
+        battle.insertCreatureAt(zombie2, 1, 2);
+        battle.insertCreatureAt(zombie3, 1, 3);
+        battle.insertCreatureAt(zombie4, 1, 4);
+        battle.insertCreatureAt(zombie5, 1, 5);
+        battle.insertCreatureAt(zombie6, 1, 6);
+
+        // TODO: remove later
+        assignAllSkillsTo(hero);
+        assignAllSkillsTo(nurse);
+        assignAllSkillsTo(soldier);
+    }
+
+    // Level 7: 'Surrounded'
+    private void initializeLevel7() {
+        battle = new GameBattle();
+
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        hero.setAlignment("good");
+        hero.setSkillAsNumber(new Strike(1, 4), 1);
+        hero.setSkillAsNumber(new HomeRun(2, 4), 2);
+        hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
+        battle.insertCreatureAt(hero, 5, 1);
+
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
+        nurse.setAlignment("good");
+        nurse.setSkillAsNumber(new Heal(5, 4), 5);
+        nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
+        nurse.setSkillAsNumber(new MustardGas(7, 4), 7);
+        nurse.setSkillAsNumber(new Push(8, 4), 8);
+        battle.insertCreatureAt(nurse, 6, 0);
+
+        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, soldierScene);
+        soldier.setAlignment("good");
+        soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
+        soldier.setSkillAsNumber(new ShootEmAll(10, 4), 10);
+        soldier.setSkillAsNumber(new Stab(11, 4), 11);
+        battle.insertCreatureAt(soldier, 6, 1);
+
+        Creature zombie1 = new Zombie("Zombie1");
+        Creature zombie2 = new Zombie("Zombie2");
+        Creature zombie3 = new Zombie("Zombie3");
+        Creature zombie4 = new Zombie("Zombie4");
+        Creature zombie5 = new Zombie("Zombie5");
+        Creature zombie6 = new Zombie("Zombie6");
+        Creature zombie7 = new Zombie("Zombie7");
+        Creature zombie8 = new Zombie("Zombie8");
+        Creature zombie9 = new Zombie("Zombie9");
+        Creature zombie10 = new Zombie("Zombie10");
+        Creature zombie11 = new Zombie("Zombie11");
+        Creature zombie12 = new Zombie("Zombie12");
+        battle.insertCreatureAt(zombie1, 3, 0);
+        battle.insertCreatureAt(zombie2, 3, 2);
+        battle.insertCreatureAt(zombie3, 3, 4);
+        battle.insertCreatureAt(zombie4, 3, 5);
+        battle.insertCreatureAt(zombie5, 3, 6);
+        battle.insertCreatureAt(zombie6, 3, 7);
+        battle.insertCreatureAt(zombie7, 4, 4);
+        battle.insertCreatureAt(zombie8, 4, 5);
+        battle.insertCreatureAt(zombie9, 4, 6);
+        battle.insertCreatureAt(zombie10, 5, 4);
+        battle.insertCreatureAt(zombie11, 5, 5);
+        battle.insertCreatureAt(zombie12, 6, 4);
+
+        // TODO: remove later
+        assignAllSkillsTo(hero);
+        assignAllSkillsTo(nurse);
+        assignAllSkillsTo(soldier);
+    }
+
+    // Level 8: 'Big Bad Boss'
+    private void initializeLevel8() {
+        battle = new GameBattle();
+
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        hero.setAlignment("good");
+        hero.setSkillAsNumber(new Strike(1, 4), 1);
+        hero.setSkillAsNumber(new HomeRun(2, 4), 2);
+        hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
+        hero.setSkillAsNumber(new Knockback(4, 4), 4);
+        battle.insertCreatureAt(hero, 3, 4);
+
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
+        nurse.setAlignment("good");
+        nurse.setSkillAsNumber(new Heal(5, 4), 5);
+        nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
+        nurse.setSkillAsNumber(new MustardGas(7, 4), 7);
+        nurse.setSkillAsNumber(new Push(8, 4), 8);
+        battle.insertCreatureAt(nurse, 2, 5);
+
+        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, soldierScene);
+        soldier.setAlignment("good");
+        soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
+        soldier.setSkillAsNumber(new ShootEmAll(10, 4), 10);
+        soldier.setSkillAsNumber(new Stab(11, 4), 11);
+        soldier.setSkillAsNumber(new CutThroat(12, 1), 12);
+        battle.insertCreatureAt(soldier, 4, 5);
+
+        Creature boss = new Zombie("Boss");
+        boss.setMaxEnergy(boss.getMaxEnergy() * 4);
+        Creature zombie1 = new Zombie("Zombie1");
+        Creature zombie2 = new Zombie("Zombie2");
+        Creature zombie3 = new Zombie("Zombie3");
+        Creature zombie4 = new Zombie("Zombie4");
+        battle.insertCreatureAt(boss, 3, 2);
+        battle.insertCreatureAt(zombie1, 2, 1);
+        battle.insertCreatureAt(zombie2, 1, 0);
+        battle.insertCreatureAt(zombie3, 4, 1);
+        battle.insertCreatureAt(zombie4, 5, 0);
+
+        // TODO: remove later
+        assignAllSkillsTo(hero);
+        assignAllSkillsTo(nurse);
+        assignAllSkillsTo(soldier);
+    }
+
+    // TODO: remove later
     protected static void assignAllSkillsTo(Creature creature) {
         creature.setSkillAsNumber(new Strike(1, 4), 1);
         creature.setSkillAsNumber(new HomeRun(2, 4), 2);
@@ -571,68 +895,5 @@ public class FakeMain2 extends SimpleApplication {
         creature.setSkillAsNumber(new ShootEmAll(10, 4), 10);
         creature.setSkillAsNumber(new Stab(11, 4), 11);
         creature.setSkillAsNumber(new CutThroat(12, 1), 12);
-    }
-
-    protected static Creature initializeHero(GameBattle battle) {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
-        hero.setAlignment("good");
-        battle.insertCreatureAt(hero, 7, 1);
-        assignAllSkillsTo(hero);
-        /* TODO
-         hero.setSkillAsNumber(new Strike(1, 4), 1);
-         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
-         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
-         hero.setSkillAsNumber(new Knockback(4, 4), 4);
-         * */
-        hero.setSpeed(10);
-        return hero;
-    }
-
-    protected static Creature initializeNurse(GameBattle battle) {
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
-        nurse.setAlignment("good");
-        battle.insertCreatureAt(nurse, 7, 3);
-        assignAllSkillsTo(nurse);
-        /* TODO
-         nurse.setSkillAsNumber(new Heal(5, 4), 1);
-         nurse.setSkillAsNumber(new Innoculation(6, 4), 2);
-         nurse.setSkillAsNumber(new MustardGas(7, 4), 3);
-         nurse.setSkillAsNumber(new Push(8, 4), 4);
-         * */
-        return nurse;
-    }
-
-    protected static Creature initializeSoldier(GameBattle battle) {
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, soldierScene);
-        soldier.setAlignment("good");
-        battle.insertCreatureAt(soldier, 7, 5);
-        assignAllSkillsTo(soldier);
-        /* TODO
-         soldier.setSkillAsNumber(new AimedShot(9, 4), 1);
-         soldier.setSkillAsNumber(new ShootEmAll(10, 4), 2);
-         soldier.setSkillAsNumber(new Stab(11, 4), 3);
-         soldier.setSkillAsNumber(new CutThroat(12, 1), 4);
-         */
-        return soldier;
-    }
-
-    protected static void initializeScenario(GameBattle battle) {
-        Creature zombie1 = new Zombie("ZombieA1(FE)");
-        zombie1.setSpeed(8);
-        Creature zombie2 = new Zombie("ZombieA2(FL)");
-        zombie2.setSpeed(9);
-        zombie2.setMaxEnergy(zombie1.getMaxEnergy() / 2);
-        Creature zombie3 = new Zombie("ZombieA3(--)");
-        zombie3.setSpeed(10);
-        Creature zombie4 = new Zombie("ZombieA4(SL)");
-        zombie4.setSpeed(11);
-        zombie4.setMaxEnergy(zombie1.getMaxEnergy() / 2);
-        Creature zombie5 = new Zombie("ZombieA5(SE)");
-        zombie5.setSpeed(12);
-        battle.insertCreatureAt(zombie1, 1, 1);
-        battle.insertCreatureAt(zombie2, 1, 2);
-        battle.insertCreatureAt(zombie3, 3, 1);
-        battle.insertCreatureAt(zombie4, 3, 2);
-        battle.insertCreatureAt(zombie5, 3, 3);
     }
 }

@@ -34,6 +34,15 @@ public class GameBoard {
             }
         }
     }
+    
+    public void clearGameBoard() {
+        for (int i = 0; i < xDim; i++) {
+            for (int j = 0; j < yDim; j++) {
+                assert(tiles[i][j] != null);
+                tiles[i][j].removeOccupier();
+            }
+        }
+    }
 
     public int getDimensionAlongXAxis() {
         return xDim;

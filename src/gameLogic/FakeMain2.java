@@ -70,6 +70,9 @@ public class FakeMain2 extends SimpleApplication {
     public static AnimChannel channelNurse;
     public static AnimChannel channelSoldier;
     public MotionEvent currentMotionEvent = null;
+    public static boolean playedPreBattleCinematic = false;
+    public static boolean battleInProgress = false;
+    public static boolean playedPostBattleCinematic = false;
 
     @Override
     public void simpleInitApp() {
@@ -114,9 +117,6 @@ public class FakeMain2 extends SimpleApplication {
         Creature soldier = initializeSoldier(battle);
 
         initializeScenario(FakeMain2.battle);
-
-        battle.start();
-        creatureInCommand = battle.getCreaturePlayingTurn();
     }
 
     private void initKeys() {
@@ -218,6 +218,7 @@ public class FakeMain2 extends SimpleApplication {
 
                     gameState = "idle";
                     animateIdle();
+
                     /*
                      MyMaterial greenTile = new MyMaterial(assetManager);
                      greenTile.setGreenTileMat();
@@ -228,9 +229,13 @@ public class FakeMain2 extends SimpleApplication {
                             g[i][j].setQueueBucket(Bucket.Translucent);
                         }
                     }
+                    if (battle.isWon()) {
+                        System.out.println("<PLACEHOLDER FUNCTION>: battle is won");
+                        battleInProgress = false;
+                    } else {
+                        battle.refreshCreatureList();
+                    }
                 }
-
-                battle.refreshCreatureList();
             }
 
 
@@ -295,13 +300,21 @@ public class FakeMain2 extends SimpleApplication {
         //Debugging
         Creature zombieTarget = zombie.getCurrentTarget();
         System.out.println(zombie + " is currently pursuing " + zombieTarget + "...");
+        boolean gameOver = false;
 
         if (zombieTarget != null && battle.zombieIsAdjacentToTarget(zombie)) {
-            while (zombie.canPayEnergyCostForSkillNumber(1) && zombieTarget.isAlive()) {
+            while (zombie.canPayEnergyCostForSkillNumber(1) && !gameOver) {
                 battle.haveZombieAttackAdjacentTarget(zombie); // TODO: target already calculated...
+                gameOver = !zombieTarget.isAlive();
             }
         }
-        battle.endTurn();
+
+        if (gameOver) {
+            System.out.println("<PLACEHOLDER FUNCTION>: battle is lost, return to main menu");
+            gameState = "finished";
+        } else {
+            battle.endTurn();
+        }
     }
 
     public void initScene() {
@@ -483,17 +496,44 @@ public class FakeMain2 extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        if (!battle.isGameOver()) {
-            if (currentMotionEvent == null || currentMotionEvent.getPlayState().equals(PlayState.Stopped)) {
-                if (battle.isZombieTurn() && !gameState.equals("enemyBusy")) {
-                    gameState = "enemyBusy";
-                    playZombieTurn();
-                    creatureInCommand = battle.getCreaturePlayingTurn();
-                    gameState = "enemyIdle";
-                } else if (!(battle.isZombieTurn() || gameState.equals("move") || gameState.equals("skill"))) {
-                    gameState = "idle";
+        if (!gameState.equals("finished")) {
+            if (battleInProgress) {
+                if (battle.isWon()) {
+                    System.out.println("<PLACEHOLDER FUNCTION / SIMPLE UPDATE>: battle is won");
+                    gameState = "finished";
+                } else if (battle.isLost()) {
+                    System.out.println("<PLACEHOLDER FUNCTION / SIMPLE UPDATE>: battle is lost, return to main menu");
+                    gameState = "finished";
+                } else {
+                    if (currentMotionEvent == null || currentMotionEvent.getPlayState().equals(PlayState.Stopped)) {
+                        if (battle.isZombieTurn() && !gameState.equals("enemyBusy")) {
+                            gameState = "enemyBusy";
+                            playZombieTurn();
+                            if (!gameState.equals("finished")) {
+                                creatureInCommand = battle.getCreaturePlayingTurn();
+                                gameState = "enemyIdle";
+                            }
+                        } else if (!(battle.isZombieTurn() || gameState.equals("move") || gameState.equals("skill"))) {
+                            gameState = "idle";
+                        }
+                    }
                 }
+            } else if (!playedPreBattleCinematic) {
+                System.out.println("<PLACEHOLDER FUNCTION / SIMPLE UPDATE>: play PRE battle cinematic now");
+                playedPreBattleCinematic = true;
+                battle.start();
+                creatureInCommand = battle.getCreaturePlayingTurn();
+                battleInProgress = true;
+            } else if (!playedPostBattleCinematic) {
+                System.out.println("<PLACEHOLDER FUNCTION / SIMPLE UPDATE>: play POST battle cinematic now");
+                playedPostBattleCinematic = true;
+            } else {
+                playedPreBattleCinematic = battleInProgress = playedPostBattleCinematic = false;
+                gameState = "finished";
+                System.out.println("<PLACEHOLDER FUNCTION / SIMPLE UPDATE>: load next level now");
             }
+        } else {
+            //app.stop();
         }
     }
 
@@ -539,11 +579,11 @@ public class FakeMain2 extends SimpleApplication {
         battle.insertCreatureAt(hero, 7, 1);
         assignAllSkillsTo(hero);
         /* TODO
-        hero.setSkillAsNumber(new Strike(1, 4), 1);
-        hero.setSkillAsNumber(new HomeRun(2, 4), 2);
-        hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
-        hero.setSkillAsNumber(new Knockback(4, 4), 4);
-        * */
+         hero.setSkillAsNumber(new Strike(1, 4), 1);
+         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
+         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
+         hero.setSkillAsNumber(new Knockback(4, 4), 4);
+         * */
         hero.setSpeed(10);
         return hero;
     }
@@ -554,11 +594,11 @@ public class FakeMain2 extends SimpleApplication {
         battle.insertCreatureAt(nurse, 7, 3);
         assignAllSkillsTo(nurse);
         /* TODO
-        nurse.setSkillAsNumber(new Heal(5, 4), 1);
-        nurse.setSkillAsNumber(new Innoculation(6, 4), 2);
-        nurse.setSkillAsNumber(new MustardGas(7, 4), 3);
-        nurse.setSkillAsNumber(new Push(8, 4), 4);
-        * */
+         nurse.setSkillAsNumber(new Heal(5, 4), 1);
+         nurse.setSkillAsNumber(new Innoculation(6, 4), 2);
+         nurse.setSkillAsNumber(new MustardGas(7, 4), 3);
+         nurse.setSkillAsNumber(new Push(8, 4), 4);
+         * */
         return nurse;
     }
 
@@ -568,11 +608,11 @@ public class FakeMain2 extends SimpleApplication {
         battle.insertCreatureAt(soldier, 7, 5);
         assignAllSkillsTo(soldier);
         /* TODO
-        soldier.setSkillAsNumber(new AimedShot(9, 4), 1);
-        soldier.setSkillAsNumber(new ShootEmAll(10, 4), 2);
-        soldier.setSkillAsNumber(new Stab(11, 4), 3);
-        soldier.setSkillAsNumber(new CutThroat(12, 1), 4);
-        */
+         soldier.setSkillAsNumber(new AimedShot(9, 4), 1);
+         soldier.setSkillAsNumber(new ShootEmAll(10, 4), 2);
+         soldier.setSkillAsNumber(new Stab(11, 4), 3);
+         soldier.setSkillAsNumber(new CutThroat(12, 1), 4);
+         */
         return soldier;
     }
 

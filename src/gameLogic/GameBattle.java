@@ -36,7 +36,8 @@ public class GameBattle {
     private int maxCumulativeCreatureSpeed = 0;
     private int minCumulativeCreatureSpeed = Integer.MAX_VALUE;
     private int turnCounter = 1;
-    private boolean gameOver = false;
+    private boolean playerVictory = false;
+    private boolean playerDefeat = false;
 
     public GameBattle() {
         paths = new OptimalPaths(8, 8);
@@ -77,7 +78,8 @@ public class GameBattle {
         return !goodCreatures.isEmpty();
     }
 
-    public boolean goodCreatureHasBeenDefeated() {
+    // Player loses as soon as one of the heroes is defeated
+    public boolean isLost() {
         boolean defeat = false;
         for (Creature creature : creatureList) {
             if (creature.isGood() && !creature.isAlive()) {
@@ -85,7 +87,19 @@ public class GameBattle {
                 break;
             }
         }
-        return defeat;
+        return playerDefeat = defeat;
+    }
+
+    // Player wins as soon as all zombies are defeated
+    public boolean isWon() {
+        boolean victory = true;
+        for (Creature creature : creatureList) {
+            if (!creature.isGood() && creature.isAlive()) {
+                victory = false;
+                break;
+            }
+        }
+        return playerVictory = victory;
     }
 
     public boolean containsBadCreatures() {
@@ -287,17 +301,11 @@ public class GameBattle {
     public void endTurn() {
         refreshCreatureList();
         creaturePriority.poll();
-        //System.out.println("*** TURN PLAYED BY: " + creaturePriority.poll()); // Pop creature who just played from priority queue
         addCreatureToCreaturePriorityRecursivelyAtLeastOnceAccordingToSpeed(creaturePlayingTurn); // Push creature who just played, who is now 'slower'
         CreatureSpeedTurnTriplet nextPair = creaturePriority.peek();
         creaturePlayingTurn = nextPair.getCreature();
-        //System.out.println("*** NEXT TURN: " + nextPair);
-        if (!gameOver) {
-            System.out.println('\n' + "------------------" + '\n' + "TURN #" + turnCounter++ + '\n' + "------------------");
-            displayCreatureSpeedPairsForTurnOrder();
-        } else {
-            System.out.println("------------------------------FIN---------------------------------");
-        }
+        System.out.println('\n' + "------------------" + '\n' + "TURN #" + turnCounter++ + '\n' + "------------------");
+        displayCreatureSpeedPairsForTurnOrder();
     }
 
     private void removeDeadCreaturesFromTurnOrder() {
@@ -377,7 +385,7 @@ public class GameBattle {
             if (zombie.getStepsToCurrentTarget() > 1) {
                 zombie.setCurrentTarget(getTargetAdjacentToZombie(zombie));
                 zombie.setStepsToCurrentTarget(1);
-            } 
+            }
         } else {
             boolean[][] availableMoves = getCalculatedOverlayForCreatureMoves(zombie);
             List<Coordinates> enemyCoordinates = getCoordinatesListOfAllEnemies(zombie);
@@ -575,8 +583,8 @@ public class GameBattle {
         }
         return target;
     }
-    
-    public boolean zombieIsAdjacentToTarget(Zombie zombie) { 
+
+    public boolean zombieIsAdjacentToTarget(Zombie zombie) {
         Creature targetCreature = zombie.getCurrentTarget();
         Coordinates targetCoords = gameboard.getCreatureCoordinates(targetCreature);
         Coordinates zombieCoords = gameboard.getCreatureCoordinates(zombie);
@@ -596,15 +604,7 @@ public class GameBattle {
         return attackEvent;
     }
 
-    public void activateGameOver() {
-        gameOver = true;
-    }
-
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
-    boolean zombieIsAdjacentToAGoodCreature(Creature zombie) {
+    public boolean zombieIsAdjacentToAGoodCreature(Creature zombie) {
         return getCoordsOfFirstGoodCreatureAdjacentToZombie(zombie) != null;
     }
 }

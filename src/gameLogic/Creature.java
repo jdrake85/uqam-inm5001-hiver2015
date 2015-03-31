@@ -83,13 +83,14 @@ public class Creature extends Geometry {
         geometry3D.removeFromParent();
     }
     
-   public MotionEvent generateMotionEventForMovingCreatureOn3DBoard(MotionPath path) {
+   public MotionEvent generateMotionEventForMovingCreatureOn3DBoard(MotionPath path, int stepCount) {
        //geometry3D.setLocalTranslation(new Vector3f(xDest, -1, yDest));
        //System.out.println("** ANIMATION **");
        MotionEvent motionControl = new MotionEvent(geometry3D, path);
        motionControl.setDirectionType(MotionEvent.Direction.PathAndRotation);
        motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
-       motionControl.setSpeed(5f);
+       motionControl.setSpeed(30f/stepCount);
+       
        return motionControl;
        /*
        int maxFrame = 9999999;

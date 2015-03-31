@@ -188,7 +188,8 @@ public class GameBattle {
             MotionPath path = new MotionPath();
 
             CoordPath pathChosen = paths.getPathForCreatureToCoordinates(creature, destCoords);
-            creature.consumeEnergyForSteps(pathChosen.length() - 1);
+            int stepCount = pathChosen.length() - 1;
+            creature.consumeEnergyForSteps(stepCount);
             System.out.println(pathChosen);
 
             //Coordinates initCoords;
@@ -199,7 +200,7 @@ public class GameBattle {
                 path.addWayPoint(new Vector3f(coord.getXCoord(), -1, coord.getYCoord()));
             }
 
-            motionEvent = creature.generateMotionEventForMovingCreatureOn3DBoard(path);
+            motionEvent = creature.generateMotionEventForMovingCreatureOn3DBoard(path, stepCount);
             gameboard.moveCreatureTo(creature, destCoords);
             System.out.println("Energy left: " + creature.getEnergy() + '/' + initialEnergy);
 

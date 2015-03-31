@@ -92,7 +92,7 @@ public class FakeMain2 extends SimpleApplication {
         heroScene.setLocalScale(.020f);
         acHero = findAnimControl(heroScene);
         channelHero = acHero.createChannel();
-        animateIdle();
+        channelHero.setAnim("Idle");
 
         // NURSE GRAPHICS
         nurseMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -101,7 +101,7 @@ public class FakeMain2 extends SimpleApplication {
         nurseScene.setLocalScale(.015f);
         acNurse = findAnimControl(nurseScene);
         channelNurse = acNurse.createChannel();
-        //animateIdle();
+        channelNurse.setAnim("Idle");
 
         // SOLDIER GRAPHICS
         soldierMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -110,7 +110,7 @@ public class FakeMain2 extends SimpleApplication {
         soldierScene.setLocalScale(.025f);
         acSoldier = findAnimControl(soldierScene);
         channelSoldier = acSoldier.createChannel();
-        //animateIdle();
+        channelSoldier.setAnim("Idle");
 
         // (DEBUGGING) Specifiy starting level here (first level is 1)
         level = 1;
@@ -150,7 +150,7 @@ public class FakeMain2 extends SimpleApplication {
                     gameState = "move";
                     commandType = 0;
                     battle.drawWithOverlayForCreatureMoves(creatureInCommand);
-                    animateMove(creatureInCommand);
+                    animateMove();  // TODO: specify creature
                 }
 
                 // Ending turn
@@ -215,7 +215,7 @@ public class FakeMain2 extends SimpleApplication {
                         setAndPlayNextMotionEvent(nextMotionEvent);
 
                         gameState = "idle";
-                        animateIdle();
+                        animateIdle(); // TODO: specify creature
 
                         /*
                          MyMaterial greenTile = new MyMaterial(assetManager);
@@ -232,7 +232,6 @@ public class FakeMain2 extends SimpleApplication {
                             gameState = "loadPostBattleCinematic";
                             battleInProgress = false;
                         } else {
-                            System.out.println("Refreshing creatures");
                             battle.refreshCreatureList();
                         }
                     }
@@ -264,7 +263,7 @@ public class FakeMain2 extends SimpleApplication {
                         setAndPlayNextMotionEvent(nextMotionEvent);
 
                         gameState = "idle";
-                        FakeMain2.animateIdle();
+                        animateIdle();  // TODO: specify creature
                         /*
                          MyMaterial greenTile = new MyMaterial(assetManager);
                          greenTile.setGreenTileMat();
@@ -444,7 +443,7 @@ public class FakeMain2 extends SimpleApplication {
     }
 
     public static void animateMove(Creature creature) {
-        try {
+        try { // TODO: implement properly
             // create a channel and start the wobble animation
             findAnimControl(creature).createChannel().setAnim("Hop");
         } catch (final Exception e) {
@@ -462,7 +461,7 @@ public class FakeMain2 extends SimpleApplication {
     }
 
     public static void animateIdle(Creature creature) {
-        try {
+        try { // TODO: implement properly
             // create a channel and start the wobble animation
             findAnimControl(creature).createChannel().setAnim("Idle");
         } catch (final Exception e) {
@@ -474,7 +473,7 @@ public class FakeMain2 extends SimpleApplication {
         final AnimControl animControl = parent.getControl(AnimControl.class);
         if (animControl != null) {
             return animControl;
-        }
+        } 
 
         if (parent instanceof Node) {
             for (final Spatial s : ((Node) parent).getChildren()) {

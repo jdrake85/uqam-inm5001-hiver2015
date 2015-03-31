@@ -34,7 +34,7 @@ public class Creature extends Geometry {
     private int power = 8;
     private double defenseRating = 1;
     private Skill[] skills;
-    private boolean isGood = false;
+    private boolean isGood = true;
     private boolean isImpaired = false;
     private Spatial geometry3D;
     private int turnsAssigned = 0;
@@ -46,7 +46,6 @@ public class Creature extends Geometry {
         geometry3D = new Geometry(name, box);
         geometry3D.setMaterial(FakeMain2.redZombie);
         FakeMain2.charNode.attachChild(geometry3D);
-
     }
 
     public Creature(String name, Material material) {

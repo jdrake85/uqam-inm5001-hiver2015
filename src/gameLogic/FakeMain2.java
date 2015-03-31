@@ -112,7 +112,7 @@ public class FakeMain2 extends SimpleApplication {
         channelSoldier = acSoldier.createChannel();
         //animateIdle();
 
-        // Specifiy starting level here (first level is 1)
+        // (DEBUGGING) Specifiy starting level here (first level is 1)
         level = 1;
     }
 
@@ -232,6 +232,7 @@ public class FakeMain2 extends SimpleApplication {
                             gameState = "loadPostBattleCinematic";
                             battleInProgress = false;
                         } else {
+                            System.out.println("Refreshing creatures");
                             battle.refreshCreatureList();
                         }
                     }
@@ -507,7 +508,7 @@ public class FakeMain2 extends SimpleApplication {
                             if (!gameState.equals("outOfLevel")) {
                                 creatureInCommand = battle.getCreaturePlayingTurn();
                                 gameState = "enemyIdle";
-                            }
+                            } 
                         } else if (!(battle.isZombieTurn() || gameState.equals("move") || gameState.equals("skill"))) {
                             gameState = "idle";
                         }
@@ -565,6 +566,10 @@ public class FakeMain2 extends SimpleApplication {
     }
 
     private void initializeBattleForLevel(int level) {
+        if (battle != null) { 
+            battle.clearCombattants();
+        }
+        battle = new GameBattle();
         switch (level) {
             case 1:
                 initializeLevel1();
@@ -599,10 +604,7 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 1: 'Freedom'
     private void initializeLevel1() {
-        battle = new GameBattle();
-
         Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
-        hero.setAlignment("good");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         battle.insertCreatureAt(hero, 1, 4);
 
@@ -616,15 +618,11 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 2: 'Damsel in Distress'
     private void initializeLevel2() {
-        battle = new GameBattle();
-
         Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
-        hero.setAlignment("good");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         battle.insertCreatureAt(hero, 1, 4);
 
         Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
-        nurse.setAlignment("good");
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
 
@@ -640,16 +638,12 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 3: 'Getting through'
     private void initializeLevel3() {
-        battle = new GameBattle();
-
         Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
-        hero.setAlignment("good");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         battle.insertCreatureAt(hero, 3, 6);
 
         Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
-        nurse.setAlignment("good");
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 3, 4);
@@ -668,16 +662,12 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 4: 'Pincer Attack'
     private void initializeLevel4() {
-        battle = new GameBattle();
-
         Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
-        hero.setAlignment("good");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         battle.insertCreatureAt(hero, 3, 3);
 
         Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
-        nurse.setAlignment("good");
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
@@ -699,23 +689,18 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 5: 'Making Friends'
     private void initializeLevel5() {
-        battle = new GameBattle();
-
         Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
-        hero.setAlignment("good");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         battle.insertCreatureAt(hero, 1, 6);
 
         Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
-        nurse.setAlignment("good");
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 2, 7);
 
         Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, soldierScene);
-        soldier.setAlignment("good");
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
         battle.insertCreatureAt(soldier, 7, 0);
@@ -737,24 +722,19 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 6: 'Showdown'
     private void initializeLevel6() {
-        battle = new GameBattle();
-
         Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
-        hero.setAlignment("good");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
         battle.insertCreatureAt(hero, 5, 4);
 
         Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
-        nurse.setAlignment("good");
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 6, 3);
 
         Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, soldierScene);
-        soldier.setAlignment("good");
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
         battle.insertCreatureAt(soldier, 6, 5);
@@ -780,17 +760,13 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 7: 'Surrounded'
     private void initializeLevel7() {
-        battle = new GameBattle();
-
         Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
-        hero.setAlignment("good");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
         battle.insertCreatureAt(hero, 5, 1);
 
         Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
-        nurse.setAlignment("good");
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new MustardGas(7, 4), 7);
@@ -798,7 +774,6 @@ public class FakeMain2 extends SimpleApplication {
         battle.insertCreatureAt(nurse, 6, 0);
 
         Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, soldierScene);
-        soldier.setAlignment("good");
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new ShootEmAll(10, 4), 10);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
@@ -837,10 +812,7 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 8: 'Big Bad Boss'
     private void initializeLevel8() {
-        battle = new GameBattle();
-
         Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
-        hero.setAlignment("good");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
@@ -848,7 +820,6 @@ public class FakeMain2 extends SimpleApplication {
         battle.insertCreatureAt(hero, 3, 4);
 
         Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
-        nurse.setAlignment("good");
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new MustardGas(7, 4), 7);
@@ -856,7 +827,6 @@ public class FakeMain2 extends SimpleApplication {
         battle.insertCreatureAt(nurse, 2, 5);
 
         Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, soldierScene);
-        soldier.setAlignment("good");
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new ShootEmAll(10, 4), 10);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);

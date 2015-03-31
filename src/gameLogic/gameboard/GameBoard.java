@@ -38,8 +38,13 @@ public class GameBoard {
     public void clearGameBoard() {
         for (int i = 0; i < xDim; i++) {
             for (int j = 0; j < yDim; j++) {
-                assert(tiles[i][j] != null);
-                tiles[i][j].removeOccupier();
+                if (tiles[i][j] != null) {
+                    Creature occupier = tiles[i][j].getOccupier();
+                    if (occupier != null) { 
+                        tiles[i][j].removeOccupier();
+                        occupier.hideCreatureOn3DBoard();
+                    }
+                }
             }
         }
     }

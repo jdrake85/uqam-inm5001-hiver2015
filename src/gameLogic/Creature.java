@@ -46,6 +46,8 @@ public class Creature extends Geometry {
     public AnimControl creatureControl;
     public AnimChannel creatureChannel;
     
+    private String picturePath = null;
+    
     public Creature(String name) {
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
@@ -336,6 +338,14 @@ public class Creature extends Geometry {
         } catch (final Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public void setPicturePath(String picturePath) {
+        this.picturePath = picturePath;
+    }
+    
+    public String getPicturePath() { 
+        return picturePath;
     }
     
 }

@@ -15,7 +15,7 @@ import java.util.Random;
 public class ShootEmAll extends EverywhereSkill {
 
     public ShootEmAll(int energyCost, int power) {
-        super("Shoot 'Em All", energyCost, power, "bad");
+        super("Shoot Em All", energyCost, power, "bad");
     }
 
     @Override

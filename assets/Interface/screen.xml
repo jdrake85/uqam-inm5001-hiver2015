@@ -10,27 +10,27 @@
                     <panel id="turnBanner" width="14%" height="100%" backgroundColor="#fff3" childLayout="vertical" align="left" valign="center">
                         <panel id="charTurn1" width="100%" height="20%" backgroundColor="#f003" childLayout="vertical"  align="center" valign="top">
                             <interact onMouseOver="showTurn1Stats()"/>
-                            <image filename="Interface/Images/charTurn1.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                            <image filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                             </image>
                         </panel>
                         <panel id="charTurn2" width="100%" height="20%" backgroundColor="#0f03" childLayout="vertical" align="center" valign="center">
                             <interact onMouseOver="showTurnv2Stats()"/>
-                            <image filename="Interface/Images/charTurn2.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                            <image filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                             </image>
                         </panel>
                         <panel id="charTurn3" width="100%" height="20%" backgroundColor="#00f3" childLayout="vertical" align="center" valign="center">
                             <interact onMouseOver="showTurn3Stats()"/>
-                            <image filename="Interface/Images/charTurn3.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                            <image filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                             </image>
                         </panel>
                         <panel id="charTurn4" width="100%" height="20%" backgroundColor="#f0f3" childLayout="vertical" align="center" valign="center">
                             <interact onMouseOver="showTurn4Stats()"/>
-                            <image filename="Interface/Images/charTurn4.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                            <image filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                             </image>
                         </panel> 
                         <panel id="charTurn5" width="100%" height="20%" backgroundColor="#0ff3" childLayout="vertical" align="center" valign="bottom">
                             <interact onMouseOver="showTurn5Stats()"/>                          
-                            <image filename="Interface/Images/charTurn5.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                            <image filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                             </image>
                         </panel> 
                     </panel>                
@@ -77,22 +77,22 @@
                         <panel id="hero1Skills" width="100%" height="20%" backgroundColor="#ff03" childLayout="horizontal" align="center" valign="center">
                             <panel id="hero1Skill1" width="25%" height="100%" childLayout="vertical" backgroundColor="#aa03" align="left" valign="center">
                                 <interact onClick="hero1Skill1()"/>
-                                <image id="hero1sk1" filename="Interface/Images/hero1skill1.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero1sk1" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero1Skill2" width="25%" height="100%" childLayout="vertical"  backgroundColor="#0af3" align="center" valign="center">
                                 <interact onClick="hero1Skill2()"/>
-                                <image id="hero1sk2" filename="Interface/Images/hero1skill2.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero1sk2" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero1Skill3" width="25%" height="100%" childLayout="vertical"  backgroundColor="#0a03" align="center" valign="center">
                                 <interact onClick="hero1Skill3()"/>
-                                <image id="hero1sk3" filename="Interface/Images/hero1skill3.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero1sk3" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero1Skill4" width="25%" height="100%" childLayout="vertical"  backgroundColor="#a0a3" align="right" valign="center">
                                 <interact onClick="hero1Skill4()"/>
-                                <image id="hero1sk4" filename="Interface/Images/hero1skill4.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero1sk4" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                         </panel>                                              
@@ -130,22 +130,22 @@
                         <panel id="hero2Skills" width="100%" height="20%" backgroundColor="#ff03" childLayout="horizontal" align="center" valign="center">
                             <panel id="hero2Skill1" width="25%" height="100%" childLayout="vertical"  backgroundColor="#aa03" align="left" valign="center">
                                 <interact onClick="hero2Skill1()"/>
-                                <image id="hero2sk1" filename="Interface/Images/hero2skill1.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero2sk1" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero2Skill2" width="25%" height="100%" childLayout="vertical"  backgroundColor="#0af3" align="center" valign="center">
                                 <interact onClick="hero2Skill2()"/>
-                                <image id="hero2sk2" filename="Interface/Images/hero2skill2.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero2sk2" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero2Skill3" width="25%" height="100%" childLayout="vertical"  backgroundColor="#0a03" align="center" valign="center">
                                 <interact onClick="hero2Skill3()"/>
-                                <image id="hero2sk3" filename="Interface/Images/hero2skill3.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero2sk3" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero2Skill4" width="25%" height="100%" childLayout="vertical"  backgroundColor="#a0a3" align="right" valign="center">
                                 <interact onClick="hero2Skill4()"/>
-                                <image id="hero2sk4" filename="Interface/Images/hero2skill4.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero2sk4" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                         </panel>                                              
@@ -183,22 +183,22 @@
                         <panel id="hero3Skills" width="100%" height="20%" backgroundColor="#ff03" childLayout="horizontal" align="center" valign="center">
                             <panel id="hero3Skill1" width="25%" height="100%" childLayout="vertical"  backgroundColor="#aa03" align="left" valign="center">
                                 <interact onClick="hero3Skill1()"/>
-                                <image id="hero3sk1" filename="Interface/Images/hero3skill1.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero3sk1" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero3Skill2" width="25%" height="100%" childLayout="vertical"  backgroundColor="#0af3" align="center" valign="center">
                                 <interact onClick="hero3Skill2()"/>
-                                <image id="hero3sk2" filename="Interface/Images/hero3skill2.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero3sk2" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero3Skill3" width="25%" height="100%" childLayout="vertical"  backgroundColor="#0a03" align="center" valign="center">
                                 <interact onClick="hero3Skill3()"/>
-                                <image id="hero3sk3" filename="Interface/Images/hero3skill3.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero3sk3" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero3Skill4" width="25%" height="100%" childLayout="vertical"  backgroundColor="#a0a3" align="right" valign="center">
                                 <interact onClick="hero3Skill4()"/>
-                                <image id="hero3sk4" filename="Interface/Images/hero3skill4.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero3sk4" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                         </panel>                                              

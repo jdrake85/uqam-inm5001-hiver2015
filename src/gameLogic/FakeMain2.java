@@ -114,7 +114,7 @@ public class FakeMain2 extends SimpleApplication {
         channelSoldier.setAnim("Idle");*/
 
         // (DEBUGGING) Specifiy starting level here (first level is 1)
-        level = 1;
+        level = 7;
     }
 
     private void initKeys() {
@@ -623,7 +623,7 @@ public class FakeMain2 extends SimpleApplication {
         battle.insertCreatureAt(hero, 1, 4);
 
 
-        Creature zombie1 = new Zombie("Zombie", assetManager);
+        Creature zombie1 = new Zombie("Zombie1", assetManager);
         battle.insertCreatureAt(zombie1, 6, 4);
 
         // TODO: remove later
@@ -642,7 +642,7 @@ public class FakeMain2 extends SimpleApplication {
 
         battle.insertCreatureAt(nurse, 7, 0);
 
-        Creature zombie1 = new Zombie("Zombie", assetManager);
+        Creature zombie1 = new Zombie("Zombie1", assetManager);
         battle.insertCreatureAt(zombie1, 6, 1);
 
         // TODO: remove later

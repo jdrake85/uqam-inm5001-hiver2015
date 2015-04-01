@@ -81,4 +81,5 @@ public abstract class Skill {
         coordsList.add(targetCoords);
         return coordsList;
     }
+    
 }

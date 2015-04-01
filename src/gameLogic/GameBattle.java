@@ -239,6 +239,8 @@ public class GameBattle {
         if (creatureCanUseSkillAt(creature, skillNumber, coords)) {
             creature.consumeEnergyForSkillNumber(skillNumber);
             skill.setTargetCoordinates(coords);
+            String animationType = skill.getAnimationType();
+            creature.animateSkill(animationType);
             gameboard.performTargetedSkill(skill);
             removeDeadCreaturesFromTurnOrder();
             while (creaturePriority.size() < 5) {

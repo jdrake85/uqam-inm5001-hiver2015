@@ -15,6 +15,7 @@ public class Innoculation extends RangedSkill{
     
     public Innoculation(int energyCost, int power) {
         super("Innoculation", energyCost, power, 4);
+        setAnimationType("Skill1");
     }
 
     @Override

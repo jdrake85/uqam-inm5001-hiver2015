@@ -18,6 +18,7 @@ import java.util.List;
 public class SpinningPipe extends MeleeSkill {
     public SpinningPipe(int energyCost, int power) {
         super("Spinning Pipe", energyCost, power);
+        setAnimationType("Skill1");
     }
 
     @Override

@@ -16,6 +16,7 @@ public class CutThroat extends MeleeSkill{
     
     public CutThroat(int energyCost, int power) {
         super("Cut Throat", energyCost, power, false, true);
+        setAnimationType("Skill2");
     }
 
     @Override

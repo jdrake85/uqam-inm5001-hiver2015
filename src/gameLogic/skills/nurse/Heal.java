@@ -15,6 +15,7 @@ public class Heal extends MeleeSkill{
     
     public Heal(int energyCost, int power) {
         super("Heal", energyCost, power * -1);
+        setAnimationType("Skill1");
     }
 
     @Override

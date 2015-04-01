@@ -3,6 +3,7 @@ package gameLogic;
 import gameLogic.creatures.Zombie;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
+import com.jme3.animation.AnimEventListener;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.app.SimpleApplication;
@@ -32,7 +33,7 @@ import gameLogic.skills.hero.*;
 import gameLogic.skills.nurse.*;
 import gameLogic.skills.soldier.*;
 
-public class FakeMain2 extends SimpleApplication {
+public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     public static void main(String[] args) {
         app = new FakeMain2();
@@ -75,7 +76,8 @@ public class FakeMain2 extends SimpleApplication {
     public static boolean playedPreBattleCinematic = false;
     public static boolean battleInProgress = false;
     public static boolean playedPostBattleCinematic = false;
-    int level = 1;
+    public int level = 1;
+    public static boolean movingCreature = false;
 
     @Override
     public void simpleInitApp() {
@@ -114,7 +116,7 @@ public class FakeMain2 extends SimpleApplication {
         channelSoldier.setAnim("Idle");*/
 
         // (DEBUGGING) Specifiy starting level here (first level is 1)
-        level = 7;
+        level = 1;
     }
 
     private void initKeys() {
@@ -140,7 +142,16 @@ public class FakeMain2 extends SimpleApplication {
         inputManager.addListener(actionListener, "RestoreHealthKey");
         inputManager.addListener(actionListener, "SelectTile");
         inputManager.addListener(actionListener, "EndTurnKey");
+        
+        /*inputManager.addListener(actionListener, "Walk");
+        inputManager.addListener(actionListener, "Idle");
+        inputManager.addListener(actionListener, "Skill1");
+        inputManager.addListener(actionListener, "Skill2");
+        inputManager.addListener(actionListener, "Skill3");*/
     }
+    
+
+    
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
 
@@ -282,7 +293,7 @@ public class FakeMain2 extends SimpleApplication {
             }
         }
     };
-
+    
     private void playZombieTurn() {
         Zombie zombie = (Zombie) creatureInCommand;
         zombie.initializeTurnEnergy();
@@ -509,8 +520,8 @@ public class FakeMain2 extends SimpleApplication {
         if (!gameState.equals("outOfLevel")) {
             if (battleInProgress) {
                 if (!battle.isWon()) {
-                    if (noMotionEventPlaying()) {
-                        if(gameState.equals("idle")) {
+                    if (noMotionEventPlaying() && !movingCreature) {
+                        if(gameState.equals("idle") && !creatureInCommand.creatureChannel.getAnimationName().equals("Idle")) {
                            creatureInCommand.animateIdle();
                         } else if (currentMovingZombie != null) {
                             currentMovingZombie.animateIdle();
@@ -554,7 +565,6 @@ public class FakeMain2 extends SimpleApplication {
                 System.out.println("Congratulations!");
                 app.stop();
             }
-
         }
     }
 
@@ -577,6 +587,10 @@ public class FakeMain2 extends SimpleApplication {
 
     private boolean noMotionEventPlaying() {
         return currentMotionEvent == null || currentMotionEvent.getPlayState().equals(PlayState.Stopped);
+    }
+    
+    private boolean creatureIsDoneMoving() {
+        return false;
     }
 
     private void initializeBattleForLevel(int level) {
@@ -619,11 +633,13 @@ public class FakeMain2 extends SimpleApplication {
     // Level 1: 'Freedom'
     private void initializeLevel1() {
         Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        hero.addAnimationListener(this);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         battle.insertCreatureAt(hero, 1, 4);
 
 
         Creature zombie1 = new Zombie("Zombie1", assetManager);
+        zombie1.addAnimationListener(this);
         battle.insertCreatureAt(zombie1, 6, 4);
 
         // TODO: remove later
@@ -880,4 +896,14 @@ public class FakeMain2 extends SimpleApplication {
         creature.setSkillAsNumber(new Stab(11, 4), 11);
         creature.setSkillAsNumber(new CutThroat(12, 1), 12);
     }
+
+    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
+        if (animName.equals("Skill1") || animName.equals("Skill2") || animName.equals("Skill13") ) {
+            movingCreature = false;
+        }
+    }
+
+    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
+        // Do nothing
+    }   
 }

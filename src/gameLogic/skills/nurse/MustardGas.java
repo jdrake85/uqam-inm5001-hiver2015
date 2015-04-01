@@ -19,6 +19,7 @@ public class MustardGas extends DirectionnalSkill {
 
     public MustardGas(int energyCost, int power) {
         super("Mustard Gas", energyCost, power, 4);
+        setAnimationType("Skill1");
     }
 
     @Override

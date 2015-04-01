@@ -15,6 +15,7 @@ public class HomeRun extends MeleeSkill{
     
     public HomeRun(int energyCost, int power) {
         super("Home Run", energyCost, power, false, true);
+        setAnimationType("Skill1");
     }
 
     @Override

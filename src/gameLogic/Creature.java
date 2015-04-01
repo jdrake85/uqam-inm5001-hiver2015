@@ -6,9 +6,12 @@ package gameLogic;
 
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
+import com.jme3.animation.AnimEventListener;
+import com.jme3.animation.LoopMode;
 import com.jme3.asset.AssetManager;
 import com.jme3.cinematic.MotionPath;
 import com.jme3.cinematic.events.MotionEvent;
+import com.jme3.input.controls.ActionListener;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
@@ -24,7 +27,7 @@ import gameLogic.skills.Skill;
  *
  * @author User
  */
-public class Creature extends Geometry {
+public class Creature {
 
     private static final int COST_OF_STEP = 2;
     private int level = 8;
@@ -71,6 +74,9 @@ public class Creature extends Geometry {
         creatureChannel = creatureControl.createChannel();
         creatureChannel.setAnim("Idle");
         
+        //skillChannel = creatureControl.createChannel();
+        //skillChannel.setLoopMode(LoopMode.DontLoop);
+        
         FakeMain2.charNode.attachChild(geometry3D);
     }
 
@@ -81,7 +87,7 @@ public class Creature extends Geometry {
         geometry3D = FakeMain2.heroScene; // WIP; node is assigned to Spatial..
         geometry3D.setMaterial(material);
         FakeMain2.charNode.attachChild(geometry3D);
-    }
+    }   
     
     public Creature(String name, Material material, AssetManager assetManager) {
         this.name = name;
@@ -93,6 +99,9 @@ public class Creature extends Geometry {
         creatureControl = findAnimControl(geometry3D);
         creatureChannel = creatureControl.createChannel();
         creatureChannel.setAnim("Idle");
+        
+        //skillChannel = creatureControl.createChannel();
+        //skillChannel.setLoopMode(LoopMode.DontLoop);
         
         FakeMain2.charNode.attachChild(geometry3D);
     }
@@ -122,6 +131,7 @@ public class Creature extends Geometry {
        motionControl.setDirectionType(MotionEvent.Direction.PathAndRotation);
        motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
        motionControl.setSpeed(20f/stepCount);
+      
        
        return motionControl;
        /*
@@ -330,6 +340,20 @@ public class Creature extends Geometry {
             e.printStackTrace();
         }
     }
+    
+    public void animateSkill(String animationType) {
+        try {
+            //System.out.println(animationType);
+            // create a channel and start the wobble animation
+            creatureChannel.setAnim(animationType);
+            creatureChannel.setLoopMode(LoopMode.DontLoop);
+            FakeMain2.movingCreature = true;
+            
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 
     void animateIdle() {
         try {
@@ -348,4 +372,20 @@ public class Creature extends Geometry {
         return picturePath;
     }
     
+    public void addAnimationListener(AnimEventListener main) { 
+        creatureControl.addListener(main);
+    }
+    /*
+    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
+        System.out.println(control);
+        if (animName.equals("Skill1") || animName.equals("Skill2") || animName.equals("Skill13")) {
+            System.out.println("onCycleDone");
+            FakeMain2.gameState = "idle";
+        }
+    }
+
+    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
+        System.out.println("onAnimChange"); //To change body of generated methods, choose Tools | Templates.
+    }*/
+      
 }

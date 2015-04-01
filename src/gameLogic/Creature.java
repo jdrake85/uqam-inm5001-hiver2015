@@ -4,6 +4,9 @@
  */
 package gameLogic;
 
+import com.jme3.animation.AnimChannel;
+import com.jme3.animation.AnimControl;
+import com.jme3.asset.AssetManager;
 import com.jme3.cinematic.MotionPath;
 import com.jme3.cinematic.events.MotionEvent;
 import com.jme3.material.Material;
@@ -14,6 +17,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import static gameLogic.FakeMain2.findAnimControl;
 import gameLogic.skills.Skill;
 
 /**
@@ -38,13 +42,33 @@ public class Creature extends Geometry {
     private boolean isImpaired = false;
     private Spatial geometry3D;
     private int turnsAssigned = 0;
-
+    
+    public AnimControl creatureControl;
+    public AnimChannel creatureChannel;
+    
     public Creature(String name) {
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
         Box box = new Box(0.2f, 1.5f, 0.2f);
         geometry3D = new Geometry(name, box);
+        //geometry3D = (Node) assetManager.loadModel("Hero.scene");
         geometry3D.setMaterial(FakeMain2.redZombie);
+        FakeMain2.charNode.attachChild(geometry3D);
+    }
+    
+    public Creature(String name, AssetManager assetManager) {
+        this.name = name;
+        skills = new Skill[12]; // TODO: eventually set to 4
+        /*Box box = new Box(0.2f, 1.5f, 0.2f);
+        geometry3D = new Geometry(name, box);*/
+        geometry3D = (Node) assetManager.loadModel("Zombie.scene");
+        geometry3D.setLocalScale(.025f);
+        geometry3D.setMaterial(FakeMain2.redZombie);
+        
+        creatureControl = findAnimControl(geometry3D);
+        creatureChannel = creatureControl.createChannel();
+        creatureChannel.setAnim("Idle");
+        
         FakeMain2.charNode.attachChild(geometry3D);
     }
 
@@ -52,16 +76,22 @@ public class Creature extends Geometry {
         //this(name);
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
-        geometry3D = FakeMain3.heroScene; // WIP; node is assigned to Spatial..
+        geometry3D = FakeMain2.heroScene; // WIP; node is assigned to Spatial..
         geometry3D.setMaterial(material);
         FakeMain2.charNode.attachChild(geometry3D);
     }
     
-    public Creature(String name, Material material, Node node) {
+    public Creature(String name, Material material, AssetManager assetManager) {
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
-        geometry3D = node;
+        geometry3D = (Node) assetManager.loadModel(name + ".scene");
+        geometry3D.setLocalScale(.025f);
         geometry3D.setMaterial(material);
+        
+        creatureControl = findAnimControl(geometry3D);
+        creatureChannel = creatureControl.createChannel();
+        creatureChannel.setAnim("Idle");
+        
         FakeMain2.charNode.attachChild(geometry3D);
     }
     
@@ -89,7 +119,7 @@ public class Creature extends Geometry {
        MotionEvent motionControl = new MotionEvent(geometry3D, path);
        motionControl.setDirectionType(MotionEvent.Direction.PathAndRotation);
        motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
-       motionControl.setSpeed(30f/stepCount);
+       motionControl.setSpeed(20f/stepCount);
        
        return motionControl;
        /*
@@ -289,4 +319,23 @@ public class Creature extends Geometry {
     public void setMaxHealth(int maxHealth) {
         this.maxHealth = health = maxHealth;
     }
+
+    public void animateMove() {
+        try {
+            // create a channel and start the wobble animation
+            creatureChannel.setAnim("Walk");
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    void animateIdle() {
+        try {
+            // create a channel and start the wobble animation
+            creatureChannel.setAnim("Idle");
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 }

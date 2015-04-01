@@ -71,6 +71,7 @@ public class FakeMain2 extends SimpleApplication {
     public static AnimChannel channelNurse;
     public static AnimChannel channelSoldier;
     public MotionEvent currentMotionEvent = null;
+    public Creature currentMovingZombie = null;
     public static boolean playedPreBattleCinematic = false;
     public static boolean battleInProgress = false;
     public static boolean playedPostBattleCinematic = false;
@@ -85,32 +86,32 @@ public class FakeMain2 extends SimpleApplication {
 
         // HERO GRAPHICS
         heroMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        heroMat.setColor("Color", new ColorRGBA(0.75f, 3f, 3f, 0f));
+        heroMat.setColor("Color", new ColorRGBA(0f, 1f, 0f, 0f));
         //load temp hero mexh + animation
         assetManager.registerLocator("assets/Models/Hero/", FileLocator.class);
-        heroScene = (Node) assetManager.loadModel("HeroScene.scene");
-        heroScene.setLocalScale(.020f);
-        acHero = findAnimControl(heroScene);
+        /*heroScene = (Node) assetManager.loadModel("Hero.scene");
+        heroScene.setLocalScale(.025f);*/
+        /*acHero = findAnimControl(heroScene);
         channelHero = acHero.createChannel();
-        channelHero.setAnim("Idle");
+        channelHero.setAnim("Idle");*/
 
         // NURSE GRAPHICS
         nurseMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        nurseMat.setColor("Color", new ColorRGBA(0.75f, 6f, 3f, 0f));
-        nurseScene = (Node) assetManager.loadModel("HeroScene.scene");
-        nurseScene.setLocalScale(.015f);
-        acNurse = findAnimControl(nurseScene);
+        nurseMat.setColor("Color", new ColorRGBA(1f, 0.5f, 0.1f, 0f));
+        /*nurseScene = (Node) assetManager.loadModel("Nurse.scene");
+        nurseScene.setLocalScale(.025f);*/
+        /*acNurse = findAnimControl(nurseScene);
         channelNurse = acNurse.createChannel();
-        channelNurse.setAnim("Idle");
+        channelNurse.setAnim("Idle");*/
 
         // SOLDIER GRAPHICS
         soldierMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        soldierMat.setColor("Color", new ColorRGBA(0.75f, 9f, 3f, 0f));
-        soldierScene = (Node) assetManager.loadModel("HeroScene.scene");
-        soldierScene.setLocalScale(.025f);
-        acSoldier = findAnimControl(soldierScene);
+        soldierMat.setColor("Color", new ColorRGBA(0f, 0f, 1f, 0f));
+        /*soldierScene = (Node) assetManager.loadModel("Soldier.scene");
+        soldierScene.setLocalScale(.025f);*/
+        /*acSoldier = findAnimControl(soldierScene);
         channelSoldier = acSoldier.createChannel();
-        channelSoldier.setAnim("Idle");
+        channelSoldier.setAnim("Idle");*/
 
         // (DEBUGGING) Specifiy starting level here (first level is 1)
         level = 1;
@@ -150,7 +151,7 @@ public class FakeMain2 extends SimpleApplication {
                     gameState = "move";
                     commandType = 0;
                     battle.drawWithOverlayForCreatureMoves(creatureInCommand);
-                    animateMove();  // TODO: specify creature
+                    creatureInCommand.animateMove();  // TODO: specify creature
                 }
 
                 // Ending turn
@@ -214,8 +215,7 @@ public class FakeMain2 extends SimpleApplication {
                         MotionEvent nextMotionEvent = FakeMain2.performTurn(FakeMain2.commandType, commandX, commandY, FakeMain2.creatureInCommand, FakeMain2.battle);
                         setAndPlayNextMotionEvent(nextMotionEvent);
 
-                        gameState = "idle";
-                        animateIdle(); // TODO: specify creature
+                        
 
                         /*
                          MyMaterial greenTile = new MyMaterial(assetManager);
@@ -234,7 +234,10 @@ public class FakeMain2 extends SimpleApplication {
                         } else {
                             battle.refreshCreatureList();
                         }
+                        
                     }
+                    gameState = "idle";
+                       // creatureInCommand.animateIdle(); // TODO: specify creature
                 }
 
 
@@ -263,7 +266,7 @@ public class FakeMain2 extends SimpleApplication {
                         setAndPlayNextMotionEvent(nextMotionEvent);
 
                         gameState = "idle";
-                        animateIdle();  // TODO: specify creature
+                        //creatureInCommand.animateIdle(); // TODO: specify creature
                         /*
                          MyMaterial greenTile = new MyMaterial(assetManager);
                          greenTile.setGreenTileMat();
@@ -286,6 +289,7 @@ public class FakeMain2 extends SimpleApplication {
         Coordinates attackPosition = battle.getCoordinatesForBestClosestTarget(zombie);
         MotionEvent nextMotionEvent = null;
         if (attackPosition != null) {
+            creatureInCommand.animateMove();
             nextMotionEvent = battle.moveCreatureTo(zombie, attackPosition);
             setAndPlayNextMotionEvent(nextMotionEvent);
             battle.draw();
@@ -433,41 +437,41 @@ public class FakeMain2 extends SimpleApplication {
         return flMat;
     }
 
-    public static void animateMove() {
+    /*public static void animateMove() {
         try {
             // create a channel and start the wobble animation
-            channelHero.setAnim("Hop");
+            channelHero.setAnim("Walk");
         } catch (final Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-    public static void animateMove(Creature creature) {
+    /*public static void animateMove(Creature creature) {
         try { // TODO: implement properly
             // create a channel and start the wobble animation
             findAnimControl(creature).createChannel().setAnim("Hop");
         } catch (final Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-    public static void animateIdle() {
+   /* public static void animateIdle() {
         try {
             // create a channel and start the wobble animation
             channelHero.setAnim("Idle");
         } catch (final Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
-    public static void animateIdle(Creature creature) {
+    /*public static void animateIdle(Creature creature) {
         try { // TODO: implement properly
             // create a channel and start the wobble animation
             findAnimControl(creature).createChannel().setAnim("Idle");
         } catch (final Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     public static AnimControl findAnimControl(final Spatial parent) {
         final AnimControl animControl = parent.getControl(AnimControl.class);
@@ -489,6 +493,11 @@ public class FakeMain2 extends SimpleApplication {
 
     public void setAndPlayNextMotionEvent(MotionEvent nextMotionEvent) {
         currentMotionEvent = nextMotionEvent;
+        if (creatureInCommand instanceof Zombie) {
+            currentMovingZombie = creatureInCommand;
+        } else {
+            currentMovingZombie = null;
+        }
         if (currentMotionEvent != null) {
             System.out.println("PLAYING MOTION EVENT: " + currentMotionEvent + '\n');
             currentMotionEvent.play();
@@ -501,6 +510,12 @@ public class FakeMain2 extends SimpleApplication {
             if (battleInProgress) {
                 if (!battle.isWon()) {
                     if (noMotionEventPlaying()) {
+                        if(gameState.equals("idle")) {
+                           creatureInCommand.animateIdle();
+                        } else if (currentMovingZombie != null) {
+                            currentMovingZombie.animateIdle();
+                            currentMovingZombie = null;
+                        }
                         if (battle.isZombieTurn() && !gameState.equals("enemyBusy")) {
                             gameState = "enemyBusy";
                             playZombieTurn();
@@ -603,12 +618,12 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 1: 'Freedom'
     private void initializeLevel1() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         battle.insertCreatureAt(hero, 1, 4);
 
 
-        Creature zombie1 = new Zombie("Zombie");
+        Creature zombie1 = new Zombie("Zombie", assetManager);
         battle.insertCreatureAt(zombie1, 6, 4);
 
         // TODO: remove later
@@ -617,17 +632,17 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 2: 'Damsel in Distress'
     private void initializeLevel2() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         battle.insertCreatureAt(hero, 1, 4);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
 
         battle.insertCreatureAt(nurse, 7, 0);
 
-        Creature zombie1 = new Zombie("Zombie");
+        Creature zombie1 = new Zombie("Zombie", assetManager);
         battle.insertCreatureAt(zombie1, 6, 1);
 
         // TODO: remove later
@@ -637,19 +652,19 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 3: 'Getting through'
     private void initializeLevel3() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         battle.insertCreatureAt(hero, 3, 6);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 3, 4);
 
-        Creature zombie1 = new Zombie("Zombie1");
-        Creature zombie2 = new Zombie("Zombie2");
-        Creature zombie3 = new Zombie("Zombie3");
+        Creature zombie1 = new Zombie("Zombie1", assetManager);
+        Creature zombie2 = new Zombie("Zombie2", assetManager);
+        Creature zombie3 = new Zombie("Zombie3", assetManager);
         battle.insertCreatureAt(zombie1, 1, 2);
         battle.insertCreatureAt(zombie2, 5, 2);
         battle.insertCreatureAt(zombie3, 3, 1);
@@ -661,21 +676,21 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 4: 'Pincer Attack'
     private void initializeLevel4() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         battle.insertCreatureAt(hero, 3, 3);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 3, 4);
 
-        Creature zombie1 = new Zombie("Zombie1");
-        Creature zombie2 = new Zombie("Zombie2");
-        Creature zombie3 = new Zombie("Zombie3");
-        Creature zombie4 = new Zombie("Zombie4");
+        Creature zombie1 = new Zombie("Zombie1", assetManager);
+        Creature zombie2 = new Zombie("Zombie2", assetManager);
+        Creature zombie3 = new Zombie("Zombie3", assetManager);
+        Creature zombie4 = new Zombie("Zombie4", assetManager);
         battle.insertCreatureAt(zombie1, 1, 1);
         battle.insertCreatureAt(zombie2, 1, 6);
         battle.insertCreatureAt(zombie3, 6, 6);
@@ -688,26 +703,26 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 5: 'Making Friends'
     private void initializeLevel5() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         battle.insertCreatureAt(hero, 1, 6);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 2, 7);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, soldierScene);
+        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
         battle.insertCreatureAt(soldier, 7, 0);
 
-        Creature zombie1 = new Zombie("Zombie1");
-        Creature zombie2 = new Zombie("Zombie2");
-        Creature zombie3 = new Zombie("Zombie3");
-        Creature zombie4 = new Zombie("Zombie4");
+        Creature zombie1 = new Zombie("Zombie1", assetManager);
+        Creature zombie2 = new Zombie("Zombie2", assetManager);
+        Creature zombie3 = new Zombie("Zombie3", assetManager);
+        Creature zombie4 = new Zombie("Zombie4", assetManager);
         battle.insertCreatureAt(zombie1, 2, 4);
         battle.insertCreatureAt(zombie2, 2, 5);
         battle.insertCreatureAt(zombie3, 6, 0);
@@ -721,29 +736,29 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 6: 'Showdown'
     private void initializeLevel6() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
         battle.insertCreatureAt(hero, 5, 4);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 6, 3);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, soldierScene);
+        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
         battle.insertCreatureAt(soldier, 6, 5);
 
-        Creature zombie1 = new Zombie("Zombie1");
-        Creature zombie2 = new Zombie("Zombie2");
-        Creature zombie3 = new Zombie("Zombie3");
-        Creature zombie4 = new Zombie("Zombie4");
-        Creature zombie5 = new Zombie("Zombie5");
-        Creature zombie6 = new Zombie("Zombie6");
+        Creature zombie1 = new Zombie("Zombie1", assetManager);
+        Creature zombie2 = new Zombie("Zombie2", assetManager);
+        Creature zombie3 = new Zombie("Zombie3", assetManager);
+        Creature zombie4 = new Zombie("Zombie4", assetManager);
+        Creature zombie5 = new Zombie("Zombie5", assetManager);
+        Creature zombie6 = new Zombie("Zombie6", assetManager);
         battle.insertCreatureAt(zombie1, 1, 1);
         battle.insertCreatureAt(zombie2, 1, 2);
         battle.insertCreatureAt(zombie3, 1, 3);
@@ -759,37 +774,37 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 7: 'Surrounded'
     private void initializeLevel7() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
         battle.insertCreatureAt(hero, 5, 1);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new MustardGas(7, 4), 7);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 6, 0);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, soldierScene);
+        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new ShootEmAll(10, 4), 10);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
         battle.insertCreatureAt(soldier, 6, 1);
 
-        Creature zombie1 = new Zombie("Zombie1");
-        Creature zombie2 = new Zombie("Zombie2");
-        Creature zombie3 = new Zombie("Zombie3");
-        Creature zombie4 = new Zombie("Zombie4");
-        Creature zombie5 = new Zombie("Zombie5");
-        Creature zombie6 = new Zombie("Zombie6");
-        Creature zombie7 = new Zombie("Zombie7");
-        Creature zombie8 = new Zombie("Zombie8");
-        Creature zombie9 = new Zombie("Zombie9");
-        Creature zombie10 = new Zombie("Zombie10");
-        Creature zombie11 = new Zombie("Zombie11");
-        Creature zombie12 = new Zombie("Zombie12");
+        Creature zombie1 = new Zombie("Zombie1", assetManager);
+        Creature zombie2 = new Zombie("Zombie2", assetManager);
+        Creature zombie3 = new Zombie("Zombie3", assetManager);
+        Creature zombie4 = new Zombie("Zombie4", assetManager);
+        Creature zombie5 = new Zombie("Zombie5", assetManager);
+        Creature zombie6 = new Zombie("Zombie6", assetManager);
+        Creature zombie7 = new Zombie("Zombie7", assetManager);
+        Creature zombie8 = new Zombie("Zombie8", assetManager);
+        Creature zombie9 = new Zombie("Zombie9", assetManager);
+        Creature zombie10 = new Zombie("Zombie10", assetManager);
+        Creature zombie11 = new Zombie("Zombie11", assetManager);
+        Creature zombie12 = new Zombie("Zombie12", assetManager);
         battle.insertCreatureAt(zombie1, 3, 0);
         battle.insertCreatureAt(zombie2, 3, 2);
         battle.insertCreatureAt(zombie3, 3, 4);
@@ -811,33 +826,33 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 8: 'Big Bad Boss'
     private void initializeLevel8() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, heroScene);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
         hero.setSkillAsNumber(new Knockback(4, 4), 4);
         battle.insertCreatureAt(hero, 3, 4);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, nurseScene);
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new MustardGas(7, 4), 7);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 2, 5);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, soldierScene);
+        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new ShootEmAll(10, 4), 10);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
         soldier.setSkillAsNumber(new CutThroat(12, 1), 12);
         battle.insertCreatureAt(soldier, 4, 5);
 
-        Creature boss = new Zombie("Boss");
+        Creature boss = new Zombie("Boss", assetManager);
         boss.setMaxEnergy(boss.getMaxEnergy() * 4);
-        Creature zombie1 = new Zombie("Zombie1");
-        Creature zombie2 = new Zombie("Zombie2");
-        Creature zombie3 = new Zombie("Zombie3");
-        Creature zombie4 = new Zombie("Zombie4");
+        Creature zombie1 = new Zombie("Zombie1", assetManager);
+        Creature zombie2 = new Zombie("Zombie2", assetManager);
+        Creature zombie3 = new Zombie("Zombie3", assetManager);
+        Creature zombie4 = new Zombie("Zombie4", assetManager);
         battle.insertCreatureAt(boss, 3, 2);
         battle.insertCreatureAt(zombie1, 2, 1);
         battle.insertCreatureAt(zombie2, 1, 0);

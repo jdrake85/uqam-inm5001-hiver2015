@@ -1,4 +1,4 @@
-package gameLogic;
+/*package gameLogic;
 
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
@@ -173,10 +173,10 @@ public class FakeMain3 extends SimpleApplication {
 
                     gameState = "idle";
                     animateIdle();
-                    /*
+                    *//*
                      MyMaterial greenTile = new MyMaterial(assetManager);
                      greenTile.setGreenTileMat();
-                     closest.setMaterial(greenTile.getMat());*/
+                     closest.setMaterial(greenTile.getMat());*//*
                     for (int i = 0; i < 8; i++) {
                         for (int j = 0; j < 8; j++) {
                             g[i][j].setMaterial(greyMat);
@@ -215,10 +215,10 @@ public class FakeMain3 extends SimpleApplication {
 
                     gameState = "idle";
                     FakeMain3.animateIdle();
-                    /*
+                    *//*
                      MyMaterial greenTile = new MyMaterial(assetManager);
                      greenTile.setGreenTileMat();
-                     closest.setMaterial(greenTile.getMat());*/
+                     closest.setMaterial(greenTile.getMat());*//*
                     for (int i = 0; i < 8; i++) {
                         for (int j = 0; j < 8; j++) {
                             g[i][j].setMaterial(greyMat);
@@ -274,25 +274,25 @@ public class FakeMain3 extends SimpleApplication {
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
                 assetManager, inputManager, audioRenderer, guiViewPort);
 
-        /**
+        *//**
          * Create a new NiftyGUI object
          */
-        nifty = niftyDisplay.getNifty();
+        //nifty = niftyDisplay.getNifty();
         /**
          * Read your XML and initialize your custom ScreenController
          */
-        nifty.fromXml("./Interface/screen.xml", "battle");
+        //nifty.fromXml("./Interface/screen.xml", "battle");
 // nifty.fromXml("Interface/helloworld.xml", "start", new MySettingsScreen(data));
 // attach the Nifty display to the gui view port as a processor
-        guiViewPort.addProcessor(niftyDisplay);
+        //guiViewPort.addProcessor(niftyDisplay);
 // disable the fly cam
-        flyCam.setDragToRotate(true);
+       // flyCam.setDragToRotate(true);
 //nifty.fromXml("Interface/screen.xml", "start", new GUIOverlay());
 
-        mainNode.setLocalTranslation(new Vector3f(-4, 4, -4));
+       // mainNode.setLocalTranslation(new Vector3f(-4, 4, -4));
         /**
          *
-         */
+         *//*
         greenMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         greenMat.setColor("Color", new ColorRGBA(.1f, .75f, .1f, 0.5f));//R,B,G,Alphas
         greenMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
@@ -308,14 +308,14 @@ public class FakeMain3 extends SimpleApplication {
         redZombie = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         redZombie.setColor("Color", new ColorRGBA(0.75f, 0f, 0f, 0f));//R,B,G,Alphas
 
-        /**/
+        *//**//*
         Box plancher = new Box(4, 0, 4);
         Geometry gp = new Geometry("Box", plancher);
 
         gp.setMaterial(floorMat());
         gp.setLocalTranslation(new Vector3f(3.5f, -2.01f, 3.5f));
         mainNode.attachChild(gp);
-        /**/
+        *//**//*
         Box b1 = new Box(0.45f, 0, 0.45f);
         g = new Geometry[8][8];
 
@@ -328,7 +328,7 @@ public class FakeMain3 extends SimpleApplication {
                 pivot.attachChild(g[i][j]);
             }
         }
-        /**
+        *//**
          * Box ninja = new Box(0.2f,1.5f,0.2f); Geometry nin = new
          * Geometry("Box", ninja);
          *
@@ -352,7 +352,7 @@ public class FakeMain3 extends SimpleApplication {
          *
          * zomb2.setMaterial(mZomb); zomb2.setLocalTranslation(new
          * Vector3f(1,-1,2)); charNode.attachChild(zomb2); *
-         */
+         *//*
         // ust add a light to make the model visible
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection(new Vector3f(-0.1f, -0.7f, -1.0f));
@@ -363,7 +363,7 @@ public class FakeMain3 extends SimpleApplication {
         mainNode.rotate(0.7f, 0f, 0f);
         rootNode.attachChild(mainNode); // put this node in the scene
     }
-    /*TODO
+    *//*TODO
      public Material setGreenTileMat(){
      Material greenMat = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
      greenMat.setColor("Color", new ColorRGBA(.1f,.75f,.1f,0.5f));//R,B,G,Alphas
@@ -377,7 +377,7 @@ public class FakeMain3 extends SimpleApplication {
      greyMat.setColor("Color", new ColorRGBA(.1f,.1f,.1f,1f));//R,B,G,Alphas
      greyMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
      return greyMat;
-     }*/
+     }*//*
     public Material floorMat() { //TODO placeHolder
         Material flMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         flMat.setColor("Color", new ColorRGBA(0.25f, 0, 0.75f, 11f));//R,B,G,Alphas
@@ -443,4 +443,4 @@ public class FakeMain3 extends SimpleApplication {
             }
         }
     }
-}
+}*/

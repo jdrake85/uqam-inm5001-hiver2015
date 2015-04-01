@@ -5,7 +5,7 @@
 package gameLogic.gameboard;
 
 import gameLogic.Creature;
-import gameLogic.FakeMain3;
+import gameLogic.FakeMain2;
 import gameLogic.pathfinding.Coordinates;
 import gameLogic.pathfinding.CoordPath;
 import gameLogic.skills.*;
@@ -323,10 +323,10 @@ public class GameBoard {
                     if (tileDrawing == ' ') {
                         //lineDrawing += '*'; // Overlay is over empty tile
                         //TODO
-                        FakeMain3.g[i][j].setMaterial(FakeMain3.greenMat);
+                        FakeMain2.g[i][j].setMaterial(FakeMain2.greenMat);
                     } else {
                         //lineDrawing += '#'; // Overlay is over occupied tile
-                        FakeMain3.g[i][j].setMaterial(FakeMain3.redMat);
+                        FakeMain2.g[i][j].setMaterial(FakeMain2.redMat);
                     }
                 } else {
                     //lineDrawing += drawTile(i, j);

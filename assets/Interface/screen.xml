@@ -70,7 +70,7 @@
                                 </panel>   
                             </panel> 
                             <panel id="hero1Picture" width="80%" height="100%" backgroundColor="#0ff3" childLayout="horizontal" align="right" valign="top">
-                                <image id="hero1pic" filename="Interface/Images/hero1pic.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero1pic" filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                         </panel>                        
@@ -123,7 +123,7 @@
                                 </panel>   
                             </panel> 
                             <panel id="hero2Picture" width="80%" height="100%" backgroundColor="#0ff3" childLayout="horizontal" align="right" valign="top">
-                                <image id="hero2pic" filename="Interface/Images/hero2pic.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero2pic" filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                         </panel>                        
@@ -176,7 +176,7 @@
                                 </panel>   
                             </panel> 
                             <panel id="hero3Picture" width="80%" height="100%" backgroundColor="#0ff3" childLayout="horizontal" align="right" valign="top">
-                                <image id="hero3pic" filename="Interface/Images/hero3pic.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero3pic" filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                         </panel>                        

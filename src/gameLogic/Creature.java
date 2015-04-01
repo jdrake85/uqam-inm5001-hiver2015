@@ -11,6 +11,7 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import gameLogic.skills.Skill;
@@ -19,21 +20,21 @@ import gameLogic.skills.Skill;
  *
  * @author User
  */
-public class Creature {
+public class Creature extends Geometry {
 
     private static final int COST_OF_STEP = 2;
     private int level = 8;
     private String name = "noName";
-    private int health = 16;
     private int maxHealth = 16;
-    private int energy = 18;
+    private int health = maxHealth;
     private int maxEnergy = 30;
+    private int energy = maxEnergy;
     private int speed = 10;
     private int cumulativeTurnSpeed = speed;
     private int power = 8;
     private double defenseRating = 1;
     private Skill[] skills;
-    private boolean isGood = false;
+    private boolean isGood = true;
     private boolean isImpaired = false;
     private Spatial geometry3D;
     private int turnsAssigned = 0;
@@ -41,25 +42,10 @@ public class Creature {
     public Creature(String name) {
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
-        //TODO: clean up
         Box box = new Box(0.2f, 1.5f, 0.2f);
         geometry3D = new Geometry(name, box);
-        geometry3D.setMaterial(FakeMain3.redZombie);
-        FakeMain3.charNode.attachChild(geometry3D);
-
-        //FakeMain2.charNode.attachChild(geo);
-
-        /**
-         * Box zombie1 = new Box(0.2f,1.5f,0.2f); Geometry zomb1 = new
-         * Geometry("Box", zombie1);
-         *
-         * Material mZomb = new Material(assetManager,
-         * "Common/MatDefs/Misc/Unshaded.j3md"); mZomb.setColor("Color", new
-         * ColorRGBA(0.75f,0f,0f,0f));//R,B,G,Alphas zomb1.setMaterial(mZomb);
-         * zomb1.setLocalTranslation(new Vector3f(1,-1,1));
-         * charNode.attachChild(zomb1);
-         *
-         */
+        geometry3D.setMaterial(FakeMain2.redZombie);
+        FakeMain2.charNode.attachChild(geometry3D);
     }
 
     public Creature(String name, Material material) {
@@ -68,7 +54,19 @@ public class Creature {
         skills = new Skill[12]; // TODO: eventually set to 4
         geometry3D = FakeMain3.heroScene; // WIP; node is assigned to Spatial..
         geometry3D.setMaterial(material);
-        FakeMain3.charNode.attachChild(geometry3D);
+        FakeMain2.charNode.attachChild(geometry3D);
+    }
+    
+    public Creature(String name, Material material, Node node) {
+        this.name = name;
+        skills = new Skill[12]; // TODO: eventually set to 4
+        geometry3D = node;
+        geometry3D.setMaterial(material);
+        FakeMain2.charNode.attachChild(geometry3D);
+    }
+    
+    public Spatial getSpatial() { 
+        return geometry3D;
     }
 
     @Override
@@ -85,13 +83,14 @@ public class Creature {
         geometry3D.removeFromParent();
     }
     
-   public MotionEvent generateMotionEventForMovingCreatureOn3DBoard(MotionPath path) {
+   public MotionEvent generateMotionEventForMovingCreatureOn3DBoard(MotionPath path, int stepCount) {
        //geometry3D.setLocalTranslation(new Vector3f(xDest, -1, yDest));
        //System.out.println("** ANIMATION **");
        MotionEvent motionControl = new MotionEvent(geometry3D, path);
        motionControl.setDirectionType(MotionEvent.Direction.PathAndRotation);
        motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
-       motionControl.setSpeed(5f);
+       motionControl.setSpeed(30f/stepCount);
+       
        return motionControl;
        /*
        int maxFrame = 9999999;
@@ -225,6 +224,14 @@ public class Creature {
         this.energy = energy;
     }
     
+    public void setMaxEnergy(int maxEnergy) { 
+        this.maxEnergy = energy = maxEnergy;
+    }
+    
+    public int getMaxEnergy() {
+        return maxEnergy;
+    }
+    
     public void setPower(int power) {
         this.power = power;
     }
@@ -277,5 +284,9 @@ public class Creature {
 
     public int getMaxHealth() {
         return maxHealth;
+    }
+    
+    public void setMaxHealth(int maxHealth) {
+        this.maxHealth = health = maxHealth;
     }
 }

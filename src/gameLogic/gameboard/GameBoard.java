@@ -34,6 +34,20 @@ public class GameBoard {
             }
         }
     }
+    
+    public void clearGameBoard() {
+        for (int i = 0; i < xDim; i++) {
+            for (int j = 0; j < yDim; j++) {
+                if (tiles[i][j] != null) {
+                    Creature occupier = tiles[i][j].getOccupier();
+                    if (occupier != null) { 
+                        tiles[i][j].removeOccupier();
+                        occupier.hideCreatureOn3DBoard();
+                    }
+                }
+            }
+        }
+    }
 
     public int getDimensionAlongXAxis() {
         return xDim;
@@ -151,7 +165,7 @@ public class GameBoard {
     }
 
     private List<Creature> getCreatureListAccordingToAlignment(String alignment) {
-        ArrayList<Creature> creatures = new ArrayList();
+        ArrayList<Creature> creatures = new ArrayList<Creature>();
         for (int i = 0; i < xDim; i++) {
             for (int j = 0; j < yDim; j++) {
                 if (tiles[i][j].isOccupied()) {
@@ -227,7 +241,7 @@ public class GameBoard {
     }
 
     private ArrayList<Coordinates> getValidUnoccupiedCoordinatesAdjacentTo(Coordinates initCoord) {
-        ArrayList<Coordinates> unoccupiedCoords = new ArrayList();
+        ArrayList<Coordinates> unoccupiedCoords = new ArrayList<Coordinates>();
         return unoccupiedCoords;
     }
 

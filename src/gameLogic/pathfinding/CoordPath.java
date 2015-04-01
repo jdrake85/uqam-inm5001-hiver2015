@@ -14,7 +14,7 @@ public class CoordPath {
     private ArrayList<Coordinates> pathElements;
     
     public CoordPath() {
-        pathElements = new ArrayList();
+        pathElements = new ArrayList<Coordinates>();
     }
     
     public boolean isEmpty() {

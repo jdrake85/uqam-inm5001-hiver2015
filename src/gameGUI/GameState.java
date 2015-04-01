@@ -12,6 +12,7 @@ import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.ImageRenderer;
 import de.lessvoid.nifty.elements.render.TextRenderer;
+import de.lessvoid.nifty.layout.align.HorizontalAlign;
 import de.lessvoid.nifty.render.NiftyImage;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
@@ -19,16 +20,20 @@ import static gameLogic.FakeMain3.gameState;
 import mygame.Main;
 import static mygame.Main.posX;
 
-import gameLogic.FakeMain3;
-import static gameLogic.FakeMain3.battle;
-import static gameLogic.FakeMain3.gameState;
-import static gameLogic.FakeMain3.creatureInCommand;
+import gameLogic.FakeMain2;
+import static gameLogic.FakeMain2.battle;
+import static gameLogic.FakeMain2.gameState;
+import static gameLogic.FakeMain2.creatureInCommand;
+import java.util.ArrayList;
 
 /**
  *
  * @author This PC
  */
 public class GameState extends AbstractAppState implements ScreenController {
+
+    private ArrayList<String> buttons = new ArrayList<String>();
+    private boolean alwaysVisible = true;
 
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
@@ -55,7 +60,7 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void onStartScreen() {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        populateButtons();
     }
 
     public void onEndScreen() {
@@ -163,11 +168,139 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void startGame(String nextScreen) {
-        Main.nifty.gotoScreen("battle");  // switch to another screen
+        FakeMain2.nifty.gotoScreen("battle");  // switch to another screen
         // start the game and do some more stuff...
+    }
+
+    public void populateButtons() {
+        buttons.add("hero1Skill1");
+        buttons.add("hero1Skill2");
+        buttons.add("hero1Skill3");
+        buttons.add("hero1Skill4");
+        buttons.add("hero2Skill1");
+        buttons.add("hero2Skill2");
+        buttons.add("hero2Skill3");
+        buttons.add("hero2Skill4");
+        buttons.add("hero3Skill1");
+        buttons.add("hero3Skill2");
+        buttons.add("hero3Skill3");
+        buttons.add("hero3Skill4");
+        buttons.add("hero3Skill4");
+        buttons.add("hero1move");
+        buttons.add("hero1endTurn");
+        buttons.add("hero2move");
+        buttons.add("hero2endTurn");
+        buttons.add("hero3move");
+        buttons.add("hero3endTurn");
+    }
+
+    public void disableAll() {
+        Element myElem;
+        for (String s : buttons) {
+            myElem = FakeMain2.nifty.getScreen("battle").findElementByName(s);
+            myElem.disable();
+        }
+    }
+
+    public void mainMenu() {
+        FakeMain2.nifty.gotoScreen("mainMenu");
+    }
+
+    public void lastInfo() {
+        Element myElem = FakeMain2.nifty.getScreen("battle").findElementByName("infoText");
+        if (myElem.isVisible()){
+            myElem.hide();
+        } else {
+            myElem.show();
+        }
+    }
+
+    public void swapImages(String scr1, String img1, String scr2, String img2) {
+        NiftyImage newImage = FakeMain2.nifty.getRenderEngine().createImage(Main.nifty.getScreen(scr1), img1, false);
+        Element image = FakeMain2.nifty.getScreen(scr2).findElementByName(img2);
+        image.getRenderer(ImageRenderer.class).setImage(newImage);
+    }
+
+    public void swapImages(String img1, String img2) {
+        NiftyImage newImage = FakeMain2.nifty.getRenderEngine().createImage(Main.nifty.getCurrentScreen(), img1, false);
+        Element image = FakeMain2.nifty.getCurrentScreen().findElementByName(img2);
+        image.getRenderer(ImageRenderer.class).setImage(newImage);
+    }
+
+    public void showTurnStats(int turn) {
+        Element myElem = FakeMain2.nifty.getScreen("battle").findElementByName("infoText");
+        myElem.getRenderer(TextRenderer.class).setTextHAlign(HorizontalAlign.left);
+        myElem.getRenderer(TextRenderer.class).setText("Hello");
+        myElem.show(); 
+    }
+
+    public void mouseOut() {
+        Element myElem = FakeMain2.nifty.getScreen("battle").findElementByName("infoArea");
+        if (!alwaysVisible) {
+            myElem.hide();            
+        }
+    }
+    
+    public void showTurn1Stats() {
+        showTurnStats(1);
+    }
+
+    public void showTurn2Stats() {
+
+        showTurnStats(2);
+    }
+
+    public void showTurn3Stats() {
+
+        showTurnStats(3);
+    }
+
+    public void showTurn4Stats() {
+
+        showTurnStats(4);
+    }
+
+    public void showTurn5Stats() {
+
+        showTurnStats(5);
+    }
+
+    public void newGame() {
+        FakeMain2.nifty.gotoScreen("battle");
+    }
+
+    public void continueGame() {
+        FakeMain2.nifty.gotoScreen("battle");
+    }
+
+    public void loadGame() {
+        FakeMain2.nifty.gotoScreen("battle");
+    }
+
+    public void saveGame() {
+        FakeMain2.nifty.gotoScreen("battle");
     }
 
     public void quitGame() {
         FakeMain3.app.stop();
+    }
+
+    public void showHeroStats(int i) {
+        Element myElem = FakeMain2.nifty.getScreen("battle").findElementByName("infoText");
+        myElem.getRenderer(TextRenderer.class).setTextHAlign(HorizontalAlign.left);
+        myElem.getRenderer(TextRenderer.class).setText("HeroStats");
+        myElem.show(); 
+    }
+
+    public void showHero1Stats() {
+        showHeroStats(1);
+    }
+
+    public void showHero2Stats() {
+        showHeroStats(2);
+    }
+
+    public void showHero3Stats() {
+        showHeroStats(3);
     }
 }

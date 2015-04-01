@@ -4,6 +4,8 @@
  */
 package gameLogic;
 
+import gameLogic.creatures.CreatureSpeedTurnTriplet;
+import gameLogic.creatures.Zombie;
 import com.jme3.cinematic.MotionPath;
 import com.jme3.cinematic.events.MotionEvent;
 import com.jme3.math.Vector3f;
@@ -36,11 +38,20 @@ public class GameBattle {
     private int maxCumulativeCreatureSpeed = 0;
     private int minCumulativeCreatureSpeed = Integer.MAX_VALUE;
     private int turnCounter = 1;
-    private boolean gameOver = false;
+    private boolean playerVictory = false;
+    private boolean playerDefeat = false;
 
     public GameBattle() {
         paths = new OptimalPaths(8, 8);
         gameboard = new GameBoard();
+    }
+    
+    public GameBattle(int level) {
+        this();
+    }
+    
+    public void clearCombattants() {
+        gameboard.clearGameBoard();
     }
 
     public boolean[][] getCalculatedOverlayForCreatureSkill(Creature creature, int skillNumber) {
@@ -77,7 +88,8 @@ public class GameBattle {
         return !goodCreatures.isEmpty();
     }
 
-    public boolean goodCreatureHasBeenDefeated() {
+    // Player loses as soon as one of the heroes is defeated
+    public boolean isLost() {
         boolean defeat = false;
         for (Creature creature : creatureList) {
             if (creature.isGood() && !creature.isAlive()) {
@@ -85,7 +97,19 @@ public class GameBattle {
                 break;
             }
         }
-        return defeat;
+        return playerDefeat = defeat;
+    }
+
+    // Player wins as soon as all zombies are defeated
+    public boolean isWon() {
+        boolean victory = true;
+        for (Creature creature : creatureList) {
+            if (!creature.isGood() && creature.isAlive()) {
+                victory = false;
+                break;
+            }
+        }
+        return playerVictory = victory;
     }
 
     public boolean containsBadCreatures() {
@@ -159,11 +183,13 @@ public class GameBattle {
 
     public MotionEvent moveCreatureTo(Creature creature, Coordinates destCoords) {
         MotionEvent motionEvent = null;
+        int initialEnergy = creature.getEnergy();
         if (creatureCanMoveTo(creature, destCoords)) {
             MotionPath path = new MotionPath();
 
             CoordPath pathChosen = paths.getPathForCreatureToCoordinates(creature, destCoords);
-            creature.consumeEnergyForSteps(pathChosen.length() - 1);
+            int stepCount = pathChosen.length() - 1;
+            creature.consumeEnergyForSteps(stepCount);
             System.out.println(pathChosen);
 
             //Coordinates initCoords;
@@ -174,8 +200,9 @@ public class GameBattle {
                 path.addWayPoint(new Vector3f(coord.getXCoord(), -1, coord.getYCoord()));
             }
 
-            motionEvent = creature.generateMotionEventForMovingCreatureOn3DBoard(path);
+            motionEvent = creature.generateMotionEventForMovingCreatureOn3DBoard(path, stepCount);
             gameboard.moveCreatureTo(creature, destCoords);
+            System.out.println("Energy left: " + creature.getEnergy() + '/' + initialEnergy);
 
 
 
@@ -199,7 +226,9 @@ public class GameBattle {
 
     private boolean creatureCanMoveTo(Creature creature, Coordinates destCoords) {
         int availableSteps = creature.maximumStepsAbleToWalk();
-        return paths.coordinatesReachableInAtMostDistanceOf(destCoords, availableSteps);
+        boolean destinationReachable = paths.coordinatesReachableInAtMostDistanceOf(destCoords, availableSteps);
+        Coordinates creatureCoords = gameboard.getCreatureCoordinates(creature);
+        return destinationReachable && !creatureCoords.equals(destCoords);
     }
 
     public MotionEvent useCreatureSkillAt(Creature creature, int skillNumber, Coordinates coords) {
@@ -283,17 +312,11 @@ public class GameBattle {
     public void endTurn() {
         refreshCreatureList();
         creaturePriority.poll();
-        //System.out.println("*** TURN PLAYED BY: " + creaturePriority.poll()); // Pop creature who just played from priority queue
         addCreatureToCreaturePriorityRecursivelyAtLeastOnceAccordingToSpeed(creaturePlayingTurn); // Push creature who just played, who is now 'slower'
         CreatureSpeedTurnTriplet nextPair = creaturePriority.peek();
         creaturePlayingTurn = nextPair.getCreature();
-        //System.out.println("*** NEXT TURN: " + nextPair);
-        if (!gameOver) {
-            System.out.println('\n' + "------------------" + '\n' + "TURN #" + turnCounter++ + '\n' + "------------------");
-            displayCreatureSpeedPairsForTurnOrder();
-        } else {
-            System.out.println("------------------------------FIN---------------------------------");
-        }
+        System.out.println('\n' + "------------------" + '\n' + "TURN #" + turnCounter++ + '\n' + "------------------");
+        displayCreatureSpeedPairsForTurnOrder();
     }
 
     private void removeDeadCreaturesFromTurnOrder() {
@@ -322,14 +345,13 @@ public class GameBattle {
     }
 
     public Creature[] getCreatureTurnOrder() {
-        int allCreatureCount = creatureList.size();
-        Creature[] fullCreatureTurnOrder = new Creature[allCreatureCount];
-        creaturePriority.toArray(fullCreatureTurnOrder);
-        Arrays.sort(fullCreatureTurnOrder);
+        int queueSize = creaturePriority.size();
+        CreatureSpeedTurnTriplet[] allTurnOrderTriplets = new CreatureSpeedTurnTriplet[queueSize];
+        creaturePriority.toArray(allTurnOrderTriplets);
+        Arrays.sort(allTurnOrderTriplets);
         Creature[] fiveCreatureTurnOrder = new Creature[5];
-        System.arraycopy(fullCreatureTurnOrder, 0, fiveCreatureTurnOrder, 0, Math.min(5, allCreatureCount));
-        for (int i = allCreatureCount; i < 5; i++) {
-            fiveCreatureTurnOrder[i] = null;
+        for (int i = 0; i < 5; i++) {
+            fiveCreatureTurnOrder[i] = allTurnOrderTriplets[i].getCreature();
         }
         return fiveCreatureTurnOrder;
     }
@@ -374,9 +396,6 @@ public class GameBattle {
             if (zombie.getStepsToCurrentTarget() > 1) {
                 zombie.setCurrentTarget(getTargetAdjacentToZombie(zombie));
                 zombie.setStepsToCurrentTarget(1);
-                //System.out.println("*** " + zombie + " is NOW adjacent to " + getTargetAdjacentToZombie(zombie));
-            } else {
-                //System.out.println("*** " + zombie + " WAS AND STILL IS adjacent to " + getTargetAdjacentToZombie(zombie));
             }
         } else {
             boolean[][] availableMoves = getCalculatedOverlayForCreatureMoves(zombie);
@@ -387,7 +406,6 @@ public class GameBattle {
             int additionnalStepsToTarget = 0;
             do {
                 desirableCoordinatesToReach = updateCoordinatesLeadingToEnemiesByAddingCardinalCoordinates(coordsLeadingToEnemies);
-                //System.out.println("Current known coordinates: " + coordsLeadingToEnemies.keySet());
                 additionnalStepsToTarget++;
                 for (Coordinates coords : desirableCoordinatesToReach) {
                     int xCoord = coords.getXCoord();
@@ -408,7 +426,6 @@ public class GameBattle {
                     if (oldTarget.equals(coordsLeadingToEnemies.get(reachableCoords))) {
                         int currentOverlayDistance = paths.getCalculatedPathDistanceForCoordinates(reachableCoords);
                         if (currentOverlayDistance < bestOverlayDistanceForSameTarget) {
-                            //System.out.print(reachableCoords + " is " + currentOverlayDistance + " tiles away from " + zombie + "...");
                             bestOverlayDistanceForSameTarget = currentOverlayDistance;
                         }
                     }
@@ -418,21 +435,15 @@ public class GameBattle {
                     Creature nextTarget = coordsLeadingToEnemies.get(nextMove);
                     zombie.setCurrentTarget(nextTarget);
                     zombie.setStepsToCurrentTarget(additionnalStepsToTarget);
-                    //System.out.println("...but " + nextMove + " is closer to an enemy, being " + additionnalStepsToTarget + " steps from new target, " + nextTarget);
                 }
 
             } else {
                 Creature nextTarget = coordsLeadingToEnemies.get(nextMove);
                 zombie.setCurrentTarget(nextTarget);
                 zombie.setStepsToCurrentTarget(additionnalStepsToTarget);
-                //System.out.println("Acquiring first target: moving to " + nextMove + " to be " + additionnalStepsToTarget + " steps from first target, " + nextTarget);
             }
             zombie.setStepsToCurrentTarget(additionnalStepsToTarget);
         }
-        /*
-        if (nextMove != null) {
-            System.out.println("...will be moving to " + nextMove + " to pursue " + zombie.getCurrentTarget());
-        }*/
         return nextMove;
     }
 
@@ -584,9 +595,17 @@ public class GameBattle {
         return target;
     }
 
-    public MotionEvent haveZombieAttackAnyAdjacentGoodCreatures(Creature zombie) {
+    public boolean zombieIsAdjacentToTarget(Zombie zombie) {
+        Creature targetCreature = zombie.getCurrentTarget();
+        Coordinates targetCoords = gameboard.getCreatureCoordinates(targetCreature);
+        Coordinates zombieCoords = gameboard.getCreatureCoordinates(zombie);
+        return targetCoords.areCardinalCoordinatesAdjacentTo(zombieCoords);
+    }
+
+    public MotionEvent haveZombieAttackAdjacentTarget(Zombie zombie) {
         int zombieSkill = 1;
-        Coordinates targetCoords = getCoordsOfFirstGoodCreatureAdjacentToZombie(zombie);
+        Creature targetCreature = zombie.getCurrentTarget();
+        Coordinates targetCoords = gameboard.getCreatureCoordinates(targetCreature);
         MotionEvent attackEvent;
         if (targetCoords != null) {
             attackEvent = useCreatureSkillAt(zombie, zombieSkill, targetCoords);
@@ -596,15 +615,7 @@ public class GameBattle {
         return attackEvent;
     }
 
-    public void activateGameOver() {
-        gameOver = true;
-    }
-
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
-    boolean zombieIsAdjacentToAGoodCreature(Creature zombie) {
+    public boolean zombieIsAdjacentToAGoodCreature(Creature zombie) {
         return getCoordsOfFirstGoodCreatureAdjacentToZombie(zombie) != null;
     }
 }

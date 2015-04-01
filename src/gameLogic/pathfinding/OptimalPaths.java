@@ -87,7 +87,7 @@ public class OptimalPaths {
     }
 
     private PriorityQueue<DijkstraCoord> generateQueueFromDijkstraCoords() {
-        PriorityQueue<DijkstraCoord> queue = new PriorityQueue();
+        PriorityQueue<DijkstraCoord> queue = new PriorityQueue<DijkstraCoord>();
         for (int i = 0; i < xDim; i++) {
             for (int j = 0; j < yDim; j++) {
                 if (dCoords[i][j] != null) {
@@ -121,7 +121,8 @@ public class OptimalPaths {
     }
     
     public boolean coordinatesReachableInAtMostDistanceOf(Coordinates coords, int distance) { 
-        return coordinatesToDijkstraCoordinates(coords).getDistance() <= distance;
+        DijkstraCoord dCoord = coordinatesToDijkstraCoordinates(coords);
+        return (dCoord != null) && (dCoord.getDistance() <= distance);
     }
     
     private DijkstraCoord coordinatesToDijkstraCoordinates(Coordinates coords) { 

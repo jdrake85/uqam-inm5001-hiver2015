@@ -15,14 +15,14 @@ import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.render.NiftyImage;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
-import static gameLogic.FakeMain2.gameState;
+import static gameLogic.FakeMain3.gameState;
 import mygame.Main;
 import static mygame.Main.posX;
 
-import gameLogic.FakeMain2;
-import static gameLogic.FakeMain2.battle;
-import static gameLogic.FakeMain2.gameState;
-import static gameLogic.FakeMain2.creatureInCommand;
+import gameLogic.FakeMain3;
+import static gameLogic.FakeMain3.battle;
+import static gameLogic.FakeMain3.gameState;
+import static gameLogic.FakeMain3.creatureInCommand;
 
 /**
  *
@@ -64,32 +64,32 @@ public class GameState extends AbstractAppState implements ScreenController {
 
     public void hero1Skill1() {
         gameState = "skill";
-        FakeMain2.commandType = 1;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 1);
+        FakeMain3.commandType = 1;
+        FakeMain3.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 1);
     }
 
     public void hero1Skill2() {
         gameState = "skill";
-        FakeMain2.commandType = 2;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 2);
+        FakeMain3.commandType = 2;
+        FakeMain3.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 2);
     }
 
     public void hero1Skill3() {
         gameState = "skill";
-        FakeMain2.commandType = 3;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 3);
+        FakeMain3.commandType = 3;
+        FakeMain3.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 3);
     }
 
     public void hero1Skill4() {
         gameState = "skill";
-        FakeMain2.commandType = 4;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 4);
+        FakeMain3.commandType = 4;
+        FakeMain3.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 4);
     }
 
     public void hero1move() {
         gameState = "move";
-        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.creatureInCommand);
-        FakeMain2.animateMove();
+        FakeMain3.battle.drawWithOverlayForCreatureMoves(FakeMain3.creatureInCommand);
+        FakeMain3.animateMove();
     }
 
     public void hero1endTurn() {
@@ -98,31 +98,31 @@ public class GameState extends AbstractAppState implements ScreenController {
 
     public void hero2Skill1() {
         gameState = "skill";
-        FakeMain2.commandType = 5;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 5);
+        FakeMain3.commandType = 5;
+        FakeMain3.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 5);
     }
 
     public void hero2Skill2() {
         gameState = "skill";
-        FakeMain2.commandType = 6;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 6);
+        FakeMain3.commandType = 6;
+        FakeMain3.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 6);
     }
 
     public void hero2Skill3() {
         gameState = "skill";
-        FakeMain2.commandType = 7;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 7);
+        FakeMain3.commandType = 7;
+        FakeMain3.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 7);
     }
 
     public void hero2Skill4() {
         gameState = "skill";
-        FakeMain2.commandType = 8;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 8);
+        FakeMain3.commandType = 8;
+        FakeMain3.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 8);
     }
 
     public void hero2move() {
         gameState = "move";
-        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.creatureInCommand);
+        FakeMain3.battle.drawWithOverlayForCreatureMoves(FakeMain3.creatureInCommand);
     }
 
     public void hero2endTurn() {
@@ -131,31 +131,31 @@ public class GameState extends AbstractAppState implements ScreenController {
 
     public void hero3Skill1() {
         gameState = "skill";
-        FakeMain2.commandType = 9;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 9);
+        FakeMain3.commandType = 9;
+        FakeMain3.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 9);
     }
 
     public void hero3Skill2() {
         gameState = "skill";
-        FakeMain2.commandType = 10;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 10);
+        FakeMain3.commandType = 10;
+        FakeMain3.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 10);
     }
 
     public void hero3Skill3() {
         gameState = "skill";
-        FakeMain2.commandType = 11;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 11);
+        FakeMain3.commandType = 11;
+        FakeMain3.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 11);
     }
 
     public void hero3Skill4() {
         gameState = "skill";
-        FakeMain2.commandType = 12;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 12);
+        FakeMain3.commandType = 12;
+        FakeMain3.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 12);
     }
 
     public void hero3move() {
         gameState = "move";
-        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.creatureInCommand);
+        FakeMain3.battle.drawWithOverlayForCreatureMoves(FakeMain3.creatureInCommand);
     }
 
     public void hero3endTurn() {
@@ -168,6 +168,6 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void quitGame() {
-        FakeMain2.app.stop();
+        FakeMain3.app.stop();
     }
 }

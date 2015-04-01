@@ -163,7 +163,7 @@ public class FakeMain {
     }
 
     protected static Creature initializeHero(GameBattle battle) {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat);
+        Creature hero = new Creature("Hero", FakeMain3.heroMat);
         hero.setAlignment("good");
         battle.insertCreatureAt(hero, 0, 0);
         assignAllSkillsTo(hero);

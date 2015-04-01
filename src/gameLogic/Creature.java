@@ -44,8 +44,8 @@ public class Creature {
         //TODO: clean up
         Box box = new Box(0.2f, 1.5f, 0.2f);
         geometry3D = new Geometry(name, box);
-        geometry3D.setMaterial(FakeMain2.redZombie);
-        FakeMain2.charNode.attachChild(geometry3D);
+        geometry3D.setMaterial(FakeMain3.redZombie);
+        FakeMain3.charNode.attachChild(geometry3D);
 
         //FakeMain2.charNode.attachChild(geo);
 
@@ -66,9 +66,9 @@ public class Creature {
         //this(name);
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
-        geometry3D = FakeMain2.heroScene; // WIP; node is assigned to Spatial..
+        geometry3D = FakeMain3.heroScene; // WIP; node is assigned to Spatial..
         geometry3D.setMaterial(material);
-        FakeMain2.charNode.attachChild(geometry3D);
+        FakeMain3.charNode.attachChild(geometry3D);
     }
 
     @Override

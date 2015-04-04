@@ -51,7 +51,7 @@ public class Creature {
     
     private String picturePath = null;
     
-    public Creature(String name) {
+    public Creature(String name, AnimEventListener listener) {
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
         Box box = new Box(0.2f, 1.5f, 0.2f);
@@ -59,9 +59,10 @@ public class Creature {
         //geometry3D = (Node) assetManager.loadModel("Hero.scene");
         geometry3D.setMaterial(FakeMain2.redZombie);
         FakeMain2.charNode.attachChild(geometry3D);
+        this.addAnimationListener(listener);
     }
     
-    public Creature(String name, AssetManager assetManager) {
+    public Creature(String name, AssetManager assetManager, AnimEventListener listener) {
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
         /*Box box = new Box(0.2f, 1.5f, 0.2f);
@@ -78,18 +79,20 @@ public class Creature {
         //skillChannel.setLoopMode(LoopMode.DontLoop);
         
         FakeMain2.charNode.attachChild(geometry3D);
+        this.addAnimationListener(listener);
     }
 
-    public Creature(String name, Material material) {
+    public Creature(String name, Material material, AnimEventListener listener) {
         //this(name);
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
         geometry3D = FakeMain2.heroScene; // WIP; node is assigned to Spatial..
         geometry3D.setMaterial(material);
         FakeMain2.charNode.attachChild(geometry3D);
+        this.addAnimationListener(listener);
     }   
     
-    public Creature(String name, Material material, AssetManager assetManager) {
+    public Creature(String name, Material material, AssetManager assetManager, AnimEventListener listener) {
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
         geometry3D = (Node) assetManager.loadModel(name + ".scene");
@@ -104,6 +107,7 @@ public class Creature {
         //skillChannel.setLoopMode(LoopMode.DontLoop);
         
         FakeMain2.charNode.attachChild(geometry3D);
+        this.addAnimationListener(listener);
     }
     
     public Spatial getSpatial() { 

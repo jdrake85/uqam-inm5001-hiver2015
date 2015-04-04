@@ -92,28 +92,28 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         //load temp hero mexh + animation
         assetManager.registerLocator("assets/Models/Hero/", FileLocator.class);
         /*heroScene = (Node) assetManager.loadModel("Hero.scene");
-        heroScene.setLocalScale(.025f);*/
+         heroScene.setLocalScale(.025f);*/
         /*acHero = findAnimControl(heroScene);
-        channelHero = acHero.createChannel();
-        channelHero.setAnim("Idle");*/
+         channelHero = acHero.createChannel();
+         channelHero.setAnim("Idle");*/
 
         // NURSE GRAPHICS
         nurseMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         nurseMat.setColor("Color", new ColorRGBA(1f, 0.5f, 0.1f, 0f));
         /*nurseScene = (Node) assetManager.loadModel("Nurse.scene");
-        nurseScene.setLocalScale(.025f);*/
+         nurseScene.setLocalScale(.025f);*/
         /*acNurse = findAnimControl(nurseScene);
-        channelNurse = acNurse.createChannel();
-        channelNurse.setAnim("Idle");*/
+         channelNurse = acNurse.createChannel();
+         channelNurse.setAnim("Idle");*/
 
         // SOLDIER GRAPHICS
         soldierMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         soldierMat.setColor("Color", new ColorRGBA(0f, 0f, 1f, 0f));
         /*soldierScene = (Node) assetManager.loadModel("Soldier.scene");
-        soldierScene.setLocalScale(.025f);*/
+         soldierScene.setLocalScale(.025f);*/
         /*acSoldier = findAnimControl(soldierScene);
-        channelSoldier = acSoldier.createChannel();
-        channelSoldier.setAnim("Idle");*/
+         channelSoldier = acSoldier.createChannel();
+         channelSoldier.setAnim("Idle");*/
 
         // (DEBUGGING) Specifiy starting level here (first level is 1)
         level = 1;
@@ -142,16 +142,13 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         inputManager.addListener(actionListener, "RestoreHealthKey");
         inputManager.addListener(actionListener, "SelectTile");
         inputManager.addListener(actionListener, "EndTurnKey");
-        
-        /*inputManager.addListener(actionListener, "Walk");
-        inputManager.addListener(actionListener, "Idle");
-        inputManager.addListener(actionListener, "Skill1");
-        inputManager.addListener(actionListener, "Skill2");
-        inputManager.addListener(actionListener, "Skill3");*/
-    }
-    
 
-    
+        /*inputManager.addListener(actionListener, "Walk");
+         inputManager.addListener(actionListener, "Idle");
+         inputManager.addListener(actionListener, "Skill1");
+         inputManager.addListener(actionListener, "Skill2");
+         inputManager.addListener(actionListener, "Skill3");*/
+    }
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
 
@@ -226,7 +223,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                         MotionEvent nextMotionEvent = FakeMain2.performTurn(FakeMain2.commandType, commandX, commandY, FakeMain2.creatureInCommand, FakeMain2.battle);
                         setAndPlayNextMotionEvent(nextMotionEvent);
 
-                        
+
 
                         /*
                          MyMaterial greenTile = new MyMaterial(assetManager);
@@ -245,10 +242,10 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                         } else {
                             battle.refreshCreatureList();
                         }
-                        
+
                     }
                     gameState = "idle";
-                       // creatureInCommand.animateIdle(); // TODO: specify creature
+                    // creatureInCommand.animateIdle(); // TODO: specify creature
                 }
 
 
@@ -293,8 +290,8 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
             }
         }
     };
-    
-    private void playZombieTurn() {
+
+    private Zombie performMovementForZombieTurn() {
         Zombie zombie = (Zombie) creatureInCommand;
         zombie.initializeTurnEnergy();
         Coordinates attackPosition = battle.getCoordinatesForBestClosestTarget(zombie);
@@ -311,26 +308,23 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 }
             }
         }
+        return zombie;
+    }
+
+    private boolean performAttackOnPlayerForZombieTurn() {
 
         //Debugging
+        Zombie zombie = (Zombie) creatureInCommand;
         Creature zombieTarget = zombie.getCurrentTarget();
         System.out.println(zombie + " is currently pursuing " + zombieTarget + "...");
         boolean gameOver = false;
 
         if (zombieTarget != null && battle.zombieIsAdjacentToTarget(zombie)) {
-            while (zombie.canPayEnergyCostForSkillNumber(1) && !gameOver) {
-                battle.haveZombieAttackAdjacentTarget(zombie); // TODO: target already calculated...
-                gameOver = !zombieTarget.isAlive();
-            }
+            battle.haveZombieAttackAdjacentTarget(zombie); // TODO: target already calculated...
+            gameOver = !zombieTarget.isAlive();
         }
 
-        if (gameOver) {
-            System.out.println("<PLACEHOLDER FUNCTION>: battle is lost, return to main menu");
-            gameState = "outOfLevel";
-            level--;
-        } else {
-            battle.endTurn();
-        }
+        return gameOver;
     }
 
     public void initScene() {
@@ -449,46 +443,45 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     }
 
     /*public static void animateMove() {
-        try {
-            // create a channel and start the wobble animation
-            channelHero.setAnim("Walk");
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-    }*/
+     try {
+     // create a channel and start the wobble animation
+     channelHero.setAnim("Walk");
+     } catch (final Exception e) {
+     e.printStackTrace();
+     }
+     }*/
 
     /*public static void animateMove(Creature creature) {
-        try { // TODO: implement properly
-            // create a channel and start the wobble animation
-            findAnimControl(creature).createChannel().setAnim("Hop");
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-    }*/
+     try { // TODO: implement properly
+     // create a channel and start the wobble animation
+     findAnimControl(creature).createChannel().setAnim("Hop");
+     } catch (final Exception e) {
+     e.printStackTrace();
+     }
+     }*/
 
-   /* public static void animateIdle() {
-        try {
-            // create a channel and start the wobble animation
-            channelHero.setAnim("Idle");
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-    }*/
+    /* public static void animateIdle() {
+     try {
+     // create a channel and start the wobble animation
+     channelHero.setAnim("Idle");
+     } catch (final Exception e) {
+     e.printStackTrace();
+     }
+     }*/
 
     /*public static void animateIdle(Creature creature) {
-        try { // TODO: implement properly
-            // create a channel and start the wobble animation
-            findAnimControl(creature).createChannel().setAnim("Idle");
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-    }*/
-
+     try { // TODO: implement properly
+     // create a channel and start the wobble animation
+     findAnimControl(creature).createChannel().setAnim("Idle");
+     } catch (final Exception e) {
+     e.printStackTrace();
+     }
+     }*/
     public static AnimControl findAnimControl(final Spatial parent) {
         final AnimControl animControl = parent.getControl(AnimControl.class);
         if (animControl != null) {
             return animControl;
-        } 
+        }
 
         if (parent instanceof Node) {
             for (final Spatial s : ((Node) parent).getChildren()) {
@@ -521,21 +514,33 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
             if (battleInProgress) {
                 if (!battle.isWon()) {
                     if (noMotionEventPlaying() && !movingCreature) {
-                        if(gameState.equals("idle") && !creatureInCommand.creatureChannel.getAnimationName().equals("Idle")) {
-                           creatureInCommand.animateIdle();
+                        if (gameState.equals("idle") && !creatureInCommand.creatureChannel.getAnimationName().equals("Idle")) {
+                            creatureInCommand.animateIdle();
                         } else if (currentMovingZombie != null) {
                             currentMovingZombie.animateIdle();
                             currentMovingZombie = null;
                         }
-                        if (battle.isZombieTurn() && !gameState.equals("enemyBusy")) {
-                            gameState = "enemyBusy";
-                            playZombieTurn();
-                            if (!gameState.equals("outOfLevel")) {
-                                creatureInCommand = battle.getCreaturePlayingTurn();
-                                gameState = "enemyIdle";
-                            } 
-                        } else if (!(battle.isZombieTurn() || gameState.equals("move") || gameState.equals("skill"))) {
-                            gameState = "idle";
+                        if (battle.isZombieTurn()) {
+                            if (gameState.equals("idle")) {
+                                performMovementForZombieTurn();
+                                gameState = "enemyAttack";
+                            } else if (gameState.equals("enemyAttack")) {
+                                Zombie zombie = (Zombie) creatureInCommand;
+                                if (zombie.hasEnoughEnergyToAttack()) {
+                                    if (performAttackOnPlayerForZombieTurn()) {
+                                        System.out.println("<PLACEHOLDER FUNCTION>: battle is lost, return to main menu");
+                                        gameState = "outOfLevel";
+                                        level--;
+                                    } 
+                                } else {
+                                    System.out.println("Zombie turn finished");
+                                    gameState = "idle";
+                                    battle.endTurn();
+                                    creatureInCommand = battle.getCreaturePlayingTurn();
+                                }
+                            }
+                        } else if (!(gameState.equals("move") || gameState.equals("skill"))) {
+                            gameState = "idle";         
                         }
                     }
                 }
@@ -559,6 +564,8 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 System.out.println("---------------------------------");
                 System.out.println();
                 playedPreBattleCinematic = battleInProgress = playedPostBattleCinematic = false;
+                currentMovingZombie = null;
+                movingCreature = false;
                 initializeBattleForLevel(level++);
                 gameState = "idle";
             } else if (level == 9) {
@@ -588,13 +595,13 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     private boolean noMotionEventPlaying() {
         return currentMotionEvent == null || currentMotionEvent.getPlayState().equals(PlayState.Stopped);
     }
-    
+
     private boolean creatureIsDoneMoving() {
         return false;
     }
 
     private void initializeBattleForLevel(int level) {
-        if (battle != null) { 
+        if (battle != null) {
             battle.clearCombattants();
         }
         battle = new GameBattle();
@@ -632,14 +639,12 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     // Level 1: 'Freedom'
     private void initializeLevel1() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
-        hero.addAnimationListener(this);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         battle.insertCreatureAt(hero, 1, 4);
 
 
-        Creature zombie1 = new Zombie("Zombie1", assetManager);
-        zombie1.addAnimationListener(this);
+        Creature zombie1 = new Zombie("Zombie1", assetManager, this);
         battle.insertCreatureAt(zombie1, 6, 4);
 
         // TODO: remove later
@@ -648,17 +653,17 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     // Level 2: 'Damsel in Distress'
     private void initializeLevel2() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         battle.insertCreatureAt(hero, 1, 4);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
 
         battle.insertCreatureAt(nurse, 7, 0);
 
-        Creature zombie1 = new Zombie("Zombie1", assetManager);
+        Creature zombie1 = new Zombie("Zombie1", assetManager, this);
         battle.insertCreatureAt(zombie1, 6, 1);
 
         // TODO: remove later
@@ -668,19 +673,19 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     // Level 3: 'Getting through'
     private void initializeLevel3() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         battle.insertCreatureAt(hero, 3, 6);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 3, 4);
 
-        Creature zombie1 = new Zombie("Zombie1", assetManager);
-        Creature zombie2 = new Zombie("Zombie2", assetManager);
-        Creature zombie3 = new Zombie("Zombie3", assetManager);
+        Creature zombie1 = new Zombie("Zombie1", assetManager, this);
+        Creature zombie2 = new Zombie("Zombie2", assetManager, this);
+        Creature zombie3 = new Zombie("Zombie3", assetManager, this);
         battle.insertCreatureAt(zombie1, 1, 2);
         battle.insertCreatureAt(zombie2, 5, 2);
         battle.insertCreatureAt(zombie3, 3, 1);
@@ -692,21 +697,21 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     // Level 4: 'Pincer Attack'
     private void initializeLevel4() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         battle.insertCreatureAt(hero, 3, 3);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 3, 4);
 
-        Creature zombie1 = new Zombie("Zombie1", assetManager);
-        Creature zombie2 = new Zombie("Zombie2", assetManager);
-        Creature zombie3 = new Zombie("Zombie3", assetManager);
-        Creature zombie4 = new Zombie("Zombie4", assetManager);
+        Creature zombie1 = new Zombie("Zombie1", assetManager, this);
+        Creature zombie2 = new Zombie("Zombie2", assetManager, this);
+        Creature zombie3 = new Zombie("Zombie3", assetManager, this);
+        Creature zombie4 = new Zombie("Zombie4", assetManager, this);
         battle.insertCreatureAt(zombie1, 1, 1);
         battle.insertCreatureAt(zombie2, 1, 6);
         battle.insertCreatureAt(zombie3, 6, 6);
@@ -719,26 +724,26 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     // Level 5: 'Making Friends'
     private void initializeLevel5() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         battle.insertCreatureAt(hero, 1, 6);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 2, 7);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
+        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
         battle.insertCreatureAt(soldier, 7, 0);
 
-        Creature zombie1 = new Zombie("Zombie1", assetManager);
-        Creature zombie2 = new Zombie("Zombie2", assetManager);
-        Creature zombie3 = new Zombie("Zombie3", assetManager);
-        Creature zombie4 = new Zombie("Zombie4", assetManager);
+        Creature zombie1 = new Zombie("Zombie1", assetManager, this);
+        Creature zombie2 = new Zombie("Zombie2", assetManager, this);
+        Creature zombie3 = new Zombie("Zombie3", assetManager, this);
+        Creature zombie4 = new Zombie("Zombie4", assetManager, this);
         battle.insertCreatureAt(zombie1, 2, 4);
         battle.insertCreatureAt(zombie2, 2, 5);
         battle.insertCreatureAt(zombie3, 6, 0);
@@ -752,29 +757,29 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     // Level 6: 'Showdown'
     private void initializeLevel6() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
         battle.insertCreatureAt(hero, 5, 4);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 6, 3);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
+        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
         battle.insertCreatureAt(soldier, 6, 5);
 
-        Creature zombie1 = new Zombie("Zombie1", assetManager);
-        Creature zombie2 = new Zombie("Zombie2", assetManager);
-        Creature zombie3 = new Zombie("Zombie3", assetManager);
-        Creature zombie4 = new Zombie("Zombie4", assetManager);
-        Creature zombie5 = new Zombie("Zombie5", assetManager);
-        Creature zombie6 = new Zombie("Zombie6", assetManager);
+        Creature zombie1 = new Zombie("Zombie1", assetManager, this);
+        Creature zombie2 = new Zombie("Zombie2", assetManager, this);
+        Creature zombie3 = new Zombie("Zombie3", assetManager, this);
+        Creature zombie4 = new Zombie("Zombie4", assetManager, this);
+        Creature zombie5 = new Zombie("Zombie5", assetManager, this);
+        Creature zombie6 = new Zombie("Zombie6", assetManager, this);
         battle.insertCreatureAt(zombie1, 1, 1);
         battle.insertCreatureAt(zombie2, 1, 2);
         battle.insertCreatureAt(zombie3, 1, 3);
@@ -790,37 +795,37 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     // Level 7: 'Surrounded'
     private void initializeLevel7() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
         battle.insertCreatureAt(hero, 5, 1);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new MustardGas(7, 4), 7);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 6, 0);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
+        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new ShootEmAll(10, 4), 10);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
         battle.insertCreatureAt(soldier, 6, 1);
 
-        Creature zombie1 = new Zombie("Zombie1", assetManager);
-        Creature zombie2 = new Zombie("Zombie2", assetManager);
-        Creature zombie3 = new Zombie("Zombie3", assetManager);
-        Creature zombie4 = new Zombie("Zombie4", assetManager);
-        Creature zombie5 = new Zombie("Zombie5", assetManager);
-        Creature zombie6 = new Zombie("Zombie6", assetManager);
-        Creature zombie7 = new Zombie("Zombie7", assetManager);
-        Creature zombie8 = new Zombie("Zombie8", assetManager);
-        Creature zombie9 = new Zombie("Zombie9", assetManager);
-        Creature zombie10 = new Zombie("Zombie10", assetManager);
-        Creature zombie11 = new Zombie("Zombie11", assetManager);
-        Creature zombie12 = new Zombie("Zombie12", assetManager);
+        Creature zombie1 = new Zombie("Zombie1", assetManager, this);
+        Creature zombie2 = new Zombie("Zombie2", assetManager, this);
+        Creature zombie3 = new Zombie("Zombie3", assetManager, this);
+        Creature zombie4 = new Zombie("Zombie4", assetManager, this);
+        Creature zombie5 = new Zombie("Zombie5", assetManager, this);
+        Creature zombie6 = new Zombie("Zombie6", assetManager, this);
+        Creature zombie7 = new Zombie("Zombie7", assetManager, this);
+        Creature zombie8 = new Zombie("Zombie8", assetManager, this);
+        Creature zombie9 = new Zombie("Zombie9", assetManager, this);
+        Creature zombie10 = new Zombie("Zombie10", assetManager, this);
+        Creature zombie11 = new Zombie("Zombie11", assetManager, this);
+        Creature zombie12 = new Zombie("Zombie12", assetManager, this);
         battle.insertCreatureAt(zombie1, 3, 0);
         battle.insertCreatureAt(zombie2, 3, 2);
         battle.insertCreatureAt(zombie3, 3, 4);
@@ -842,33 +847,33 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     // Level 8: 'Big Bad Boss'
     private void initializeLevel8() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
         hero.setSkillAsNumber(new Knockback(4, 4), 4);
         battle.insertCreatureAt(hero, 3, 4);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
+        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new MustardGas(7, 4), 7);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 2, 5);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
+        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new ShootEmAll(10, 4), 10);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
         soldier.setSkillAsNumber(new CutThroat(12, 1), 12);
         battle.insertCreatureAt(soldier, 4, 5);
 
-        Creature boss = new Zombie("Boss", assetManager);
+        Creature boss = new Zombie("Boss", assetManager, this);
         boss.setMaxEnergy(boss.getMaxEnergy() * 4);
-        Creature zombie1 = new Zombie("Zombie1", assetManager);
-        Creature zombie2 = new Zombie("Zombie2", assetManager);
-        Creature zombie3 = new Zombie("Zombie3", assetManager);
-        Creature zombie4 = new Zombie("Zombie4", assetManager);
+        Creature zombie1 = new Zombie("Zombie1", assetManager, this);
+        Creature zombie2 = new Zombie("Zombie2", assetManager, this);
+        Creature zombie3 = new Zombie("Zombie3", assetManager, this);
+        Creature zombie4 = new Zombie("Zombie4", assetManager, this);
         battle.insertCreatureAt(boss, 3, 2);
         battle.insertCreatureAt(zombie1, 2, 1);
         battle.insertCreatureAt(zombie2, 1, 0);
@@ -898,12 +903,12 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     }
 
     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
-        if (animName.equals("Skill1") || animName.equals("Skill2") || animName.equals("Skill13") ) {
+        if (animName.equals("Skill1") || animName.equals("Skill2") || animName.equals("Skill13")) {
             movingCreature = false;
         }
     }
 
     public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
         // Do nothing
-    }   
+    }
 }

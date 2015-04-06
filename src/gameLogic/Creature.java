@@ -155,7 +155,7 @@ public class Creature extends Geometry {
     }
 
     public int getEneryCostForSkillNumber(int skillNumber) {
-        Skill chosenSkill = skills[skillNumber - 1];
+        Skill chosenSkill = getSkills()[skillNumber - 1];
         return chosenSkill.getEnergyCost();
     }
 
@@ -249,7 +249,7 @@ public class Creature extends Geometry {
     }
 
     public Skill prepareSkill(int skillNumber) {
-        return skills[skillNumber - 1];
+        return getSkills()[skillNumber - 1];
     }
 
     public void setEnergy(int energy) {
@@ -346,6 +346,13 @@ public class Creature extends Geometry {
     
     public String getPicturePath() { 
         return picturePath;
+    }
+
+    /**
+     * @return the skills
+     */
+    public Skill[] getSkills() {
+        return skills;
     }
     
 }

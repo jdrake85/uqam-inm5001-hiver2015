@@ -7,7 +7,6 @@ package gameGUI;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
-import com.jme3.math.Vector3f;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.ImageRenderer;
@@ -16,9 +15,8 @@ import de.lessvoid.nifty.layout.align.HorizontalAlign;
 import de.lessvoid.nifty.render.NiftyImage;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
-import static gameLogic.FakeMain2.gameState;
+import gameLogic.Creature;
 import mygame.Main;
-import static mygame.Main.posX;
 
 import gameLogic.FakeMain2;
 import static gameLogic.FakeMain2.battle;
@@ -32,8 +30,21 @@ import java.util.ArrayList;
  */
 public class GameState extends AbstractAppState implements ScreenController {
 
-    private ArrayList<String> buttons = new ArrayList<String>();
-    private boolean alwaysVisible = true;
+    private ArrayList<String> buttons = GUIData.fillButtons();
+    private ArrayList<String> facesHolders = GUIData.fillFacesHolders();
+    private ArrayList<String> skillsHolders = GUIData.fillSkillsHolders();
+    private ArrayList<String> moveAndEnd = GUIData.fillMoveAndEnd();
+    private ArrayList<String> hpAndEnergy = GUIData.fillHpAndEnergy();
+    private ArrayList<String> skillsList = GUIData.fillSkills();
+    private ArrayList<String> picturePaths = GUIData.fillPicsPaths();
+    private static String noneAsChar = GUIData.noneAsChar;
+    private static String lockedAsSkill = GUIData.lockedAsSkill;
+    private static String greyedAsMoveAndEnd = GUIData.greyedAsMoveAndEnd;
+    private static String heroMovePng = GUIData.heroMovePng;
+    private static String heroEndTurnPng = GUIData.heroEndTurnPng;
+    private static String heroHpPng = GUIData.heroHpPng;
+    private static String heroEnergyPng = GUIData.heroEnergyPng;
+    private static String greyedAsHpAndEnergy = GUIData.greyedAsHpAndEnergy;
 
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
@@ -42,9 +53,16 @@ public class GameState extends AbstractAppState implements ScreenController {
         //this is called on the OpenGL thread after the AppState has been attached
     }
 
-    @Override
-    public void update(float tpf) {
-        //TODO: implement behavior during runtime
+    public void update() {
+        if (FakeMain2.nifty.getCurrentScreen().getScreenId().equals("battle")) {
+            updateCombatWindow();
+        }
+    }
+
+    public void updateCombatWindow() {
+        disableAllButtons();
+        smartEnableButtons();
+        smartEnableImages();
     }
 
     @Override
@@ -60,141 +78,134 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void onStartScreen() {
-        populateButtons();
     }
 
     public void onEndScreen() {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public void endTurn() {
+        battle.endTurn();
+        creatureInCommand = battle.getCreaturePlayingTurn();
+        disableAllButtons();
+        smartEnableButtons();
+        smartEnableImages();
+    }
+
     public void hero1Skill1() {
         gameState = "skill";
         FakeMain2.commandType = 1;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 1);
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.hero, 1);
     }
 
     public void hero1Skill2() {
         gameState = "skill";
         FakeMain2.commandType = 2;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 2);
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.hero, 2);
     }
 
     public void hero1Skill3() {
         gameState = "skill";
         FakeMain2.commandType = 3;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 3);
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.hero, 3);
     }
 
     public void hero1Skill4() {
         gameState = "skill";
         FakeMain2.commandType = 4;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 4);
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.hero, 4);
     }
 
     public void hero1move() {
         gameState = "move";
-        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.creatureInCommand);
-        FakeMain2.creatureInCommand.animateMove();
+        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.hero);
+        FakeMain2.hero.animateMove();
     }
 
     public void hero1endTurn() {
-        quitGame();
+        endTurn();
     }
 
     public void hero2Skill1() {
         gameState = "skill";
         FakeMain2.commandType = 5;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 5);
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.nurse, 5);
     }
 
     public void hero2Skill2() {
         gameState = "skill";
         FakeMain2.commandType = 6;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 6);
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.nurse, 6);
     }
 
     public void hero2Skill3() {
         gameState = "skill";
         FakeMain2.commandType = 7;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 7);
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.nurse, 7);
     }
 
     public void hero2Skill4() {
         gameState = "skill";
         FakeMain2.commandType = 8;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 8);
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.nurse, 8);
     }
 
     public void hero2move() {
         gameState = "move";
-        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.creatureInCommand);
+        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.nurse);
     }
 
     public void hero2endTurn() {
-        quitGame();
+        endTurn();
     }
 
     public void hero3Skill1() {
         gameState = "skill";
         FakeMain2.commandType = 9;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 9);
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.soldier, 9);
     }
 
     public void hero3Skill2() {
         gameState = "skill";
         FakeMain2.commandType = 10;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 10);
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.soldier, 10);
     }
 
     public void hero3Skill3() {
         gameState = "skill";
         FakeMain2.commandType = 11;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 11);
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.soldier, 11);
     }
 
     public void hero3Skill4() {
         gameState = "skill";
         FakeMain2.commandType = 12;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(creatureInCommand, 12);
+        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.soldier, 12);
     }
 
     public void hero3move() {
         gameState = "move";
-        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.creatureInCommand);
+        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.soldier);
     }
 
     public void hero3endTurn() {
-        quitGame();
+        endTurn();
     }
 
     public void startGame(String nextScreen) {
-        FakeMain2.nifty.gotoScreen("battle");  // switch to another screen
-        // start the game and do some more stuff...
+        FakeMain2.nifty.gotoScreen("battle");
+
+        resetHpAndEnergyPics();
+        resetFacesPics();
+        resetSkillsPics();
+        resetMoveAndEndPics();
+
+        smartEnableImages();
+        disableAllButtons();
+        smartEnableButtons();
     }
 
-    public void populateButtons() {
-        buttons.add("hero1Skill1");
-        buttons.add("hero1Skill2");
-        buttons.add("hero1Skill3");
-        buttons.add("hero1Skill4");
-        buttons.add("hero2Skill1");
-        buttons.add("hero2Skill2");
-        buttons.add("hero2Skill3");
-        buttons.add("hero2Skill4");
-        buttons.add("hero3Skill1");
-        buttons.add("hero3Skill2");
-        buttons.add("hero3Skill3");
-        buttons.add("hero3Skill4");
-        buttons.add("hero3Skill4");
-        buttons.add("hero1move");
-        buttons.add("hero1endTurn");
-        buttons.add("hero2move");
-        buttons.add("hero2endTurn");
-        buttons.add("hero3move");
-        buttons.add("hero3endTurn");
-    }
-
-    public void disableAll() {
+    public void disableAllButtons() {
         Element myElem;
         for (String s : buttons) {
             myElem = FakeMain2.nifty.getScreen("battle").findElementByName(s);
@@ -202,13 +213,43 @@ public class GameState extends AbstractAppState implements ScreenController {
         }
     }
 
+    public void smartEnableButtons() {
+        smartEnableHero();
+        smartEnableNurse();
+        smartEnableSoldier();
+    }
+
+    public void resetImages(ArrayList<String> holdersList, String filePath) {
+        NiftyImage newImage = FakeMain2.nifty.getRenderEngine().createImage(Main.nifty.getCurrentScreen(), filePath, false);
+        for (String s : holdersList) {
+            Element image = FakeMain2.nifty.getCurrentScreen().findElementByName(s);
+            image.getRenderer(ImageRenderer.class).setImage(newImage);
+        }
+    }
+
+    public void resetFacesPics() {
+        resetImages(facesHolders, noneAsChar);
+    }
+
+    public void resetSkillsPics() {
+        resetImages(skillsHolders, lockedAsSkill);
+    }
+
+    public void resetMoveAndEndPics() {
+        resetImages(moveAndEnd, greyedAsMoveAndEnd);
+    }
+
+    public void resetHpAndEnergyPics() {
+        resetImages(hpAndEnergy, greyedAsHpAndEnergy);
+    }
+
     public void mainMenu() {
         FakeMain2.nifty.gotoScreen("mainMenu");
     }
 
-    public void lastInfo() {
+    public void toggleInfo() {
         Element myElem = FakeMain2.nifty.getScreen("battle").findElementByName("infoText");
-        if (myElem.isVisible()){
+        if (myElem.isVisible()) {
             myElem.hide();
         } else {
             myElem.show();
@@ -216,31 +257,28 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void swapImages(String scr1, String img1, String scr2, String img2) {
-        NiftyImage newImage = FakeMain2.nifty.getRenderEngine().createImage(Main.nifty.getScreen(scr1), img1, false);
+        NiftyImage newImage = FakeMain2.nifty.getRenderEngine().createImage(FakeMain2.nifty.getScreen(scr1), img1, false);
         Element image = FakeMain2.nifty.getScreen(scr2).findElementByName(img2);
         image.getRenderer(ImageRenderer.class).setImage(newImage);
     }
 
     public void swapImages(String img1, String img2) {
-        NiftyImage newImage = FakeMain2.nifty.getRenderEngine().createImage(Main.nifty.getCurrentScreen(), img1, false);
+        NiftyImage newImage = FakeMain2.nifty.getRenderEngine().createImage(FakeMain2.nifty.getCurrentScreen(), img1, false);
         Element image = FakeMain2.nifty.getCurrentScreen().findElementByName(img2);
         image.getRenderer(ImageRenderer.class).setImage(newImage);
     }
 
-    public void showTurnStats(int turn) {
-        Element myElem = FakeMain2.nifty.getScreen("battle").findElementByName("infoText");
-        myElem.getRenderer(TextRenderer.class).setTextHAlign(HorizontalAlign.left);
-        myElem.getRenderer(TextRenderer.class).setText("Hello");
-        myElem.show(); 
+    public String creatureInfo(int turn) {
+        Creature toStats = FakeMain2.battle.getCreatureTurnOrder()[turn];
+        String infoString = new String("this is some info");
+        return infoString;
     }
 
-    public void mouseOut() {
-        Element myElem = FakeMain2.nifty.getScreen("battle").findElementByName("infoArea");
-        if (!alwaysVisible) {
-            myElem.hide();            
-        }
+    public void showTurnStats(int turn) {
+        Element myElem = FakeMain2.nifty.getScreen("battle").findElementByName("infoText");
+        myElem.getRenderer(TextRenderer.class).setText(creatureInfo(turn));
     }
-    
+
     public void showTurn1Stats() {
         showTurnStats(1);
     }
@@ -289,7 +327,6 @@ public class GameState extends AbstractAppState implements ScreenController {
         Element myElem = FakeMain2.nifty.getScreen("battle").findElementByName("infoText");
         myElem.getRenderer(TextRenderer.class).setTextHAlign(HorizontalAlign.left);
         myElem.getRenderer(TextRenderer.class).setText("HeroStats");
-        myElem.show(); 
     }
 
     public void showHero1Stats() {
@@ -302,5 +339,56 @@ public class GameState extends AbstractAppState implements ScreenController {
 
     public void showHero3Stats() {
         showHeroStats(3);
+    }
+
+    private void smartEnableChar(Creature character, int index) {
+        Element myElem;
+        if (character != null) {
+            myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(index + 12));
+            myElem.enable();
+            myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(index + 13));
+            myElem.enable();
+            for (int i = index; i < index + 4; i++) {
+                if (FakeMain2.hero.getSkills()[i] != null) {
+                    myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(i));
+                    myElem.enable();
+                }
+            }
+        }
+    }
+
+    private void smartEnableImages() {
+        smartEnablePlayerImages(FakeMain2.hero, 0);
+        smartEnablePlayerImages(FakeMain2.nurse, 1);
+        smartEnablePlayerImages(FakeMain2.soldier, 2);
+    }
+
+    private void smartEnablePlayerImages(Creature player, int index) {
+        int scaled2X = 2 * index;
+        int scaled4X = 4 * index;
+        if (player != null) {
+            swapImages(picturePaths.get(index), facesHolders.get(index));
+            swapImages(heroHpPng, hpAndEnergy.get(scaled2X + 0));
+            swapImages(heroEnergyPng, hpAndEnergy.get(scaled2X + 1));
+            swapImages(heroMovePng, moveAndEnd.get(scaled2X + 0));
+            swapImages(heroEndTurnPng, moveAndEnd.get(scaled2X + 1));
+            for (int i = 0 + scaled4X; i < scaled4X + 4; i++) {
+                if (player.getSkills()[i] != null) {
+                    swapImages(skillsList.get(i), skillsHolders.get(i));
+                }
+            }
+        }
+    }
+
+    private void smartEnableHero() {
+        smartEnableChar(FakeMain2.hero, 0);
+    }
+
+    private void smartEnableNurse() {
+        smartEnableChar(FakeMain2.nurse, 4);
+    }
+
+    private void smartEnableSoldier() {
+        smartEnableChar(FakeMain2.soldier, 8);
     }
 }

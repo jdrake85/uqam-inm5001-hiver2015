@@ -6,6 +6,7 @@ import com.jme3.animation.AnimControl;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.app.SimpleApplication;
+import com.jme3.asset.AssetManager;
 import com.jme3.asset.plugins.FileLocator;
 import com.jme3.cinematic.PlayState;
 import com.jme3.cinematic.events.MotionEvent;
@@ -27,6 +28,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import de.lessvoid.nifty.Nifty;
+import gameGUI.GameState;
 import gameLogic.pathfinding.Coordinates;
 import gameLogic.skills.hero.*;
 import gameLogic.skills.nurse.*;
@@ -53,6 +55,9 @@ public class FakeMain2 extends SimpleApplication {
     public static Geometry[][] g;
     public static GameBattle battle;
     public static Creature creatureInCommand;
+    public static Creature hero = null;
+    public static Creature nurse = null;
+    public static Creature soldier = null;
     //public static Spatial ninja;
     public static Nifty nifty;
     //public static int posX = 0;
@@ -76,6 +81,11 @@ public class FakeMain2 extends SimpleApplication {
     public static boolean battleInProgress = false;
     public static boolean playedPostBattleCinematic = false;
     int level = 1;
+    
+    @Override
+    public AssetManager getAssetManager(){
+        return assetManager;
+    }
 
     @Override
     public void simpleInitApp() {
@@ -114,7 +124,7 @@ public class FakeMain2 extends SimpleApplication {
         channelSoldier.setAnim("Idle");*/
 
         // (DEBUGGING) Specifiy starting level here (first level is 1)
-        level = 7;
+        //level = 7;
     }
 
     private void initKeys() {
@@ -506,6 +516,7 @@ public class FakeMain2 extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
+        ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
         if (!gameState.equals("outOfLevel")) {
             if (battleInProgress) {
                 if (!battle.isWon()) {
@@ -618,7 +629,9 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 1: 'Freedom'
     private void initializeLevel1() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        soldier = null;
+        nurse = null;
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         battle.insertCreatureAt(hero, 1, 4);
 
@@ -627,16 +640,18 @@ public class FakeMain2 extends SimpleApplication {
         battle.insertCreatureAt(zombie1, 6, 4);
 
         // TODO: remove later
-        assignAllSkillsTo(hero);
+        //assignAllSkillsTo(hero);
     }
 
     // Level 2: 'Damsel in Distress'
     private void initializeLevel2() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        soldier = null;
+        
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         battle.insertCreatureAt(hero, 1, 4);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
+        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
 
@@ -652,12 +667,14 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 3: 'Getting through'
     private void initializeLevel3() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        soldier = null;
+        
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         battle.insertCreatureAt(hero, 3, 6);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
+        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 3, 4);
@@ -676,12 +693,14 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 4: 'Pincer Attack'
     private void initializeLevel4() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        soldier = null;
+        
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         battle.insertCreatureAt(hero, 3, 3);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
+        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
@@ -703,18 +722,18 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 5: 'Making Friends'
     private void initializeLevel5() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         battle.insertCreatureAt(hero, 1, 6);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
+        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 2, 7);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
+        soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
         battle.insertCreatureAt(soldier, 7, 0);
@@ -736,19 +755,19 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 6: 'Showdown'
     private void initializeLevel6() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
         battle.insertCreatureAt(hero, 5, 4);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
+        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 6, 3);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
+        soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
         battle.insertCreatureAt(soldier, 6, 5);
@@ -774,20 +793,20 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 7: 'Surrounded'
     private void initializeLevel7() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
         battle.insertCreatureAt(hero, 5, 1);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
+        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new MustardGas(7, 4), 7);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 6, 0);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
+        soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new ShootEmAll(10, 4), 10);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
@@ -826,21 +845,21 @@ public class FakeMain2 extends SimpleApplication {
 
     // Level 8: 'Big Bad Boss'
     private void initializeLevel8() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
         hero.setSkillAsNumber(new Knockback(4, 4), 4);
         battle.insertCreatureAt(hero, 3, 4);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
+        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new MustardGas(7, 4), 7);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 2, 5);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
+        soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager);
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new ShootEmAll(10, 4), 10);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
@@ -860,9 +879,9 @@ public class FakeMain2 extends SimpleApplication {
         battle.insertCreatureAt(zombie4, 5, 0);
 
         // TODO: remove later
-        assignAllSkillsTo(hero);
-        assignAllSkillsTo(nurse);
-        assignAllSkillsTo(soldier);
+        //assignAllSkillsTo(hero);
+        //assignAllSkillsTo(nurse);
+        //assignAllSkillsTo(soldier);
     }
 
     // TODO: remove later

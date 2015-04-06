@@ -47,7 +47,7 @@ public class GameBattle {
         Skill skill = creature.prepareSkill(skillNumber);
         Coordinates originatingCoords = gameboard.getCreatureCoordinates(creature);
         skill.setOriginatingFrom(originatingCoords);
-        boolean creatureIsGood = creature.isGood();
+        //boolean creatureIsGood = creature.isGood();
         return gameboard.getSkillOverlay(skill);
     }
 
@@ -533,4 +533,5 @@ public class GameBattle {
     public Coordinates getCreatureCoordinates(Creature creature) {
         return gameboard.getCreatureCoordinates(creature);
     }
+   
 }

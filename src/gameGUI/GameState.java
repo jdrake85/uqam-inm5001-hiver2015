@@ -5,6 +5,7 @@
 package gameGUI;
 
 import com.jme3.app.Application;
+import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import de.lessvoid.nifty.Nifty;
@@ -54,19 +55,22 @@ public class GameState extends AbstractAppState implements ScreenController {
         //this is called on the OpenGL thread after the AppState has been attached
     }
 
-    public void update() {
+    public void update(boolean frequent) {
         if (FakeMain2.nifty.getCurrentScreen().getScreenId().equals("battle")) {
-            updateCombatWindow();
+            updateCombatWindow(frequent);
         }
     }
 
-    public void updateCombatWindow() {
-        disableAllButtons();
-        smartEnableButtons();
-        smartEnableImages();
-        smartDisableButtons();
-        smartDisableImages();
-        updateTurnBanner();
+    public void updateCombatWindow(boolean frequent) {
+        if (!frequent) {
+            disableAllButtons();
+            smartEnableButtons();
+            smartEnableImages();
+            smartDisableButtons();
+            smartDisableImages();
+            updateTurnBanner();
+        }
+        updateHealthAndEnergyBars();
     }
 
     @Override
@@ -89,41 +93,30 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void endTurn() {
-        battle.endTurn();
-        creatureInCommand = battle.getCreaturePlayingTurn();
+        FakeMain2.app.endTurn();
         //disableAllButtons();
         //smartEnableButtons();
         //smartEnableImages();
     }
 
     public void hero1Skill1() {
-        gameState = "skill";
-        FakeMain2.commandType = 1;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.hero, 1);
+        FakeMain2.app.requestSkill(1);
     }
 
     public void hero1Skill2() {
-        gameState = "skill";
-        FakeMain2.commandType = 2;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.hero, 2);
+        FakeMain2.app.requestSkill(2);
     }
 
     public void hero1Skill3() {
-        gameState = "skill";
-        FakeMain2.commandType = 3;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.hero, 3);
+        FakeMain2.app.requestSkill(3);
     }
 
     public void hero1Skill4() {
-        gameState = "skill";
-        FakeMain2.commandType = 4;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.hero, 4);
+        FakeMain2.app.requestSkill(4);
     }
 
     public void hero1move() {
-        gameState = "move";
-        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.hero);
-        FakeMain2.hero.animateMove();
+        FakeMain2.app.requestMove();
     }
 
     public void hero1endTurn() {
@@ -131,32 +124,23 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void hero2Skill1() {
-        gameState = "skill";
-        FakeMain2.commandType = 5;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.nurse, 5);
+        FakeMain2.app.requestSkill(5);
     }
 
     public void hero2Skill2() {
-        gameState = "skill";
-        FakeMain2.commandType = 6;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.nurse, 6);
+        FakeMain2.app.requestSkill(6);
     }
 
     public void hero2Skill3() {
-        gameState = "skill";
-        FakeMain2.commandType = 7;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.nurse, 7);
+        FakeMain2.app.requestSkill(7);
     }
 
     public void hero2Skill4() {
-        gameState = "skill";
-        FakeMain2.commandType = 8;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.nurse, 8);
+        FakeMain2.app.requestSkill(8);
     }
 
     public void hero2move() {
-        gameState = "move";
-        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.nurse);
+        FakeMain2.app.requestMove();
     }
 
     public void hero2endTurn() {
@@ -164,32 +148,23 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void hero3Skill1() {
-        gameState = "skill";
-        FakeMain2.commandType = 9;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.soldier, 9);
+        FakeMain2.app.requestSkill(9);
     }
 
     public void hero3Skill2() {
-        gameState = "skill";
-        FakeMain2.commandType = 10;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.soldier, 10);
+        FakeMain2.app.requestSkill(10);
     }
 
     public void hero3Skill3() {
-        gameState = "skill";
-        FakeMain2.commandType = 11;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.soldier, 11);
+        FakeMain2.app.requestSkill(11);
     }
 
     public void hero3Skill4() {
-        gameState = "skill";
-        FakeMain2.commandType = 12;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.soldier, 12);
+        FakeMain2.app.requestSkill(12);
     }
 
     public void hero3move() {
-        gameState = "move";
-        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.soldier);
+        FakeMain2.app.requestMove();
     }
 
     public void hero3endTurn() {
@@ -461,9 +436,43 @@ public class GameState extends AbstractAppState implements ScreenController {
     private void updateTurnBanner() {
         resetTurnsPics();
         int i = 0;
-        for(Creature c : FakeMain2.battle.getCreatureTurnOrder()){            
+        for (Creature c : FakeMain2.battle.getCreatureTurnOrder()) {
             swapImages(c.getPicturePath(), turnsHolders.get(i));
             i++;
         }
+    }
+
+    private void updateHealthAndEnergyBars() {
+        if (FakeMain2.hero != null) {
+            updatePlayerBars(FakeMain2.hero, 0);
+        }
+        if (FakeMain2.nurse != null) {
+            updatePlayerBars(FakeMain2.nurse, 1);
+        }
+        if (FakeMain2.soldier != null) {
+            updatePlayerBars(FakeMain2.soldier, 2);
+        }
+    }
+
+    private void updatePlayerBars(Creature player, int index) {
+        int scaled2X = 2 * index;
+        int maxBoxHeight = FakeMain2.nifty.getCurrentScreen().findElementByName("hero1hp").getHeight();
+
+        float hpRatio = computeHpRatio(player);
+        float enRatio = computeEnRatio(player);
+        
+        int newHpHeight = (int)Math.ceil(hpRatio * maxBoxHeight);
+        int newEnHeight = (int)Math.ceil(enRatio * maxBoxHeight);
+        
+        FakeMain2.nifty.getCurrentScreen().findElementByName(hpAndEnergy.get(scaled2X)).setHeight(newHpHeight);
+        FakeMain2.nifty.getCurrentScreen().findElementByName(hpAndEnergy.get(scaled2X + 1)).setHeight(newEnHeight);
+    }
+
+    private float computeHpRatio(Creature player) {
+        return (float) player.getHealth() / player.getMaxHealth();
+    }
+
+    private float computeEnRatio(Creature player) {
+        return (float) player.getEnergy() / player.getMaxEnergy();
     }
 }

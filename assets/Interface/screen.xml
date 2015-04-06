@@ -60,12 +60,12 @@
                         <interact onMouseOver="showHero1Stats()"/>                    
                         <panel id="hero1PicNstats" width="100%" height="64%" backgroundColor="#0ff3" childLayout="horizontal" align="center" valign="top">
                             <panel id="hero1stats" width="20%" height="100%" backgroundColor="#f0f3" childLayout="horizontal" align="left">                      
-                                <panel id="hero1hp" width="50%" height="100%" backgroundColor="#f0f3" childLayout="vertical" align="left">
-                                    <image id="hero1health" filename="Interface/Images/GreyedHnE.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                                <panel id="hero1hp" width="50%" height="100%" backgroundColor="#f0f3" valign="bottom" childLayout="vertical" align="left">
+                                    <image id="hero1health" filename="Interface/Images/GreyedHnE.png" childLayout="vertical" valign="bottom" align="center" height="100%" width="100%" >
                                     </image>
                                 </panel> 
-                                <panel id="hero1energy" width="50%" height="100%" backgroundColor="#0f03" childLayout="vertical" align="right">
-                                    <image id="hero1enr" filename="Interface/Images/GreyedHnE.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                                <panel id="hero1energy" width="50%" height="100%" backgroundColor="#0f03" valign="bottom" childLayout="vertical" align="right">
+                                    <image id="hero1enr" filename="Interface/Images/GreyedHnE.png" childLayout="vertical" valign="bottom" align="center" height="100%" width="100%" >
                                     </image>
                                 </panel>   
                             </panel> 

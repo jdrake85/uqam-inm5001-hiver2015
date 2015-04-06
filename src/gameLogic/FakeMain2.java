@@ -196,6 +196,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         public void endTurn() {
             battle.endTurn();
             creatureInCommand = battle.getCreaturePlayingTurn();
+            ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
             // Enemy turn(s), if next
         }
 
@@ -265,6 +266,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                     battleInProgress = false;
                 } else {
                     battle.refreshCreatureList();
+                    ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
                 }
 
             }
@@ -495,7 +497,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                                     gameState = "idle";
                                     battle.endTurn();
                                     creatureInCommand = battle.getCreaturePlayingTurn();                                    
-        ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
+                                    ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
                                 }
                             }
                         } else if (!(gameState.equals("move") || gameState.equals("skill"))) {
@@ -506,9 +508,9 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
             } else if (!playedPreBattleCinematic) {
                 System.out.println("<PLACEHOLDER FUNCTION / SIMPLE UPDATE>: play PRE battle cinematic now");
                 playedPreBattleCinematic = true;
-                battle.start();
-        ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
+                battle.start();  
                 creatureInCommand = battle.getCreaturePlayingTurn();
+                ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
                 battleInProgress = true;
             } else if (!playedPostBattleCinematic) {
                 battleInProgress = false;

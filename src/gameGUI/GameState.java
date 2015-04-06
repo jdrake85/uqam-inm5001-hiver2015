@@ -54,19 +54,22 @@ public class GameState extends AbstractAppState implements ScreenController {
         //this is called on the OpenGL thread after the AppState has been attached
     }
 
-    public void update() {
+    public void update(boolean frequent) {
         if (FakeMain2.nifty.getCurrentScreen().getScreenId().equals("battle")) {
-            updateCombatWindow();
+            updateCombatWindow(frequent);
         }
     }
 
-    public void updateCombatWindow() {
-        disableAllButtons();
-        smartEnableButtons();
-        smartEnableImages();
-        smartDisableButtons();
-        smartDisableImages();
-        updateTurnBanner();
+    public void updateCombatWindow(boolean frequent) {
+        if (!frequent) {
+            disableAllButtons();
+            smartEnableButtons();
+            smartEnableImages();
+            smartDisableButtons();
+            smartDisableImages();
+            updateTurnBanner();
+        }
+        updateHealthAndEnergyBars();
     }
 
     @Override
@@ -461,9 +464,43 @@ public class GameState extends AbstractAppState implements ScreenController {
     private void updateTurnBanner() {
         resetTurnsPics();
         int i = 0;
-        for(Creature c : FakeMain2.battle.getCreatureTurnOrder()){            
+        for (Creature c : FakeMain2.battle.getCreatureTurnOrder()) {
             swapImages(c.getPicturePath(), turnsHolders.get(i));
             i++;
         }
+    }
+
+    private void updateHealthAndEnergyBars() {
+        if (FakeMain2.hero != null) {
+            updatePlayerBars(FakeMain2.hero, 0);
+        }
+        if (FakeMain2.nurse != null) {
+            updatePlayerBars(FakeMain2.nurse, 1);
+        }
+        if (FakeMain2.soldier != null) {
+            updatePlayerBars(FakeMain2.soldier, 2);
+        }
+    }
+
+    private void updatePlayerBars(Creature player, int index) {
+        int scaled2X = 2 * index;
+        int maxBoxHeight = FakeMain2.nifty.getCurrentScreen().findElementByName("hero1hp").getHeight();
+
+        float hpRatio = computeHpRatio(player);
+        float enRatio = computeEnRatio(player);
+        
+        int newHpHeight = (int)Math.ceil(hpRatio * maxBoxHeight);
+        int newEnHeight = (int)Math.ceil(enRatio * maxBoxHeight);
+        
+        FakeMain2.nifty.getCurrentScreen().findElementByName(hpAndEnergy.get(scaled2X)).setHeight(newHpHeight);
+        FakeMain2.nifty.getCurrentScreen().findElementByName(hpAndEnergy.get(scaled2X + 1)).setHeight(newEnHeight);
+    }
+
+    private float computeHpRatio(Creature player) {
+        return (float) player.getHealth() / player.getMaxHealth();
+    }
+
+    private float computeEnRatio(Creature player) {
+        return (float) player.getEnergy() / player.getMaxEnergy();
     }
 }

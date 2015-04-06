@@ -91,6 +91,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     public static boolean movingCreature = false;
     public static Transform mainTransform;
     public static Node lastDamageNode = null;
+    public static final boolean FREQUENT = true;
 
     @Override
     public void simpleInitApp() {
@@ -199,7 +200,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         public void endTurn() {
             battle.endTurn();
             creatureInCommand = battle.getCreaturePlayingTurn();
-            ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
+            ((GameState)(nifty.getCurrentScreen().getScreenController())).update(!FREQUENT);
             // Enemy turn(s), if next
         }
 
@@ -269,7 +270,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                     battleInProgress = false;
                 } else {
                     battle.refreshCreatureList();
-                    ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
+                    ((GameState)(nifty.getCurrentScreen().getScreenController())).update(!FREQUENT);
                 }
 
             }
@@ -476,7 +477,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     public void simpleUpdate(float tpf) {
         if (!gameState.equals("outOfLevel")) {
             if (battleInProgress) {
-        //((GameState)(nifty.getCurrentScreen().getScreenController())).update();
+        ((GameState)(nifty.getCurrentScreen().getScreenController())).update(FREQUENT);
                 if (!battle.isWon()) {
                     if (noMotionEventPlaying() && !movingCreature) {
                         if (lastDamageNode != null) {
@@ -506,7 +507,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                                     gameState = "idle";
                                     battle.endTurn();
                                     creatureInCommand = battle.getCreaturePlayingTurn();                                    
-                                    ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
+                                    ((GameState)(nifty.getCurrentScreen().getScreenController())).update(!FREQUENT);
                                 }
                             }
                         } else if (!(gameState.equals("move") || gameState.equals("skill"))) {
@@ -519,7 +520,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 playedPreBattleCinematic = true;
                 battle.start();  
                 creatureInCommand = battle.getCreaturePlayingTurn();
-                ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
+                ((GameState)(nifty.getCurrentScreen().getScreenController())).update(!FREQUENT);
                 battleInProgress = true;
             } else if (!playedPostBattleCinematic) {
                 battleInProgress = false;

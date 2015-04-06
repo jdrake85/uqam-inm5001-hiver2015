@@ -6,9 +6,12 @@ package gameLogic;
 
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
+import com.jme3.animation.AnimEventListener;
+import com.jme3.animation.LoopMode;
 import com.jme3.asset.AssetManager;
 import com.jme3.cinematic.MotionPath;
 import com.jme3.cinematic.events.MotionEvent;
+import com.jme3.input.controls.ActionListener;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
@@ -17,17 +20,20 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import static gameLogic.FakeMain2.creatureInCommand;
 import static gameLogic.FakeMain2.findAnimControl;
+import static gameLogic.FakeMain2.mainTransform;
+import gameLogic.pathfinding.CoordPath;
+import gameLogic.pathfinding.Coordinates;
 import gameLogic.skills.Skill;
 
 /**
  *
  * @author User
  */
-public class Creature extends Geometry {
+public class Creature {
 
     private static final int COST_OF_STEP = 2;
-    private int level = 8;
     private String name = "noName";
     private int maxHealth = 16;
     private int health = maxHealth;
@@ -40,15 +46,13 @@ public class Creature extends Geometry {
     private Skill[] skills;
     private boolean isGood = true;
     private boolean isImpaired = false;
-    private Spatial geometry3D;
+    public Spatial geometry3D;
     private int turnsAssigned = 0;
-    
     public AnimControl creatureControl;
     public AnimChannel creatureChannel;
-    
     private String picturePath = null;
-    
-    public Creature(String name) {
+
+    public Creature(String name, AnimEventListener listener) {
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
         Box box = new Box(0.2f, 1.5f, 0.2f);
@@ -56,48 +60,58 @@ public class Creature extends Geometry {
         //geometry3D = (Node) assetManager.loadModel("Hero.scene");
         geometry3D.setMaterial(FakeMain2.redZombie);
         FakeMain2.charNode.attachChild(geometry3D);
+        this.addAnimationListener(listener);
     }
-    
-    public Creature(String name, AssetManager assetManager) {
+
+    public Creature(String name, AssetManager assetManager, AnimEventListener listener) {
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
         /*Box box = new Box(0.2f, 1.5f, 0.2f);
-        geometry3D = new Geometry(name, box);*/
+         geometry3D = new Geometry(name, box);*/
         geometry3D = (Node) assetManager.loadModel("Zombie.scene");
         geometry3D.setLocalScale(.025f);
         geometry3D.setMaterial(FakeMain2.redZombie);
-        
+
         creatureControl = findAnimControl(geometry3D);
         creatureChannel = creatureControl.createChannel();
         creatureChannel.setAnim("Idle");
-        
+
+        //skillChannel = creatureControl.createChannel();
+        //skillChannel.setLoopMode(LoopMode.DontLoop);
+
         FakeMain2.charNode.attachChild(geometry3D);
+        this.addAnimationListener(listener);
     }
 
-    public Creature(String name, Material material) {
+    public Creature(String name, Material material, AnimEventListener listener) {
         //this(name);
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
         geometry3D = FakeMain2.heroScene; // WIP; node is assigned to Spatial..
         geometry3D.setMaterial(material);
         FakeMain2.charNode.attachChild(geometry3D);
+        this.addAnimationListener(listener);
     }
-    
-    public Creature(String name, Material material, AssetManager assetManager) {
+
+    public Creature(String name, Material material, AssetManager assetManager, AnimEventListener listener) {
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
         geometry3D = (Node) assetManager.loadModel(name + ".scene");
         geometry3D.setLocalScale(.025f);
         geometry3D.setMaterial(material);
-        
+
         creatureControl = findAnimControl(geometry3D);
         creatureChannel = creatureControl.createChannel();
         creatureChannel.setAnim("Idle");
-        
+
+        //skillChannel = creatureControl.createChannel();
+        //skillChannel.setLoopMode(LoopMode.DontLoop);
+
         FakeMain2.charNode.attachChild(geometry3D);
+        this.addAnimationListener(listener);
     }
-    
-    public Spatial getSpatial() { 
+
+    public Spatial getSpatial() {
         return geometry3D;
     }
 
@@ -114,26 +128,14 @@ public class Creature extends Geometry {
     public void hideCreatureOn3DBoard() {
         geometry3D.removeFromParent();
     }
-    
-   public MotionEvent generateMotionEventForMovingCreatureOn3DBoard(MotionPath path, int stepCount) {
-       //geometry3D.setLocalTranslation(new Vector3f(xDest, -1, yDest));
-       //System.out.println("** ANIMATION **");
-       MotionEvent motionControl = new MotionEvent(geometry3D, path);
-       motionControl.setDirectionType(MotionEvent.Direction.PathAndRotation);
-       motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
-       motionControl.setSpeed(20f/stepCount);
-       
-       return motionControl;
-       /*
-       int maxFrame = 9999999;
-       float translationX = (xDest - xInit);// / (float) maxFrame;
-       float translationY = (yDest - yInit);// / (float) maxFrame;
-       Vector3f v = geometry3D.getLocalTranslation();
-      
-       for (int i = 0; i < maxFrame; i++) {
-           geometry3D.setLocalTranslation(v.x + translationX , v.y , v.z + translationY);
-       }*/
-   } 
+
+    public MotionEvent generateMotionEventForMovingCreatureOn3DBoard(MotionPath path, int stepCount) {
+        MotionEvent motionControl = new MotionEvent(geometry3D, path);
+        motionControl.setDirectionType(MotionEvent.Direction.PathAndRotation);
+        motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
+        motionControl.setSpeed(20f / stepCount);
+        return motionControl;
+    }
 
     public void displayStats() {
         String output = name + ": HEALTH: " + health
@@ -255,15 +257,15 @@ public class Creature extends Geometry {
     public void setEnergy(int energy) {
         this.energy = energy;
     }
-    
-    public void setMaxEnergy(int maxEnergy) { 
+
+    public void setMaxEnergy(int maxEnergy) {
         this.maxEnergy = energy = maxEnergy;
     }
-    
+
     public int getMaxEnergy() {
         return maxEnergy;
     }
-    
+
     public void setPower(int power) {
         this.power = power;
     }
@@ -276,14 +278,13 @@ public class Creature extends Geometry {
         cumulativeTurnSpeed += speed;
     }
 
-
     public void setSpeed(int speed) {
         this.speed = speed;
         this.cumulativeTurnSpeed = speed;
     }
-    
+
     public void setCumulativeSpeed(int cumulativeSpeed) {
-       cumulativeTurnSpeed = cumulativeSpeed;
+        cumulativeTurnSpeed = cumulativeSpeed;
     }
 
     public void incrementTurnsAssigned() {
@@ -293,15 +294,15 @@ public class Creature extends Geometry {
     public int getTurnsAssigned() {
         return turnsAssigned;
     }
-    
+
     public int getOriginalSpeed() {
         return speed;
     }
-    
+
     public boolean isGood() {
         return isGood;
     }
-    
+
     public void initializeTurnEnergy() {
         if (isImpaired) {
             energy = maxEnergy / 2;
@@ -317,7 +318,7 @@ public class Creature extends Geometry {
     public int getMaxHealth() {
         return maxHealth;
     }
-    
+
     public void setMaxHealth(int maxHealth) {
         this.maxHealth = health = maxHealth;
     }
@@ -331,6 +332,19 @@ public class Creature extends Geometry {
         }
     }
 
+    public void animateSkill(String animationType) {
+        try {
+            //System.out.println(animationType);
+            // create a channel and start the wobble animation
+            creatureChannel.setAnim(animationType);
+            creatureChannel.setLoopMode(LoopMode.DontLoop);
+            FakeMain2.movingCreature = true;
+
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     void animateIdle() {
         try {
             // create a channel and start the wobble animation
@@ -339,20 +353,35 @@ public class Creature extends Geometry {
             e.printStackTrace();
         }
     }
-    
+
     public void setPicturePath(String picturePath) {
         this.picturePath = picturePath;
     }
-    
-    public String getPicturePath() { 
+
+    public String getPicturePath() {
         return picturePath;
     }
 
-    /**
-     * @return the skills
-     */
-    public Skill[] getSkills() {
-        return skills;
+    public void addAnimationListener(AnimEventListener main) {
+        creatureControl.addListener(main);
     }
-    
+
+    void rotateModelTowardsCoordinates(Coordinates originatingCoords, Coordinates targetCoords) {
+        Coordinates closestAdjacentCoords = originatingCoords.getAdjacentCoordinatesNearestTo(targetCoords);
+        String facingDirection = originatingCoords.getCardinalDirectionTowards(closestAdjacentCoords);
+        turnToFaceDirection(facingDirection);
+    }
+
+    private void turnToFaceDirection(String direction) {
+        Quaternion facingRotation = new Quaternion();
+        if (direction.equals("+x")) {
+            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(0f, Vector3f.UNIT_Y));  
+        } else if (direction.equals("-x")) {
+            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(FastMath.PI, Vector3f.UNIT_Y));  
+        } else if (direction.equals("+y")) {
+            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));  
+        } else if (direction.equals("-y")) {
+            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));  
+        }
+    }
 }

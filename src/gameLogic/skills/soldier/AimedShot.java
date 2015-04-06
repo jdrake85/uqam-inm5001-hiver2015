@@ -16,6 +16,7 @@ public class AimedShot extends RangedSkill{
     
     public AimedShot(int energyCost, int power) {
         super("Aimed Shot", energyCost, power, 6);
+        setAnimationType("Skill1");
     }
 
     @Override

@@ -101,6 +101,24 @@ public class Coordinates implements Comparable {
         return nextCoords;
     }
 
+    public String getCardinalDirectionTowards(Coordinates coords) {
+        String direction = null;
+        if (!this.equals(coords)) {
+            int otherXCoord = coords.getXCoord();
+            int otherYCoord = coords.getYCoord();
+            if (otherXCoord - xCoord > 0) {
+                direction = "+x";
+            } else if (otherXCoord - xCoord < 0) {
+                direction = "-x";
+            } else if (otherYCoord - yCoord > 0) {
+                direction = "+y";
+            } else {
+                direction = "-y";
+            }
+        }
+        return direction;
+    }
+
     public Coordinates getAdjacentCoordinatesNearestTo(Coordinates coords) {
         Coordinates adjacentCoords;
         int xDiff = coords.getXCoord() - xCoord;
@@ -111,7 +129,7 @@ public class Coordinates implements Comparable {
             adjacentCoords = new Coordinates(xCoord + xStep, yCoord);
         } else {
             adjacentCoords = new Coordinates(xCoord, yCoord + yStep);
-        } 
+        }
         return adjacentCoords;
     }
 
@@ -172,7 +190,7 @@ public class Coordinates implements Comparable {
             int otherXCoord = otherCoords.getXCoord();
             int otherYCoord = otherCoords.getYCoord();
             if (xCoord < otherXCoord || (xCoord == otherXCoord && yCoord < otherYCoord)) {
-                comparison = -1; 
+                comparison = -1;
             } else if (xCoord > otherXCoord || (xCoord == otherXCoord && yCoord > otherYCoord)) {
                 comparison = 1;
             }

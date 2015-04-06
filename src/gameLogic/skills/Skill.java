@@ -22,6 +22,8 @@ public abstract class Skill {
     protected int power;
     protected Coordinates originatingCoords = null;
     protected Coordinates targetCoords = null;
+    protected String animationType = null;
+    
 
     public Skill(String name, int energyCost, int power) {
         this.name = name;
@@ -82,4 +84,11 @@ public abstract class Skill {
         return coordsList;
     }
     
+    public void setAnimationType(String animationType) {
+        this.animationType = animationType;
+    }
+    
+    public String getAnimationType() {
+        return animationType;
+    }
 }

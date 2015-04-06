@@ -15,6 +15,7 @@ public class Push extends MeleeSkill{
     
     public Push(int energyCost, int power) {
         super("Push", energyCost, power, true, false);
+        setAnimationType("Skill2");
     }
 
     @Override

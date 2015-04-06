@@ -15,6 +15,7 @@ public class Knockback extends MeleeSkill{
     
     public Knockback(int energyCost, int power) {
         super("Knockback", energyCost, power, true, true);
+        setAnimationType("Skill1");
     }
 
     @Override

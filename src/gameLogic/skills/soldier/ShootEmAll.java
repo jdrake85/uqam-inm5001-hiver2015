@@ -16,6 +16,7 @@ public class ShootEmAll extends EverywhereSkill {
 
     public ShootEmAll(int energyCost, int power) {
         super("Shoot Em All", energyCost, power, "bad");
+        setAnimationType("Skill1");
     }
 
     @Override

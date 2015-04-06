@@ -16,6 +16,7 @@ public class Strike extends MeleeSkill{
     
     public Strike(int energyCost, int power) {
         super("Strike", energyCost, power);
+        setAnimationType("Skill1");
     }
 
     @Override

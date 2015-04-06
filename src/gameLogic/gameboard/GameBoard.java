@@ -12,10 +12,6 @@ import gameLogic.skills.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author User
- */
 public class GameBoard {
 
     private Tile[][] tiles;
@@ -34,13 +30,13 @@ public class GameBoard {
             }
         }
     }
-    
+
     public void clearGameBoard() {
         for (int i = 0; i < xDim; i++) {
             for (int j = 0; j < yDim; j++) {
                 if (tiles[i][j] != null) {
                     Creature occupier = tiles[i][j].getOccupier();
-                    if (occupier != null) { 
+                    if (occupier != null) {
                         tiles[i][j].removeOccupier();
                         occupier.hideCreatureOn3DBoard();
                     }
@@ -129,7 +125,7 @@ public class GameBoard {
             Tile initialTile = getTileAt(initialCoords);
             Tile destinationTile = getTileAt(destinationCoords);
             destinationTile.addOccupier(creature);
-            initialTile.removeOccupier();  
+            initialTile.removeOccupier();
             //creature.displayCreatureOn3DBoard(destinationCoords.getXCoord(),destinationCoords.getYCoord());           
 
         } else {
@@ -286,7 +282,7 @@ public class GameBoard {
                 moveCreatureFromTo(coords, nextCoords);
                 previousCoords = coords;
                 coords = nextCoords;
-                creature.displayCreatureOn3DBoard(nextCoords.getXCoord(),nextCoords.getYCoord());  
+                creature.displayCreatureOn3DBoard(nextCoords.getXCoord(), nextCoords.getYCoord());
             } else {
                 break;
             }
@@ -307,47 +303,47 @@ public class GameBoard {
         }
     }
 
-    public void draw() {
-        draw(null);
+    public void drawWithBlankOverlay() {
+        drawWithMovesOverlay(null);
     }
 
-    // ASCII drawing disabled
-    public void draw(boolean[][] overlay) {
+    public void drawWithMovesOverlay(boolean[][] overlay) {
         //System.out.println();
         boolean withOverlay = overlay != null;
-        for (int j = 7; j >= 0; j--) {
-            //String lineDrawing = j + " | ";
-            for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
                 char tileDrawing = drawTile(i, j);
                 if (withOverlay && overlay[i][j]) {
                     if (tileDrawing == ' ') {
-                        //lineDrawing += '*'; // Overlay is over empty tile
-                        //TODO
                         FakeMain2.g[i][j].setMaterial(FakeMain2.greenMat);
                     } else {
-                        //lineDrawing += '#'; // Overlay is over occupied tile
                         FakeMain2.g[i][j].setMaterial(FakeMain2.redMat);
                     }
-                } else {
-                    //lineDrawing += drawTile(i, j);
                 }
-                //lineDrawing += " | ";
             }
-            //System.out.println(lineDrawing);
         }
-        //drawXAxisDetails();
-        //System.out.println();
     }
 
-    private void drawXAxisDetails() {
-        String xAxis = "  |";
-        String xLabels = "   ";
-        for (int n = 0; n < 8; n++) {
-            xAxis += "----";
-            xLabels += " " + n + " |";
+    public void drawWithSkillOverlay(Creature creature, boolean[][] overlay) {
+        if (creature != null && overlay != null) {
+            boolean creatureIsGood = creature.isGood();
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (overlay[i][j]) {
+                        if (tiles[i][j].isOccupied()) {
+                            Creature occupier = tiles[i][j].getOccupier();
+                            if (creatureIsGood != occupier.isGood()) {
+                                FakeMain2.g[i][j].setMaterial(FakeMain2.redMat);
+                            } else {
+                                FakeMain2.g[i][j].setMaterial(FakeMain2.blueMat);
+                            }
+                        } else {
+                            FakeMain2.g[i][j].setMaterial(FakeMain2.greenMat);
+                        }
+                    }
+                }
+            }
         }
-        System.out.println(xAxis);
-        System.out.println(xLabels);
     }
 
     private char drawTile(int i, int j) {
@@ -366,13 +362,12 @@ public class GameBoard {
     }
 
     public boolean[][] getSkillOverlay(Skill skill) {
+        //TODO: distinguish between good and bad creatures
         boolean[][] skillUseOverlay = null;
         if (skill instanceof MeleeSkill) {
-            skillUseOverlay = generateBooleanOverlayWithAllValuesSetTo(false);
-            adjustOverlayForMeleeSkill(skill, skillUseOverlay);
+            skillUseOverlay = generateMeleeOverlay(skill);
         } else if (skill instanceof RangedSkill) {
-            skillUseOverlay = new boolean[xDim][yDim];
-            adjustOverlayForRangedSkill((RangedSkill) skill, skillUseOverlay);
+            skillUseOverlay = generateRangedOverlay((RangedSkill) skill);
         } else if (skill instanceof EverywhereSkill) {
             skillUseOverlay = generateBadCreaturesOverlay();
         } else if (skill instanceof DirectionnalSkill) {
@@ -391,38 +386,42 @@ public class GameBoard {
         return overlay;
     }
 
-    private void adjustOverlayForMeleeSkill(Skill skill, boolean[][] skillUseOverlay) {
+    private boolean[][] generateMeleeOverlay(Skill skill) {
+        boolean[][] overlay = generateBooleanOverlayWithAllValuesSetTo(false);
         Coordinates originatingCoords = skill.getOriginatingFrom();
         int xCoord = originatingCoords.getXCoord();
         int yCoord = originatingCoords.getYCoord();
         //skillUseOverlay[xCoord][yCoord] = true; // TODO: USE WHEN FINISHED WITH ASCII GRAPHICS
         if (tileIsWithinGameBoard(xCoord, yCoord + 1)) {
-            skillUseOverlay[xCoord][yCoord + 1] = true;
+            overlay[xCoord][yCoord + 1] = true;
         }
         if (tileIsWithinGameBoard(xCoord + 1, yCoord)) {
-            skillUseOverlay[xCoord + 1][yCoord] = true;
+            overlay[xCoord + 1][yCoord] = true;
         }
         if (tileIsWithinGameBoard(xCoord, yCoord - 1)) {
-            skillUseOverlay[xCoord][yCoord - 1] = true;
+            overlay[xCoord][yCoord - 1] = true;
         }
         if (tileIsWithinGameBoard(xCoord - 1, yCoord)) {
-            skillUseOverlay[xCoord - 1][yCoord] = true;
+            overlay[xCoord - 1][yCoord] = true;
         }
+        return overlay;
     }
 
-    private void adjustOverlayForRangedSkill(RangedSkill skill, boolean[][] skillUseOverlay) {
+    private boolean[][] generateRangedOverlay(RangedSkill skill) {
+        boolean[][] overlay = new boolean[xDim][yDim];
         Coordinates originatingCoords = skill.getOriginatingFrom();
         int xCoord = originatingCoords.getXCoord();
         int yCoord = originatingCoords.getYCoord();
         int range = skill.getRange();
         for (int i = 0; i < xDim; i++) {
             for (int j = 0; j < yDim; j++) {
-                skillUseOverlay[i][j] = (Math.abs(i - xCoord) + Math.abs(j - yCoord)) <= range;
+                overlay[i][j] = (Math.abs(i - xCoord) + Math.abs(j - yCoord)) <= range;
             }
         }
-        skillUseOverlay[xCoord][yCoord] = false; // More efficient to negate after loops
+        overlay[xCoord][yCoord] = false; // More efficient to negate after loops
+        return overlay;
     }
-    
+
     private boolean[][] generateBadCreaturesOverlay() {
         boolean[][] overlay = new boolean[xDim][yDim];
         for (int i = 0; i < xDim; i++) {
@@ -437,7 +436,7 @@ public class GameBoard {
         }
         return overlay;
     }
-    
+
     private boolean[][] generateDirectionnalOverlay(DirectionnalSkill skill) {
         boolean[][] overlay = new boolean[xDim][yDim];
         Coordinates originatingCoords = skill.getOriginatingFrom();
@@ -448,17 +447,17 @@ public class GameBoard {
             for (int j = 0; j < yDim; j++) {
                 int xDiff = Math.abs(xCoord - i);
                 int yDiff = Math.abs(yCoord - j);
-                overlay[i][j] = !(xDiff > range || yDiff > range || originatingCoords.isDiagonalTo(new Coordinates(i,j)));
+                overlay[i][j] = !(xDiff > range || yDiff > range || originatingCoords.isDiagonalTo(new Coordinates(i, j)));
             }
         }
         overlay[originatingCoords.getXCoord()][originatingCoords.getYCoord()] = false; // More efficient to negate after loops
         return overlay;
     }
 
-    // Error here for mustard gas
-    public void performTargetedSkill(Skill skill) {
+    public List<Creature> performTargetedSkill(Skill skill) {
         Coordinates targetCoords = skill.getTargetCoordinates();
         List<Coordinates> affectedCoords = skill.generateAffectedCoordinatesFrom(targetCoords);
+        List<Creature> affectedCreatures = new ArrayList<Creature>();
         for (Coordinates coords : affectedCoords) {
             Tile targetTile = getTileAt(coords);
             if (targetTile != null && targetTile.isOccupied()) {
@@ -466,13 +465,14 @@ public class GameBoard {
                 int damage = skill.performOn(target);
 
                 if (damage > 0) {
+                    affectedCreatures.add(target);
                     System.out.println(target + " receives " + damage + " damage from " + skill + ", is at " + target.getHealth() + "/" + target.getMaxHealth());
                     if (skill.hasKnockback()) {
-                            knockbackCreatureFromSkill(target, skill);
-                        }
+                        knockbackCreatureFromSkill(target, skill);
+                    }
                     if (!target.isAlive()) {
                         System.out.println("...and expires!");
-                        
+
                     }
                 } else if (damage == 0) {
                     System.out.println(skill + "misses!");
@@ -481,15 +481,16 @@ public class GameBoard {
                 }
             }
         }
-    } 
-    
-    public boolean containsTileWithCoordinates(Coordinates coords) { 
+        return affectedCreatures;
+    }
+
+    public boolean containsTileWithCoordinates(Coordinates coords) {
         int xCoord = coords.getXCoord();
         int yCoord = coords.getYCoord();
         return 0 <= xCoord && xCoord <= 7 && 0 <= yCoord && yCoord <= 7;
     }
-    
-    public Creature getCreatureAt(Coordinates coords) { 
+
+    public Creature getCreatureAt(Coordinates coords) {
         Creature creatureFound = null;
         if (containsTileWithCoordinates(coords)) {
             creatureFound = tiles[coords.getXCoord()][coords.getYCoord()].getOccupier();

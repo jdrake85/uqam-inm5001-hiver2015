@@ -6,6 +6,7 @@ package gameLogic.creatures;
 
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
+import com.jme3.animation.AnimEventListener;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import gameLogic.Creature;
@@ -26,8 +27,8 @@ public class Zombie extends Creature {
     
     
     
-    public Zombie(String name, AssetManager assetManager) {
-        super(name, assetManager);
+    public Zombie(String name, AssetManager assetManager, AnimEventListener listener) {
+        super(name, assetManager, listener);
         this.setAlignment("bad");
         setSkillAsNumber(new Strike(15, 1), 1);
         setPicturePath("assets/Interface/Images/" + name + ".png");
@@ -62,5 +63,9 @@ public class Zombie extends Creature {
     
     public int getStepsToCurrentTarget() {
         return stepsToCurrentTarget;
+    }
+
+    public boolean hasEnoughEnergyToAttack() {
+        return this.canPayEnergyCostForSkillNumber(1);
     }
 }

@@ -43,7 +43,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     }
     protected Node pivot = new Node("pivot");
     protected Node mainNode = new Node("mainNode");
-    protected static Node charNode = new Node("charNode");
+    public static Node charNode = new Node("charNode");
     public static String gameState = "outOfLevel"; // idle, move, skill, outOfLevel, enemyBusy, enemyIdle
     public static Material greenMat; //TODO remove
     public static Material redMat; //TODO remove
@@ -82,6 +82,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     public int level = 1;
     public static boolean movingCreature = false;
     public static Transform mainTransform;
+    public static Node lastDamageNode = null;
 
     @Override
     public void simpleInitApp() {
@@ -92,7 +93,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
         // HERO GRAPHICS
         heroMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        heroMat.setColor("Color", new ColorRGBA(0f, 1f, 0f, 0f));
+        heroMat.setColor("Color", new ColorRGBA(0f, 0f, 1f, 0f));
         assetManager.registerLocator("assets/Models/Hero/", FileLocator.class);
 
         // NURSE GRAPHICS
@@ -101,10 +102,10 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
         // SOLDIER GRAPHICS
         soldierMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        soldierMat.setColor("Color", new ColorRGBA(0f, 0f, 1f, 0f));
+        soldierMat.setColor("Color", new ColorRGBA(0f, 1f, 0f, 0f));
 
         // (DEBUGGING) Specifiy starting level here (first level is 1)
-        level = 6;
+        level = 1;
     }
 
     private void initKeys() {
@@ -428,6 +429,10 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
             if (battleInProgress) {
                 if (!battle.isWon()) {
                     if (noMotionEventPlaying() && !movingCreature) {
+                        if (lastDamageNode != null) {
+                            lastDamageNode.getParent().detachChild(lastDamageNode);
+                            lastDamageNode = null;
+                        }
                         if (gameState.equals("idle") && !creatureInCommand.creatureChannel.getAnimationName().equals("Idle")) {
                             creatureInCommand.animateIdle();
                         } else if (currentMovingZombie != null) {

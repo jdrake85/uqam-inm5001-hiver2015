@@ -195,7 +195,7 @@ public class GameBattle {
             String animationType = skill.getAnimationType();
             creature.rotateModelTowardsCoordinates(originatingCoords, targetCoords);
             creature.animateSkill(animationType);
-            List<Creature> affectedCreatures = gameboard.performTargetedSkill(skill);
+            attackEvent = gameboard.performTargetedSkill(skill);
             removeDeadCreaturesFromTurnOrder();
             while (creaturePriority.size() < 5) {
                 addCreatureListOnceToCreaturePriority();

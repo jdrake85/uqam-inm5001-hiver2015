@@ -4,6 +4,15 @@
  */
 package gameLogic.gameboard;
 
+import com.jme3.cinematic.MotionPath;
+import com.jme3.cinematic.events.MotionEvent;
+import com.jme3.material.Material;
+import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.scene.shape.Box;
 import gameLogic.Creature;
 import gameLogic.FakeMain2;
 import gameLogic.pathfinding.Coordinates;
@@ -454,10 +463,10 @@ public class GameBoard {
         return overlay;
     }
 
-    public List<Creature> performTargetedSkill(Skill skill) {
+    public MotionEvent performTargetedSkill(Skill skill) {
         Coordinates targetCoords = skill.getTargetCoordinates();
         List<Coordinates> affectedCoords = skill.generateAffectedCoordinatesFrom(targetCoords);
-        List<Creature> affectedCreatures = new ArrayList<Creature>();
+        MotionEvent motionControl = null;
         for (Coordinates coords : affectedCoords) {
             Tile targetTile = getTileAt(coords);
             if (targetTile != null && targetTile.isOccupied()) {
@@ -465,7 +474,7 @@ public class GameBoard {
                 int damage = skill.performOn(target);
 
                 if (damage > 0) {
-                    affectedCreatures.add(target);
+                    motionControl = displayDamage(damage, target);
                     System.out.println(target + " receives " + damage + " damage from " + skill + ", is at " + target.getHealth() + "/" + target.getMaxHealth());
                     if (skill.hasKnockback()) {
                         knockbackCreatureFromSkill(target, skill);
@@ -481,7 +490,7 @@ public class GameBoard {
                 }
             }
         }
-        return affectedCreatures;
+        return motionControl;
     }
 
     public boolean containsTileWithCoordinates(Coordinates coords) {
@@ -497,4 +506,41 @@ public class GameBoard {
         }
         return creatureFound;
     }
+
+    private MotionEvent displayDamage(int damage, Creature target) {
+
+        Node damagePannel = new Node("damagePannel");
+        damagePannel.setLocalTranslation(target.geometry3D.getLocalTranslation());
+        
+        Box b1 = new Box(0.1f, 0.2f, 0f);
+        Geometry tens = new Geometry("Box1", b1);
+        tens.setMaterial(FakeMain2.soldierMat);
+        tens.setLocalTranslation(tens.getLocalTranslation().add(new Vector3f(-0.15f, 0f, 0.5f)));
+        
+        Box b2 = new Box(0.1f, 0.2f, 0f);
+        Geometry units = new Geometry("Box2", b2);
+        units.setMaterial(FakeMain2.soldierMat);
+        units.setLocalTranslation(units.getLocalTranslation().add(new Vector3f(+0.15f, 0f, 0.5f)));
+        
+        damagePannel.attachChild(tens);
+        damagePannel.attachChild(units);
+        
+        FakeMain2.charNode.attachChild(damagePannel);
+        
+        MotionPath path = new MotionPath();
+        path.addWayPoint(damagePannel.getLocalTranslation());
+        path.addWayPoint(damagePannel.getLocalTranslation().add(new Vector3f(0f, 1.5f, 0f)));
+        
+        MotionEvent motionControl = new MotionEvent(damagePannel, path);
+        motionControl.setDirectionType(MotionEvent.Direction.None);
+        motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
+        motionControl.setSpeed(10f);
+        
+        FakeMain2.lastDamageNode = damagePannel;
+        
+        return motionControl;
+
+        //FakeMain2.charNode.detachChild(damagePannel);
+ 
+    }      
 }

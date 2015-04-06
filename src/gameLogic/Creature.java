@@ -384,4 +384,8 @@ public class Creature {
             geometry3D.setLocalRotation(facingRotation.fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));  
         }
     }
+
+    public Skill[] getSkills() {
+        return skills;
+    }
 }

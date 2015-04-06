@@ -10,27 +10,27 @@
                     <panel id="turnBanner" width="14%" height="100%" backgroundColor="#fff3" childLayout="vertical" align="left" valign="center">
                         <panel id="charTurn1" width="100%" height="20%" backgroundColor="#f003" childLayout="vertical"  align="center" valign="top">
                             <interact onMouseOver="showTurn1Stats()"/>
-                            <image filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                            <image  id="turn1" filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                             </image>
                         </panel>
                         <panel id="charTurn2" width="100%" height="20%" backgroundColor="#0f03" childLayout="vertical" align="center" valign="center">
                             <interact onMouseOver="showTurnv2Stats()"/>
-                            <image filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                            <image  id="turn2" filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                             </image>
                         </panel>
                         <panel id="charTurn3" width="100%" height="20%" backgroundColor="#00f3" childLayout="vertical" align="center" valign="center">
                             <interact onMouseOver="showTurn3Stats()"/>
-                            <image filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                            <image  id="turn3" filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                             </image>
                         </panel>
                         <panel id="charTurn4" width="100%" height="20%" backgroundColor="#f0f3" childLayout="vertical" align="center" valign="center">
                             <interact onMouseOver="showTurn4Stats()"/>
-                            <image filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                            <image  id="turn4" filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                             </image>
                         </panel> 
                         <panel id="charTurn5" width="100%" height="20%" backgroundColor="#0ff3" childLayout="vertical" align="center" valign="bottom">
                             <interact onMouseOver="showTurn5Stats()"/>                          
-                            <image filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                            <image  id="turn5" filename="Interface/Images/None.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                             </image>
                         </panel> 
                     </panel>                
@@ -40,18 +40,18 @@
                                 <interact onClick="mainMenu()"/>
                                 <text id="textMM" font="Interface/Fonts/Arial.fnt" color="#00f" text="Main menu" align="center" valign="center" />
                             </panel>
-                            <panel id="topSpacer" width="60%" height="100%" backgroundColor="#fff5" childLayout="horizontal" align="center" valign="top">
-                    
+                            <panel id="topSpacer" width="60%" height="100%" backgroundColor="#fff5" childLayout="center" align="center" valign="top">
+                                <text id="levelTitle" font="Interface/Fonts/Arial.fnt" color="#00f" text="Level 0" align="center" valign="center" />
                             </panel>
                             <panel id="infoBtn" width="20%" height="100%" backgroundColor="#fff0" childLayout="center" align="right" valign="top">
-                                <interact onClick="lastInfo()"/>
+                                <interact onClick="toggleInfo()"/>
                                 <text id="textLI" font="Interface/Fonts/Arial.fnt" color="#00f" text="Toggle Info" align="center" valign="center" />
                             </panel>
                         </panel> 
                         <panel id="midAreaSpacer" width="100%" height="79%" backgroundColor="#0000" childLayout="vertical" align="center" valign="center">
                         </panel> 
                         <panel id="infoArea" width="100%" height="16%" backgroundColor="#fff0" childLayout="vertical" align="center" valign="bottom">
-                            <text id="infoText" font="Interface/Fonts/Arial.fnt" width="90%" height="90%" color="#fff" text="This area should contain info recieved after actions, wrapping this text has also been enabled." align="center" valign="center" wrap="true"/>
+                            <text id="infoText" font="Interface/Fonts/Arial.fnt" width="90%" height="90%" color="#fff" text="This area should contain info recieved after actions, wrapping this text has also been enabled." align="left" valign="center" wrap="true"/>
                         </panel> 
                     </panel> 
                 </panel> 
@@ -61,11 +61,11 @@
                         <panel id="hero1PicNstats" width="100%" height="64%" backgroundColor="#0ff3" childLayout="horizontal" align="center" valign="top">
                             <panel id="hero1stats" width="20%" height="100%" backgroundColor="#f0f3" childLayout="horizontal" align="left">                      
                                 <panel id="hero1hp" width="50%" height="100%" backgroundColor="#f0f3" childLayout="vertical" align="left">
-                                    <image id="hero1health" filename="Interface/Images/hero1hp.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                                    <image id="hero1health" filename="Interface/Images/GreyedHnE.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                                     </image>
                                 </panel> 
                                 <panel id="hero1energy" width="50%" height="100%" backgroundColor="#0f03" childLayout="vertical" align="right">
-                                    <image id="hero1enr" filename="Interface/Images/hero1energy.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                                    <image id="hero1enr" filename="Interface/Images/GreyedHnE.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                                     </image>
                                 </panel>   
                             </panel> 
@@ -99,12 +99,12 @@
                         <panel id="hero1actions" width="100%" height="16%" backgroundColor="#fff3" childLayout="horizontal" align="center" valign="bottom">
                             <panel id="hero1move" width="50%" height="100%" childLayout="vertical"  backgroundColor="#aa03" align="left" valign="center">
                                 <interact onClick="hero1move()"/>
-                                <image id="hero1mv" filename="Interface/Images/hero1move.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero1mv" filename="Interface/Images/GreyedMnE.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero1endTurn" width="50%" height="100%" childLayout="vertical"  backgroundColor="#a0a3" align="right" valign="center">
                                 <interact onClick="hero1endTurn()"/>
-                                <image id="hero1et" filename="Interface/Images/hero1EndTurn.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero1et" filename="Interface/Images/GreyedMnE.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                         </panel>
@@ -114,11 +114,11 @@
                         <panel id="hero2PicNstats" width="100%" height="64%" backgroundColor="#0ff3" childLayout="horizontal" align="center" valign="top">
                             <panel id="hero2stats" width="20%" height="100%" backgroundColor="#f0f3" childLayout="horizontal" align="left">                      
                                 <panel id="hero2hp" width="50%" height="100%" backgroundColor="#f0f3" childLayout="vertical" align="left">
-                                    <image id="hero2health" filename="Interface/Images/hero2hp.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                                    <image id="hero2health" filename="Interface/Images/GreyedHnE.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                                     </image>
                                 </panel> 
                                 <panel id="hero2energy" width="50%" height="100%" backgroundColor="#0f03" childLayout="vertical" align="right">
-                                    <image id="hero2enr" filename="Interface/Images/hero2energy.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                                    <image id="hero2enr" filename="Interface/Images/GreyedHnE.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                                     </image>
                                 </panel>   
                             </panel> 
@@ -152,12 +152,12 @@
                         <panel id="hero2actions" width="100%" height="16%" backgroundColor="#fff3" childLayout="horizontal" align="center" valign="bottom">
                             <panel id="hero2move" width="50%" height="100%" childLayout="vertical"  backgroundColor="#aa03" align="left" valign="center">
                                 <interact onClick="hero2move()"/>
-                                <image id="hero2mv" filename="Interface/Images/hero2move.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero2mv" filename="Interface/Images/GreyedMnE.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero2endTurn" width="50%" height="100%" childLayout="vertical"  backgroundColor="#a0a3" align="right" valign="center">
                                 <interact onClick="hero2endTurn()"/>
-                                <image id="hero2et" filename="Interface/Images/hero2EndTurn.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero2et" filename="Interface/Images/GreyedMnE.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                         </panel>
@@ -167,11 +167,11 @@
                         <panel id="hero3PicNstats" width="100%" height="64%" backgroundColor="#0ff3" childLayout="horizontal" align="center" valign="top">
                             <panel id="hero3stats" width="20%" height="100%" backgroundColor="#f0f3" childLayout="horizontal" align="left">                      
                                 <panel id="hero3hp" width="50%" height="100%" backgroundColor="#f0f3" childLayout="vertical" align="left">
-                                    <image id="hero3health" filename="Interface/Images/hero3hp.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                                    <image id="hero3health" filename="Interface/Images/GreyedHnE.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                                     </image>
                                 </panel> 
                                 <panel id="hero3energy" width="50%" height="100%" backgroundColor="#0f03" childLayout="vertical" align="right">
-                                    <image id="hero3enr" filename="Interface/Images/hero3energy.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
+                                    <image id="hero3enr" filename="Interface/Images/GreyedHnE.png" childLayout="vertical" valign="center" align="center" height="100%" width="100%" >
                                     </image>
                                 </panel>   
                             </panel> 
@@ -205,12 +205,12 @@
                         <panel id="hero3actions" width="100%" height="16%" backgroundColor="#fff3" childLayout="horizontal" align="center" valign="bottom">
                             <panel id="hero3move" width="50%" height="100%" childLayout="vertical"  backgroundColor="#aa03" align="left" valign="center">
                                 <interact onClick="hero3move()"/>
-                                <image id="hero3mv" filename="Interface/Images/hero3move.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero3mv" filename="Interface/Images/GreyedMnE.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero3endTurn" width="50%" height="100%" childLayout="vertical"  backgroundColor="#a0a3" align="right" valign="center">
                                 <interact onClick="hero3endTurn()"/>
-                                <image id="hero3et" filename="Interface/Images/hero3EndTurn.png" valign="center" align="center" height="100%" width="100%" >
+                                <image id="hero3et" filename="Interface/Images/GreyedMnE.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                         </panel>

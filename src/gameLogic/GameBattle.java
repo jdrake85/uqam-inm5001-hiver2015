@@ -47,7 +47,7 @@ public class GameBattle {
         Skill skill = creature.prepareSkill(skillNumber);
         Coordinates originatingCoords = gameboard.getCreatureCoordinates(creature);
         skill.setOriginatingFrom(originatingCoords);
-        boolean creatureIsGood = creature.isGood();
+        //boolean creatureIsGood = creature.isGood();
         return gameboard.getSkillOverlay(skill);
     }
 
@@ -195,7 +195,7 @@ public class GameBattle {
             String animationType = skill.getAnimationType();
             creature.rotateModelTowardsCoordinates(originatingCoords, targetCoords);
             creature.animateSkill(animationType);
-            List<Creature> affectedCreatures = gameboard.performTargetedSkill(skill);
+            attackEvent = gameboard.performTargetedSkill(skill);
             removeDeadCreaturesFromTurnOrder();
             while (creaturePriority.size() < 5) {
                 addCreatureListOnceToCreaturePriority();
@@ -533,4 +533,5 @@ public class GameBattle {
     public Coordinates getCreatureCoordinates(Creature creature) {
         return gameboard.getCreatureCoordinates(creature);
     }
+   
 }

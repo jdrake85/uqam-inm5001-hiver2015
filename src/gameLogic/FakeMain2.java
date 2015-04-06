@@ -45,7 +45,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     }
     protected Node pivot = new Node("pivot");
     protected Node mainNode = new Node("mainNode");
-    protected static Node charNode = new Node("charNode");
+    public static Node charNode = new Node("charNode");
     public static String gameState = "outOfLevel"; // idle, move, skill, outOfLevel, enemyBusy, enemyIdle
     public static Material greenMat; //TODO remove
     public static Material redMat; //TODO remove
@@ -87,6 +87,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     public int level = 1;
     public static boolean movingCreature = false;
     public static Transform mainTransform;
+    public static Node lastDamageNode = null;
 
     @Override
     public void simpleInitApp() {
@@ -97,7 +98,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
         // HERO GRAPHICS
         heroMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        heroMat.setColor("Color", new ColorRGBA(0f, 1f, 0f, 0f));
+        heroMat.setColor("Color", new ColorRGBA(0f, 0f, 1f, 0f));
         assetManager.registerLocator("assets/Models/Hero/", FileLocator.class);
 
         // NURSE GRAPHICS
@@ -106,10 +107,10 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
         // SOLDIER GRAPHICS
         soldierMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        soldierMat.setColor("Color", new ColorRGBA(0f, 0f, 1f, 0f));
+        soldierMat.setColor("Color", new ColorRGBA(0f, 1f, 0f, 0f));
 
         // (DEBUGGING) Specifiy starting level here (first level is 1)
-        level = 6;
+        level = 1;
     }
 
     private void initKeys() {
@@ -139,32 +140,22 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
 
-            if (noMotionEventPlaying()) {
+            if (noMotionEventPlaying() && !movingCreature) {
                 //Equivalent du premier bouton
                 // TODO; effacer
                 if (name.equals("MoveKey") && !keyPressed && gameState.equals("idle")) {
-                    gameState = "move";
-                    commandType = 0;
-                    battle.drawWithOverlayForCreatureMoves(creatureInCommand);
-                    creatureInCommand.animateMove();  // TODO: specify creature
+                    requestMove();
                 }
 
                 // Ending turn
                 if (name.equals("EndTurnKey") && !keyPressed && gameState.equals("idle")) {
-                    battle.endTurn();
-                    creatureInCommand = battle.getCreaturePlayingTurn();
-                    // Enemy turn(s), if next
+                    endTurn();
 
                 }
 
                 // Ending turn
                 if (name.equals("BannerRefresh") && !keyPressed && gameState.equals("idle")) {
-                    Creature[] priorityBanner = battle.getCreatureTurnOrder();
-                    System.out.print("PRIORITY BANNER: ");
-                    for (Creature creature : priorityBanner) {
-                        System.out.print(creature + ", ");
-                    }
-                    System.out.println();
+                    refreshAndDisplayBanner();
                 }
 
                 if (name.substring(0, 5).equals("Skill") && !keyPressed && gameState.equals("idle")) {
@@ -173,105 +164,148 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                     } catch (Exception e) {
                         commandType = 1;
                     }
-                    gameState = "skill";
-                    battle.drawWithOverlayForCreatureSkill(creatureInCommand, commandType);
+                    requestSkill(commandType);
                 }
 
                 if (name.equals("EnergyKey") && !keyPressed && gameState.equals("idle")) {
-                    creatureInCommand.setEnergy(creatureInCommand.getEnergy() + 20);
-                    System.out.println(creatureInCommand.getEnergy());
+                    increaseEnergy();
                 }
 
                 if (name.equals("RestoreHealthKey") && !keyPressed && gameState.equals("idle")) {
-                    creatureInCommand.receiveDamage(-16);
-                    System.out.println(creatureInCommand + " is now at " + creatureInCommand.getHealth() + " health!");
+                    restoreHealth();
                 }
 
                 if (name.equals("SelectTile") && !keyPressed && gameState.equals("skill")) {
-                    CollisionResults results = new CollisionResults();
-                    Vector2f click2d = inputManager.getCursorPosition();
-                    Vector3f click3d = cam.getWorldCoordinates(
-                            new Vector2f(click2d.x, click2d.y), 0f).clone();
-                    Vector3f dir = cam.getWorldCoordinates(
-                            new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
-                    Ray ray = new Ray(click3d, dir);
-                    pivot.collideWith(ray, results);
-
-                    // Use the results (we mark the hit object)
-                    if (results.size() > 0) {
-                        // The closest collision point is what was truly hit:
-                        Geometry closest = results.getClosestCollision().getGeometry();
-
-                        Vector3f targetTile;
-                        targetTile = closest.getLocalTranslation();
-                        int commandX = (int) targetTile.getX();
-                        int commandY = (int) targetTile.getZ();
-
-                        MotionEvent nextMotionEvent = FakeMain2.performTurn(FakeMain2.commandType, commandX, commandY, FakeMain2.creatureInCommand, FakeMain2.battle);
-                        setAndPlayNextMotionEvent(nextMotionEvent);
-                        // TODO HERE
-
-
-                        /*
-                         MyMaterial greenTile = new MyMaterial(assetManager);
-                         greenTile.setGreenTileMat();
-                         closest.setMaterial(greenTile.getMat());*/
-                        for (int i = 0; i < 8; i++) {
-                            for (int j = 0; j < 8; j++) {
-                                g[i][j].setMaterial(greyMat);
-                                g[i][j].setQueueBucket(Bucket.Translucent);
-                            }
-                        }
-                        if (battle.isWon()) {
-                            System.out.println("<PLACEHOLDER FUNCTION>: battle is won");
-                            gameState = "loadPostBattleCinematic";
-                            battleInProgress = false;
-                        } else {
-                            battle.refreshCreatureList();
-                        }
-
-                    }
-                    gameState = "idle";
-                    // creatureInCommand.animateIdle(); // TODO: specify creature
+                    confirmSkill();
                 }
 
 
                 if (name.equals("SelectTile") && !keyPressed && gameState.equals("move")) {
-                    CollisionResults results = new CollisionResults();
-                    Vector2f click2d = inputManager.getCursorPosition();
-                    Vector3f click3d = cam.getWorldCoordinates(
-                            new Vector2f(click2d.x, click2d.y), 0f).clone();
-                    Vector3f dir = cam.getWorldCoordinates(
-                            new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
-                    Ray ray = new Ray(click3d, dir);
-                    pivot.collideWith(ray, results);
+                    confirmMove();
+                }
+            }
+        }
 
-                    // Use the results (we mark the hit object)
-                    if (results.size() > 0) {
-                        // The closest collision point is what was truly hit:
-                        Geometry closest = results.getClosestCollision().getGeometry();
+        public void requestMove() {
+            gameState = "move";
+            commandType = 0;
+            battle.drawWithOverlayForCreatureMoves(creatureInCommand);
+            creatureInCommand.animateMove();
+        }
 
-                        Vector3f targetTile;
-                        targetTile = closest.getLocalTranslation();
-                        int commandX = (int) targetTile.getX();
-                        int commandY = (int) targetTile.getZ();
+        public void endTurn() {
+            battle.endTurn();
+            creatureInCommand = battle.getCreaturePlayingTurn();
+            // Enemy turn(s), if next
+        }
+
+        public void refreshAndDisplayBanner() {
+            Creature[] priorityBanner = battle.getCreatureTurnOrder();
+            System.out.print("PRIORITY BANNER: ");
+            for (Creature creature : priorityBanner) {
+                System.out.print(creature + ", ");
+            }
+            System.out.println();
+        }
+
+        public void requestSkill(int command) {
+            commandType = command;
+            gameState = "skill";
+            battle.drawWithOverlayForCreatureSkill(creatureInCommand, commandType);
+        }
+
+        public void increaseEnergy() {
+            creatureInCommand.setEnergy(creatureInCommand.getEnergy() + 20);
+            System.out.println(creatureInCommand.getEnergy());
+        }
+
+        public void restoreHealth() {
+            creatureInCommand.receiveDamage(-16);
+            System.out.println(creatureInCommand + " is now at " + creatureInCommand.getHealth() + " health!");
+        }
+
+        public void confirmSkill() {
+            CollisionResults results = new CollisionResults();
+            Vector2f click2d = inputManager.getCursorPosition();
+            Vector3f click3d = cam.getWorldCoordinates(
+                    new Vector2f(click2d.x, click2d.y), 0f).clone();
+            Vector3f dir = cam.getWorldCoordinates(
+                    new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
+            Ray ray = new Ray(click3d, dir);
+            pivot.collideWith(ray, results);
+
+            // Use the results (we mark the hit object)
+            if (results.size() > 0) {
+                // The closest collision point is what was truly hit:
+                Geometry closest = results.getClosestCollision().getGeometry();
+
+                Vector3f targetTile;
+                targetTile = closest.getLocalTranslation();
+                int commandX = (int) targetTile.getX();
+                int commandY = (int) targetTile.getZ();
+
+                MotionEvent nextMotionEvent = FakeMain2.performTurn(FakeMain2.commandType, commandX, commandY, FakeMain2.creatureInCommand, FakeMain2.battle);
+                setAndPlayNextMotionEvent(nextMotionEvent);
+                // TODO HERE
 
 
-                        MotionEvent nextMotionEvent = FakeMain2.performTurn(0, commandX, commandY, FakeMain2.creatureInCommand, FakeMain2.battle);
-                        setAndPlayNextMotionEvent(nextMotionEvent);
+                /*
+                 MyMaterial greenTile = new MyMaterial(assetManager);
+                 greenTile.setGreenTileMat();
+                 closest.setMaterial(greenTile.getMat());*/
+                for (int i = 0; i < 8; i++) {
+                    for (int j = 0; j < 8; j++) {
+                        g[i][j].setMaterial(greyMat);
+                        g[i][j].setQueueBucket(Bucket.Translucent);
+                    }
+                }
+                if (battle.isWon()) {
+                    System.out.println("<PLACEHOLDER FUNCTION>: battle is won");
+                    gameState = "loadPostBattleCinematic";
+                    battleInProgress = false;
+                } else {
+                    battle.refreshCreatureList();
+                }
 
-                        gameState = "idle";
-                        //creatureInCommand.animateIdle(); // TODO: specify creature
-                        /*
-                         MyMaterial greenTile = new MyMaterial(assetManager);
-                         greenTile.setGreenTileMat();
-                         closest.setMaterial(greenTile.getMat());*/
-                        for (int i = 0; i < 8; i++) {
-                            for (int j = 0; j < 8; j++) {
-                                g[i][j].setMaterial(greyMat);
-                                g[i][j].setQueueBucket(Bucket.Translucent);
-                            }
-                        }
+            }
+            gameState = "idle";
+            // creatureInCommand.animateIdle(); // TODO: specify creature
+        }
+
+        public void confirmMove() {
+            CollisionResults results = new CollisionResults();
+            Vector2f click2d = inputManager.getCursorPosition();
+            Vector3f click3d = cam.getWorldCoordinates(
+                    new Vector2f(click2d.x, click2d.y), 0f).clone();
+            Vector3f dir = cam.getWorldCoordinates(
+                    new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d).normalizeLocal();
+            Ray ray = new Ray(click3d, dir);
+            pivot.collideWith(ray, results);
+
+            // Use the results (we mark the hit object)
+            if (results.size() > 0) {
+                // The closest collision point is what was truly hit:
+                Geometry closest = results.getClosestCollision().getGeometry();
+
+                Vector3f targetTile;
+                targetTile = closest.getLocalTranslation();
+                int commandX = (int) targetTile.getX();
+                int commandY = (int) targetTile.getZ();
+
+
+                MotionEvent nextMotionEvent = FakeMain2.performTurn(0, commandX, commandY, FakeMain2.creatureInCommand, FakeMain2.battle);
+                setAndPlayNextMotionEvent(nextMotionEvent);
+
+                gameState = "idle";
+                //creatureInCommand.animateIdle(); // TODO: specify creature
+                /*
+                 MyMaterial greenTile = new MyMaterial(assetManager);
+                 greenTile.setGreenTileMat();
+                 closest.setMaterial(greenTile.getMat());*/
+                for (int i = 0; i < 8; i++) {
+                    for (int j = 0; j < 8; j++) {
+                        g[i][j].setMaterial(greyMat);
+                        g[i][j].setQueueBucket(Bucket.Translucent);
                     }
                 }
             }
@@ -308,7 +342,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
         if (zombieTarget != null && battle.zombieIsAdjacentToTarget(zombie)) {
             //rotateModelsForSkillUserAndAffectedCreatures(zombieTarget);
-            battle.haveZombieAttackAdjacentTarget(zombie); 
+            battle.haveZombieAttackAdjacentTarget(zombie);
             gameOver = !zombieTarget.isAlive();
         }
 
@@ -346,10 +380,10 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         redMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         redMat.setColor("Color", new ColorRGBA(0.75f, 0f, 0f, 0.5f));//R,B,G,Alphas
         redMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-        
+
         blueMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         blueMat.setColor("Color", new ColorRGBA(.1f, .1f, .75f, 0.5f));//R,B,G,Alphas
-        blueMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha); 
+        blueMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
 
         redZombie = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         redZombie.setColor("Color", new ColorRGBA(0.75f, 0f, 0f, 0f));//R,B,G,Alphas
@@ -378,14 +412,14 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection(new Vector3f(-0.1f, -0.7f, -1.0f));
         rootNode.addLight(sun);
-        
+
         mainTransform = new Transform();
         mainTransform.setTranslation(new Vector3f(-4, 4, -4));
         mainTransform.setRotation(new Quaternion().fromAngles(0.7f, 0f, 0f));
         //mainNode.setLocalTranslation(new Vector3f(-4, 4, -4));
         //mainNode.rotate(0.7f, 0f, 0f);
         mainNode.setLocalTransform(mainTransform);
-        
+
         mainNode.attachChild(pivot);
         mainNode.attachChild(charNode);
         rootNode.attachChild(mainNode); // put this node in the scene
@@ -434,6 +468,10 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         //((GameState)(nifty.getCurrentScreen().getScreenController())).update();
                 if (!battle.isWon()) {
                     if (noMotionEventPlaying() && !movingCreature) {
+                        if (lastDamageNode != null) {
+                            lastDamageNode.getParent().detachChild(lastDamageNode);
+                            lastDamageNode = null;
+                        }
                         if (gameState.equals("idle") && !creatureInCommand.creatureChannel.getAnimationName().equals("Idle")) {
                             creatureInCommand.animateIdle();
                         } else if (currentMovingZombie != null) {
@@ -505,6 +543,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         } else if (commandType == 0) {
             System.out.println("Moving to (" + commandX + ", " + commandY + ")...");
             motionEvent = battle.moveCreatureTo(creature, new Coordinates(commandX, commandY));
+            //} else if (commandType = )
         } else if (commandType >= 1 && commandType <= 12) {
             System.out.println("Using skill " + creature.prepareSkill(commandType) + " at (" + commandX + ", " + commandY + ")...");
             motionEvent = battle.useCreatureSkillAt(creature, commandType, new Coordinates(commandX, commandY));
@@ -513,10 +552,10 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         }
         return motionEvent;
     }
-    
-    public static Vector3f coordinatesWithHeightToVector3f(int x, float height, int y) { 
+
+    public static Vector3f coordinatesWithHeightToVector3f(int x, float height, int y) {
         Vector3f vector = null;
-        if (Math.min(x,y) >= 0 && Math.max(x,y) < 8) { 
+        if (Math.min(x, y) >= 0 && Math.max(x, y) < 8) {
             vector = g[x][y].getWorldTranslation();
             vector.setY(height);
         }

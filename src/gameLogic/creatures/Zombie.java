@@ -31,7 +31,7 @@ public class Zombie extends Creature {
         super(name, assetManager, listener);
         this.setAlignment("bad");
         setSkillAsNumber(new Strike(15, 1), 1);
-        setPicturePath("assets/Interface/Images/" + name + ".png");
+        setPicturePath("Interface/Images/" + name + ".png");
     }
     
     /*public Zombie(String name, Material material, int speed, int power) {

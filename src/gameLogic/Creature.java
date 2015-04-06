@@ -157,7 +157,7 @@ public class Creature {
     }
 
     public int getEneryCostForSkillNumber(int skillNumber) {
-        Skill chosenSkill = getSkills()[skillNumber - 1];
+        Skill chosenSkill = skills[skillNumber - 1];
         return chosenSkill.getEnergyCost();
     }
 
@@ -251,7 +251,7 @@ public class Creature {
     }
 
     public Skill prepareSkill(int skillNumber) {
-        return getSkills()[skillNumber - 1];
+        return skills[skillNumber - 1];
     }
 
     public void setEnergy(int energy) {
@@ -383,5 +383,9 @@ public class Creature {
         } else if (direction.equals("-y")) {
             geometry3D.setLocalRotation(facingRotation.fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));  
         }
+    }
+
+    public Skill[] getSkills() {
+        return skills;
     }
 }

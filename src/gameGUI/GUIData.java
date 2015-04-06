@@ -14,6 +14,7 @@ public class GUIData {
 
     public static ArrayList<String> buttons;
     public static ArrayList<String> facesHolders;
+    public static ArrayList<String> turnsHolders;
     public static ArrayList<String> skillsHolders;
     public static ArrayList<String> moveAndEnd;
     public static ArrayList<String> hpAndEnergy;
@@ -67,6 +68,18 @@ public class GUIData {
         facesHolders.add("turn4");
         facesHolders.add("turn5");
         return facesHolders;
+    }
+
+    public static ArrayList<String> fillTurnsHolders() {
+
+        turnsHolders = new ArrayList<String>();
+
+        turnsHolders.add("turn1");
+        turnsHolders.add("turn2");
+        turnsHolders.add("turn3");
+        turnsHolders.add("turn4");
+        turnsHolders.add("turn5");
+        return turnsHolders;
     }
 
     public static ArrayList<String> fillSkillsHolders() {

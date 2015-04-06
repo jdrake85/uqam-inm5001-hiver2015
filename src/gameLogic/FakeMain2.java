@@ -429,9 +429,9 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     @Override
     public void simpleUpdate(float tpf) {
-        ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
         if (!gameState.equals("outOfLevel")) {
             if (battleInProgress) {
+        //((GameState)(nifty.getCurrentScreen().getScreenController())).update();
                 if (!battle.isWon()) {
                     if (noMotionEventPlaying() && !movingCreature) {
                         if (gameState.equals("idle") && !creatureInCommand.creatureChannel.getAnimationName().equals("Idle")) {
@@ -456,7 +456,8 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                                     System.out.println("Zombie turn finished");
                                     gameState = "idle";
                                     battle.endTurn();
-                                    creatureInCommand = battle.getCreaturePlayingTurn();
+                                    creatureInCommand = battle.getCreaturePlayingTurn();                                    
+        ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
                                 }
                             }
                         } else if (!(gameState.equals("move") || gameState.equals("skill"))) {
@@ -468,6 +469,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 System.out.println("<PLACEHOLDER FUNCTION / SIMPLE UPDATE>: play PRE battle cinematic now");
                 playedPreBattleCinematic = true;
                 battle.start();
+        ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
                 creatureInCommand = battle.getCreaturePlayingTurn();
                 battleInProgress = true;
             } else if (!playedPostBattleCinematic) {
@@ -576,7 +578,8 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     private void initializeLevel1() {
         soldier = null;
         nurse = null;
-        hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);        
+        hero.setPicturePath("Interface/Images/Hero.png");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         battle.insertCreatureAt(hero, 1, 4);
 
@@ -592,11 +595,13 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     private void initializeLevel2() {
         soldier = null;
         
-        hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);      
+        hero.setPicturePath("Interface/Images/Hero.png");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         battle.insertCreatureAt(hero, 1, 4);
 
-        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager);
+        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);      
+        nurse.setPicturePath("Interface/Images/Nurse.png");
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
 
@@ -614,12 +619,14 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     private void initializeLevel3() {
         soldier = null;
         
-        hero = new Creature("Hero", FakeMain2.heroMat, assetManager);
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);      
+        hero.setPicturePath("Interface/Images/Hero.png");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         battle.insertCreatureAt(hero, 3, 6);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
+        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);      
+        nurse.setPicturePath("Interface/Images/Nurse.png");
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 3, 4);
@@ -638,12 +645,16 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     // Level 4: 'Pincer Attack'
     private void initializeLevel4() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);
+        soldier = null;
+        
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);      
+        hero.setPicturePath("Interface/Images/Hero.png");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         battle.insertCreatureAt(hero, 3, 3);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
+        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);      
+        nurse.setPicturePath("Interface/Images/Nurse.png");
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
@@ -665,18 +676,21 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     // Level 5: 'Making Friends'
     private void initializeLevel5() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);      
+        hero.setPicturePath("Interface/Images/Hero.png");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         battle.insertCreatureAt(hero, 1, 6);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
+        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
+        nurse.setPicturePath("Interface/Images/Nurse.png");
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 2, 7);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);
+        soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);
+        soldier.setPicturePath("Interface/Images/Soldier.png");
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
         battle.insertCreatureAt(soldier, 7, 0);
@@ -698,19 +712,22 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     // Level 6: 'Showdown'
     private void initializeLevel6() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);      
+        hero.setPicturePath("Interface/Images/Hero.png");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
         battle.insertCreatureAt(hero, 5, 4);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
+        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
+        nurse.setPicturePath("Interface/Images/Nurse.png");
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 6, 3);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);
+        soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);
+        soldier.setPicturePath("Interface/Images/Soldier.png");
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
         battle.insertCreatureAt(soldier, 6, 5);
@@ -736,20 +753,23 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     // Level 7: 'Surrounded'
     private void initializeLevel7() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);      
+        hero.setPicturePath("Interface/Images/Hero.png");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
         battle.insertCreatureAt(hero, 5, 1);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
+        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
+        nurse.setPicturePath("Interface/Images/Nurse.png");
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new MustardGas(7, 4), 7);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 6, 0);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);
+        soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);
+        soldier.setPicturePath("Interface/Images/Soldier.png");
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new ShootEmAll(10, 4), 10);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);
@@ -788,21 +808,24 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     // Level 8: 'Big Bad Boss'
     private void initializeLevel8() {
-        Creature hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);
+        hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);      
+        hero.setPicturePath("Interface/Images/Hero.png");
         hero.setSkillAsNumber(new Strike(1, 4), 1);
         hero.setSkillAsNumber(new HomeRun(2, 4), 2);
         hero.setSkillAsNumber(new SpinningPipe(3, 4), 3);
         hero.setSkillAsNumber(new Knockback(4, 4), 4);
         battle.insertCreatureAt(hero, 3, 4);
 
-        Creature nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
+        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
+        nurse.setPicturePath("Interface/Images/Nurse.png");
         nurse.setSkillAsNumber(new Heal(5, 4), 5);
         nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
         nurse.setSkillAsNumber(new MustardGas(7, 4), 7);
         nurse.setSkillAsNumber(new Push(8, 4), 8);
         battle.insertCreatureAt(nurse, 2, 5);
 
-        Creature soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);
+        soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);      
+        soldier.setPicturePath("Interface/Images/Soldier.png");
         soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
         soldier.setSkillAsNumber(new ShootEmAll(10, 4), 10);
         soldier.setSkillAsNumber(new Stab(11, 4), 11);

@@ -32,6 +32,7 @@ public class GameState extends AbstractAppState implements ScreenController {
 
     private ArrayList<String> buttons = GUIData.fillButtons();
     private ArrayList<String> facesHolders = GUIData.fillFacesHolders();
+    private ArrayList<String> turnsHolders = GUIData.fillTurnsHolders();
     private ArrayList<String> skillsHolders = GUIData.fillSkillsHolders();
     private ArrayList<String> moveAndEnd = GUIData.fillMoveAndEnd();
     private ArrayList<String> hpAndEnergy = GUIData.fillHpAndEnergy();
@@ -63,6 +64,9 @@ public class GameState extends AbstractAppState implements ScreenController {
         disableAllButtons();
         smartEnableButtons();
         smartEnableImages();
+        smartDisableButtons();
+        smartDisableImages();
+        updateTurnBanner();
     }
 
     @Override
@@ -87,9 +91,9 @@ public class GameState extends AbstractAppState implements ScreenController {
     public void endTurn() {
         battle.endTurn();
         creatureInCommand = battle.getCreaturePlayingTurn();
-        disableAllButtons();
-        smartEnableButtons();
-        smartEnableImages();
+        //disableAllButtons();
+        //smartEnableButtons();
+        //smartEnableImages();
     }
 
     public void hero1Skill1() {
@@ -219,12 +223,22 @@ public class GameState extends AbstractAppState implements ScreenController {
         smartEnableSoldier();
     }
 
+    public void smartDisableButtons() {
+        smartDisableHero();
+        smartDisableNurse();
+        smartDisableSoldier();
+    }
+
     public void resetImages(ArrayList<String> holdersList, String filePath) {
-        NiftyImage newImage = FakeMain2.nifty.getRenderEngine().createImage(Main.nifty.getCurrentScreen(), filePath, false);
+        NiftyImage newImage = FakeMain2.nifty.getRenderEngine().createImage(FakeMain2.nifty.getCurrentScreen(), filePath, false);
         for (String s : holdersList) {
             Element image = FakeMain2.nifty.getCurrentScreen().findElementByName(s);
             image.getRenderer(ImageRenderer.class).setImage(newImage);
         }
+    }
+
+    public void resetTurnsPics() {
+        resetImages(turnsHolders, noneAsChar);
     }
 
     public void resetFacesPics() {
@@ -343,12 +357,14 @@ public class GameState extends AbstractAppState implements ScreenController {
 
     private void smartEnableChar(Creature character, int index) {
         Element myElem;
+        int scaled2X = 2 * index;
+        int scaled4X = 4 * index;
         if (character != null) {
-            myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(index + 12));
+            myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(scaled2X + 12));
             myElem.enable();
-            myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(index + 13));
+            myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(scaled2X + 13));
             myElem.enable();
-            for (int i = index; i < index + 4; i++) {
+            for (int i = scaled4X; i < scaled4X + 4; i++) {
                 if (FakeMain2.hero.getSkills()[i] != null) {
                     myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(i));
                     myElem.enable();
@@ -385,10 +401,69 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     private void smartEnableNurse() {
-        smartEnableChar(FakeMain2.nurse, 4);
+        smartEnableChar(FakeMain2.nurse, 1);
     }
 
     private void smartEnableSoldier() {
-        smartEnableChar(FakeMain2.soldier, 8);
+        smartEnableChar(FakeMain2.soldier, 2);
+    }
+
+    private void smartDisableHero() {
+        smartDisableChar(FakeMain2.hero, 0);
+    }
+
+    private void smartDisableNurse() {
+        smartDisableChar(FakeMain2.nurse, 1);
+    }
+
+    private void smartDisableSoldier() {
+        smartDisableChar(FakeMain2.soldier, 2);
+    }
+
+    private void smartDisableChar(Creature character, int index) {
+        Element myElem;
+        int scaled2X = 2 * index;
+        int scaled4X = 4 * index;
+        if (character != null && !character.equals(creatureInCommand)) {
+            myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(scaled2X + 12));
+            myElem.disable();
+            myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(scaled2X + 13));
+            myElem.disable();
+            for (int i = scaled4X; i < scaled4X + 4; i++) {
+                if (FakeMain2.hero.getSkills()[i] != null) {
+                    myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(i));
+                    myElem.disable();
+                }
+            }
+        }
+    }
+
+    private void smartDisableImages() {
+        smartDisablePlayerImages(FakeMain2.hero, 0);
+        smartDisablePlayerImages(FakeMain2.nurse, 1);
+        smartDisablePlayerImages(FakeMain2.soldier, 2);
+    }
+
+    private void smartDisablePlayerImages(Creature player, int index) {
+        int scaled2X = 2 * index;
+        int scaled4X = 4 * index;
+        if (player != null && !player.equals(creatureInCommand)) {
+            swapImages(greyedAsMoveAndEnd, moveAndEnd.get(scaled2X + 0));
+            swapImages(greyedAsMoveAndEnd, moveAndEnd.get(scaled2X + 1));
+            for (int i = 0 + scaled4X; i < scaled4X + 4; i++) {
+                if (player.getSkills()[i] != null) {
+                    swapImages(lockedAsSkill, skillsHolders.get(i));
+                }
+            }
+        }
+    }
+
+    private void updateTurnBanner() {
+        resetTurnsPics();
+        int i = 0;
+        for(Creature c : FakeMain2.battle.getCreatureTurnOrder()){            
+            swapImages(c.getPicturePath(), turnsHolders.get(i));
+            i++;
+        }
     }
 }

@@ -379,7 +379,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         greenMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
 
         greyMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        greyMat.setColor("Color", new ColorRGBA(.1f, .1f, .1f, 1f));//R,B,G,Alphas
+        greyMat.setColor("Color", new ColorRGBA(.1f, .1f, .1f, .1f));//R,B,G,Alphas
         greyMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
 
         redMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -438,7 +438,9 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     public Material floorMat() { //TODO placeHolder
         Material flMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        flMat.setColor("Color", new ColorRGBA(0.25f, 0, 0.75f, 11f));//R,B,G,Alphas
+        //flMat.setColor("Color", new ColorRGBA(0.25f, 0, 0.75f, 11f));//R,B,G,Alphas
+        Texture flTex = assetManager.loadTexture("Models/greenTileFloor2.jpg");
+        flMat.setTexture("ColorMap", flTex);
         return flMat;
     }
 

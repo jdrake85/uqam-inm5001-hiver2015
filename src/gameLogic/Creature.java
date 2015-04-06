@@ -34,7 +34,6 @@ import gameLogic.skills.Skill;
 public class Creature {
 
     private static final int COST_OF_STEP = 2;
-    private int level = 8;
     private String name = "noName";
     private int maxHealth = 16;
     private int health = maxHealth;
@@ -131,24 +130,11 @@ public class Creature {
     }
 
     public MotionEvent generateMotionEventForMovingCreatureOn3DBoard(MotionPath path, int stepCount) {
-        //geometry3D.setLocalTranslation(new Vector3f(xDest, -1, yDest));
-        //System.out.println("** ANIMATION **");
         MotionEvent motionControl = new MotionEvent(geometry3D, path);
         motionControl.setDirectionType(MotionEvent.Direction.PathAndRotation);
         motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
         motionControl.setSpeed(20f / stepCount);
-
-
         return motionControl;
-        /*
-         int maxFrame = 9999999;
-         float translationX = (xDest - xInit);// / (float) maxFrame;
-         float translationY = (yDest - yInit);// / (float) maxFrame;
-         Vector3f v = geometry3D.getLocalTranslation();
-      
-         for (int i = 0; i < maxFrame; i++) {
-         geometry3D.setLocalTranslation(v.x + translationX , v.y , v.z + translationY);
-         }*/
     }
 
     public void displayStats() {
@@ -379,120 +365,15 @@ public class Creature {
     public void addAnimationListener(AnimEventListener main) {
         creatureControl.addListener(main);
     }
-    /*
-     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
-     System.out.println(control);
-     if (animName.equals("Skill1") || animName.equals("Skill2") || animName.equals("Skill13")) {
-     System.out.println("onCycleDone");
-     FakeMain2.gameState = "idle";
-     }
-     }
-
-     public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
-     System.out.println("onAnimChange"); //To change body of generated methods, choose Tools | Templates.
-     }*/
 
     void rotateModelTowardsCoordinates(Coordinates originatingCoords, Coordinates targetCoords) {
-
         Coordinates closestAdjacentCoords = originatingCoords.getAdjacentCoordinatesNearestTo(targetCoords);
         String facingDirection = originatingCoords.getCardinalDirectionTowards(closestAdjacentCoords);
-        //System.out.println(this + "now facing " + facingDirection);
         turnToFaceDirection(facingDirection);
-        /*
-         geometry3D.lookAt(new Vector3f(coordsToFace.getXCoord(), -1, coordsToFace.getYCoord()), new Vector3f(5f, 5f, 5f));
-         /*
-         while (facing != toFace) {
-            
-            
-         geometry3D.rotate(new Quaternion().fromAngles(0f, FastMath.HALF_PI, 0f));
-         facing = getDirectionInWhichModelIsFacing();
-         System.out.println("..." + ++counter + " rotation of 90deg, now facing: " + facing);
-         }
-         System.out.println();
-         /*else {
-         while (facing != toFace) {
-         System.out.println("...rotating 90 degrees");
-         geometry3D.rotate(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));
-         facing = getDirectionInWhichModelIsFacing();
-         }
-         }
-         System.out.println();
-         /*
-         for (int i = 0; i < 3; i++) {
-         if (directionToFace.equals(getDirectionInWhichModelIsFacing())) {
-         System.out.println("Success");
-         break;
-         } else {
-         System.out.println(getDirectionInWhichModelIsFacing() + " != " + directionToFace);
-         geometry3D.rotate(0f, FastMath.HALF_PI, 0f);
-         }
-         }
-         /*
-         while (!alreadyFacing.equals(directionToFace)) {
-         geometry3D.rotate(new Quaternion().fromAngleNormalAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));
-         alreadyFacing = getDirectionInWhichModelIsFacing();
-         System.out.println("  now facing: " + alreadyFacing);
-         }
-         */
-        /*
-         Quaternion rotation = new Quaternion();
-         rotation.lookAt(vectorToFace, Vector3f.UNIT_Y);
-         geometry3D.rotate(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));*/
     }
 
-    private int getDirectionInWhichModelIsFacing() {
-        Quaternion initialOrientation = geometry3D.getLocalRotation();
-        float y = initialOrientation.getY();
-        float w = initialOrientation.getW();
-
-        int facing;
-
-        if (y < 0) {
-            if (w > 0) {
-                facing = 1;
-            } else {
-                facing = 2;
-            }
-        } else {
-            if (y > 0) {
-                facing = 3;
-            } else {
-                facing = 0;
-            }
-        }
-        System.out.println("    Current quaternion: " + initialOrientation);
-        return facing;
-    }
-
-    public void faceSouth() {
-        //geometry3D.rotate(0f, FastMath.HALF_PI, 0f);
-        System.out.print("About to face south...");
-        geometry3D.setLocalRotation(new Quaternion(0f, FastMath.PI, 0f, 0f));
-        System.out.println("done");
-    }
-/*
-    public void turnToFaceCreature(Creature creature) {
-        System.out.println("Creature " + creature + " at " + creature.geometry3D.getWorldTranslation() + " is being faced ");
-        turnToFaceTile(creature.geometry3D.getWorldTranslation());
-    }
-
-    public void turnToFaceTile(Vector3f targetVector) {
-        turnToFace("+x");
-        /*
-        Vector3f upVector = (Vector3f.UNIT_Y);//.add(mainTransform.getTranslation());
-        Quaternion mainRotation = new Quaternion(mainTransform.getRotation());
-        upVector = mainRotation.mult(upVector);
-        geometry3D.lookAt(targetVector, upVector);
-        geometry3D.rotate(0f, -FastMath.HALF_PI, 0f);
-       
-    }*/
-    
     private void turnToFaceDirection(String direction) {
-        /*
-        Vector3f upVector = (Vector3f.UNIT_Y);//.add(mainTransform.getTranslation());
-        Quaternion mainRotation = new Quaternion(mainTransform.getRotation());
-        upVector = mainRotation.mult(upVector);*/
-        Quaternion facingRotation = new Quaternion();//.fromAngleAxis(level, upVector);
+        Quaternion facingRotation = new Quaternion();
         if (direction.equals("+x")) {
             geometry3D.setLocalRotation(facingRotation.fromAngleAxis(0f, Vector3f.UNIT_Y));  
         } else if (direction.equals("-x")) {

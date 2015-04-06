@@ -19,7 +19,6 @@ import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Ray;
 import com.jme3.math.Transform;
@@ -49,6 +48,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     public static Material greenMat; //TODO remove
     public static Material redMat; //TODO remove
     public static Material greyMat; //TODO remove
+    public static Material blueMat;
     public static Material redZombie;
     public static Material heroMat;
     public static Material nurseMat;
@@ -104,7 +104,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         soldierMat.setColor("Color", new ColorRGBA(0f, 0f, 1f, 0f));
 
         // (DEBUGGING) Specifiy starting level here (first level is 1)
-        level = 1;
+        level = 6;
     }
 
     private void initKeys() {
@@ -341,6 +341,10 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         redMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         redMat.setColor("Color", new ColorRGBA(0.75f, 0f, 0f, 0.5f));//R,B,G,Alphas
         redMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        
+        blueMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        blueMat.setColor("Color", new ColorRGBA(.1f, .1f, .75f, 0.5f));//R,B,G,Alphas
+        blueMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha); 
 
         redZombie = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         redZombie.setColor("Color", new ColorRGBA(0.75f, 0f, 0f, 0f));//R,B,G,Alphas

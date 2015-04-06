@@ -514,12 +514,12 @@ public class GameBoard {
         
         Box b1 = new Box(0.1f, 0.2f, 0f);
         Geometry tens = new Geometry("Box1", b1);
-        tens.setMaterial(FakeMain2.soldierMat);
+        tens.setMaterial(FakeMain2.numberMat[damage/10]);
         tens.setLocalTranslation(tens.getLocalTranslation().add(new Vector3f(-0.15f, 0f, 0.5f)));
         
         Box b2 = new Box(0.1f, 0.2f, 0f);
         Geometry units = new Geometry("Box2", b2);
-        units.setMaterial(FakeMain2.soldierMat);
+        units.setMaterial(FakeMain2.numberMat[damage%10]);
         units.setLocalTranslation(units.getLocalTranslation().add(new Vector3f(+0.15f, 0f, 0.5f)));
         
         damagePannel.attachChild(tens);

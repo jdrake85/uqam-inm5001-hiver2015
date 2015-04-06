@@ -29,6 +29,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import com.jme3.texture.Texture;
 import de.lessvoid.nifty.Nifty;
 import gameLogic.pathfinding.Coordinates;
 import gameLogic.skills.hero.*;
@@ -53,6 +54,8 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     public static Material heroMat;
     public static Material nurseMat;
     public static Material soldierMat;
+    public static Material numberMat[] = new Material[10];
+    
     public static int commandType = -1;
     public static Geometry[][] g;
     public static GameBattle battle;
@@ -383,6 +386,12 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         redZombie = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         redZombie.setColor("Color", new ColorRGBA(0.75f, 0f, 0f, 0f));//R,B,G,Alphas
 
+        for (int i = 0; i < 10; i++){
+            numberMat[i] = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+            Texture numberTex = assetManager.loadTexture("DamageNumbers/" + i + ".png");
+            numberMat[i].setTexture("ColorMap", numberTex);
+        }
+        
         /**/
         Box plancher = new Box(4, 0, 4);
         Geometry gp = new Geometry("Box", plancher);

@@ -19,7 +19,10 @@ import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Ray;
+import com.jme3.math.Transform;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
@@ -78,6 +81,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     public static boolean playedPostBattleCinematic = false;
     public int level = 1;
     public static boolean movingCreature = false;
+    public static Transform mainTransform;
 
     @Override
     public void simpleInitApp() {
@@ -89,31 +93,15 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         // HERO GRAPHICS
         heroMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         heroMat.setColor("Color", new ColorRGBA(0f, 1f, 0f, 0f));
-        //load temp hero mexh + animation
         assetManager.registerLocator("assets/Models/Hero/", FileLocator.class);
-        /*heroScene = (Node) assetManager.loadModel("Hero.scene");
-         heroScene.setLocalScale(.025f);*/
-        /*acHero = findAnimControl(heroScene);
-         channelHero = acHero.createChannel();
-         channelHero.setAnim("Idle");*/
 
         // NURSE GRAPHICS
         nurseMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         nurseMat.setColor("Color", new ColorRGBA(1f, 0.5f, 0.1f, 0f));
-        /*nurseScene = (Node) assetManager.loadModel("Nurse.scene");
-         nurseScene.setLocalScale(.025f);*/
-        /*acNurse = findAnimControl(nurseScene);
-         channelNurse = acNurse.createChannel();
-         channelNurse.setAnim("Idle");*/
 
         // SOLDIER GRAPHICS
         soldierMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         soldierMat.setColor("Color", new ColorRGBA(0f, 0f, 1f, 0f));
-        /*soldierScene = (Node) assetManager.loadModel("Soldier.scene");
-         soldierScene.setLocalScale(.025f);*/
-        /*acSoldier = findAnimControl(soldierScene);
-         channelSoldier = acSoldier.createChannel();
-         channelSoldier.setAnim("Idle");*/
 
         // (DEBUGGING) Specifiy starting level here (first level is 1)
         level = 1;
@@ -142,12 +130,6 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         inputManager.addListener(actionListener, "RestoreHealthKey");
         inputManager.addListener(actionListener, "SelectTile");
         inputManager.addListener(actionListener, "EndTurnKey");
-
-        /*inputManager.addListener(actionListener, "Walk");
-         inputManager.addListener(actionListener, "Idle");
-         inputManager.addListener(actionListener, "Skill1");
-         inputManager.addListener(actionListener, "Skill2");
-         inputManager.addListener(actionListener, "Skill3");*/
     }
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
@@ -222,7 +204,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
                         MotionEvent nextMotionEvent = FakeMain2.performTurn(FakeMain2.commandType, commandX, commandY, FakeMain2.creatureInCommand, FakeMain2.battle);
                         setAndPlayNextMotionEvent(nextMotionEvent);
-
+                        // TODO HERE
 
 
                         /*
@@ -320,7 +302,8 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         boolean gameOver = false;
 
         if (zombieTarget != null && battle.zombieIsAdjacentToTarget(zombie)) {
-            battle.haveZombieAttackAdjacentTarget(zombie); // TODO: target already calculated...
+            //rotateModelsForSkillUserAndAffectedCreatures(zombieTarget);
+            battle.haveZombieAttackAdjacentTarget(zombie); 
             gameOver = !zombieTarget.isAlive();
         }
 
@@ -347,10 +330,6 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         flyCam.setDragToRotate(true);
 //nifty.fromXml("Interface/screen.xml", "start", new GUIOverlay());
 
-        mainNode.setLocalTranslation(new Vector3f(-4, 4, -4));
-        /**
-         *
-         */
         greenMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         greenMat.setColor("Color", new ColorRGBA(.1f, .75f, .1f, 0.5f));//R,B,G,Alphas
         greenMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
@@ -386,97 +365,29 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 pivot.attachChild(g[i][j]);
             }
         }
-        /**
-         * Box ninja = new Box(0.2f,1.5f,0.2f); Geometry nin = new
-         * Geometry("Box", ninja);
-         *
-         * Material mNin = new Material(assetManager,
-         * "Common/MatDefs/Misc/Unshaded.j3md"); mNin.setColor("Color", new
-         * ColorRGBA(0.25f,1f,0.5f,0f));//R,B,G,Alphas nin.setMaterial(mNin);
-         * nin.setLocalTranslation(new Vector3f(0,-1,0));
-         * charNode.attachChild(nin);
-         *
-         * Box zombie1 = new Box(0.2f,1.5f,0.2f); Geometry zomb1 = new
-         * Geometry("Box", zombie1);
-         *
-         * Material mZomb = new Material(assetManager,
-         * "Common/MatDefs/Misc/Unshaded.j3md"); mZomb.setColor("Color", new
-         * ColorRGBA(0.75f,0f,0f,0f));//R,B,G,Alphas zomb1.setMaterial(mZomb);
-         * zomb1.setLocalTranslation(new Vector3f(1,-1,1));
-         * charNode.attachChild(zomb1);
-         *
-         * Box zombie2 = new Box(0.2f,1.5f,0.2f); Geometry zomb2 = new
-         * Geometry("Box", zombie2);
-         *
-         * zomb2.setMaterial(mZomb); zomb2.setLocalTranslation(new
-         * Vector3f(1,-1,2)); charNode.attachChild(zomb2); *
-         */
-        // ust add a light to make the model visible
+
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection(new Vector3f(-0.1f, -0.7f, -1.0f));
         rootNode.addLight(sun);
-
+        
+        mainTransform = new Transform();
+        mainTransform.setTranslation(new Vector3f(-4, 4, -4));
+        mainTransform.setRotation(new Quaternion().fromAngles(0.7f, 0f, 0f));
+        //mainNode.setLocalTranslation(new Vector3f(-4, 4, -4));
+        //mainNode.rotate(0.7f, 0f, 0f);
+        mainNode.setLocalTransform(mainTransform);
+        
         mainNode.attachChild(pivot);
         mainNode.attachChild(charNode);
-        mainNode.rotate(0.7f, 0f, 0f);
         rootNode.attachChild(mainNode); // put this node in the scene
     }
-    /*TODO
-     public Material setGreenTileMat(){
-     Material greenMat = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
-     greenMat.setColor("Color", new ColorRGBA(.1f,.75f,.1f,0.5f));//R,B,G,Alphas
-     greenMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-     return greenMat;
-     }*/
 
-    /*TODO
-     public Material greyTileMat(){
-     Material greyMat = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
-     greyMat.setColor("Color", new ColorRGBA(.1f,.1f,.1f,1f));//R,B,G,Alphas
-     greyMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-     return greyMat;
-     }*/
     public Material floorMat() { //TODO placeHolder
         Material flMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         flMat.setColor("Color", new ColorRGBA(0.25f, 0, 0.75f, 11f));//R,B,G,Alphas
         return flMat;
     }
 
-    /*public static void animateMove() {
-     try {
-     // create a channel and start the wobble animation
-     channelHero.setAnim("Walk");
-     } catch (final Exception e) {
-     e.printStackTrace();
-     }
-     }*/
-
-    /*public static void animateMove(Creature creature) {
-     try { // TODO: implement properly
-     // create a channel and start the wobble animation
-     findAnimControl(creature).createChannel().setAnim("Hop");
-     } catch (final Exception e) {
-     e.printStackTrace();
-     }
-     }*/
-
-    /* public static void animateIdle() {
-     try {
-     // create a channel and start the wobble animation
-     channelHero.setAnim("Idle");
-     } catch (final Exception e) {
-     e.printStackTrace();
-     }
-     }*/
-
-    /*public static void animateIdle(Creature creature) {
-     try { // TODO: implement properly
-     // create a channel and start the wobble animation
-     findAnimControl(creature).createChannel().setAnim("Idle");
-     } catch (final Exception e) {
-     e.printStackTrace();
-     }
-     }*/
     public static AnimControl findAnimControl(final Spatial parent) {
         final AnimControl animControl = parent.getControl(AnimControl.class);
         if (animControl != null) {
@@ -491,7 +402,6 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 }
             }
         }
-
         return null;
     }
 
@@ -531,7 +441,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                                         System.out.println("<PLACEHOLDER FUNCTION>: battle is lost, return to main menu");
                                         gameState = "outOfLevel";
                                         level--;
-                                    } 
+                                    }
                                 } else {
                                     System.out.println("Zombie turn finished");
                                     gameState = "idle";
@@ -540,7 +450,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                                 }
                             }
                         } else if (!(gameState.equals("move") || gameState.equals("skill"))) {
-                            gameState = "idle";         
+                            gameState = "idle";
                         }
                     }
                 }
@@ -591,13 +501,28 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         }
         return motionEvent;
     }
+    
+    public static Vector3f coordinatesWithHeightToVector3f(int x, float height, int y) { 
+        Vector3f vector = null;
+        if (Math.min(x,y) >= 0 && Math.max(x,y) < 8) { 
+            vector = g[x][y].getWorldTranslation();
+            vector.setY(height);
+        }
+        return vector;
+    }
 
     private boolean noMotionEventPlaying() {
         return currentMotionEvent == null || currentMotionEvent.getPlayState().equals(PlayState.Stopped);
     }
 
-    private boolean creatureIsDoneMoving() {
-        return false;
+    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
+        if (animName.equals("Skill1") || animName.equals("Skill2") || animName.equals("Skill13")) {
+            movingCreature = false;
+        }
+    }
+
+    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
+        // Do nothing
     }
 
     private void initializeBattleForLevel(int level) {
@@ -900,15 +825,5 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         creature.setSkillAsNumber(new ShootEmAll(10, 4), 10);
         creature.setSkillAsNumber(new Stab(11, 4), 11);
         creature.setSkillAsNumber(new CutThroat(12, 1), 12);
-    }
-
-    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
-        if (animName.equals("Skill1") || animName.equals("Skill2") || animName.equals("Skill13")) {
-            movingCreature = false;
-        }
-    }
-
-    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
-        // Do nothing
     }
 }

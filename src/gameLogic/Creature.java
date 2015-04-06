@@ -20,7 +20,11 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import static gameLogic.FakeMain2.creatureInCommand;
 import static gameLogic.FakeMain2.findAnimControl;
+import static gameLogic.FakeMain2.mainTransform;
+import gameLogic.pathfinding.CoordPath;
+import gameLogic.pathfinding.Coordinates;
 import gameLogic.skills.Skill;
 
 /**
@@ -43,14 +47,12 @@ public class Creature {
     private Skill[] skills;
     private boolean isGood = true;
     private boolean isImpaired = false;
-    private Spatial geometry3D;
+    public Spatial geometry3D;
     private int turnsAssigned = 0;
-    
     public AnimControl creatureControl;
     public AnimChannel creatureChannel;
-    
     private String picturePath = null;
-    
+
     public Creature(String name, AnimEventListener listener) {
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
@@ -61,23 +63,23 @@ public class Creature {
         FakeMain2.charNode.attachChild(geometry3D);
         this.addAnimationListener(listener);
     }
-    
+
     public Creature(String name, AssetManager assetManager, AnimEventListener listener) {
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
         /*Box box = new Box(0.2f, 1.5f, 0.2f);
-        geometry3D = new Geometry(name, box);*/
+         geometry3D = new Geometry(name, box);*/
         geometry3D = (Node) assetManager.loadModel("Zombie.scene");
         geometry3D.setLocalScale(.025f);
         geometry3D.setMaterial(FakeMain2.redZombie);
-        
+
         creatureControl = findAnimControl(geometry3D);
         creatureChannel = creatureControl.createChannel();
         creatureChannel.setAnim("Idle");
-        
+
         //skillChannel = creatureControl.createChannel();
         //skillChannel.setLoopMode(LoopMode.DontLoop);
-        
+
         FakeMain2.charNode.attachChild(geometry3D);
         this.addAnimationListener(listener);
     }
@@ -90,27 +92,27 @@ public class Creature {
         geometry3D.setMaterial(material);
         FakeMain2.charNode.attachChild(geometry3D);
         this.addAnimationListener(listener);
-    }   
-    
+    }
+
     public Creature(String name, Material material, AssetManager assetManager, AnimEventListener listener) {
         this.name = name;
         skills = new Skill[12]; // TODO: eventually set to 4
         geometry3D = (Node) assetManager.loadModel(name + ".scene");
         geometry3D.setLocalScale(.025f);
         geometry3D.setMaterial(material);
-        
+
         creatureControl = findAnimControl(geometry3D);
         creatureChannel = creatureControl.createChannel();
         creatureChannel.setAnim("Idle");
-        
+
         //skillChannel = creatureControl.createChannel();
         //skillChannel.setLoopMode(LoopMode.DontLoop);
-        
+
         FakeMain2.charNode.attachChild(geometry3D);
         this.addAnimationListener(listener);
     }
-    
-    public Spatial getSpatial() { 
+
+    public Spatial getSpatial() {
         return geometry3D;
     }
 
@@ -127,27 +129,27 @@ public class Creature {
     public void hideCreatureOn3DBoard() {
         geometry3D.removeFromParent();
     }
-    
-   public MotionEvent generateMotionEventForMovingCreatureOn3DBoard(MotionPath path, int stepCount) {
-       //geometry3D.setLocalTranslation(new Vector3f(xDest, -1, yDest));
-       //System.out.println("** ANIMATION **");
-       MotionEvent motionControl = new MotionEvent(geometry3D, path);
-       motionControl.setDirectionType(MotionEvent.Direction.PathAndRotation);
-       motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
-       motionControl.setSpeed(20f/stepCount);
+
+    public MotionEvent generateMotionEventForMovingCreatureOn3DBoard(MotionPath path, int stepCount) {
+        //geometry3D.setLocalTranslation(new Vector3f(xDest, -1, yDest));
+        //System.out.println("** ANIMATION **");
+        MotionEvent motionControl = new MotionEvent(geometry3D, path);
+        motionControl.setDirectionType(MotionEvent.Direction.PathAndRotation);
+        motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
+        motionControl.setSpeed(20f / stepCount);
+
+
+        return motionControl;
+        /*
+         int maxFrame = 9999999;
+         float translationX = (xDest - xInit);// / (float) maxFrame;
+         float translationY = (yDest - yInit);// / (float) maxFrame;
+         Vector3f v = geometry3D.getLocalTranslation();
       
-       
-       return motionControl;
-       /*
-       int maxFrame = 9999999;
-       float translationX = (xDest - xInit);// / (float) maxFrame;
-       float translationY = (yDest - yInit);// / (float) maxFrame;
-       Vector3f v = geometry3D.getLocalTranslation();
-      
-       for (int i = 0; i < maxFrame; i++) {
-           geometry3D.setLocalTranslation(v.x + translationX , v.y , v.z + translationY);
-       }*/
-   } 
+         for (int i = 0; i < maxFrame; i++) {
+         geometry3D.setLocalTranslation(v.x + translationX , v.y , v.z + translationY);
+         }*/
+    }
 
     public void displayStats() {
         String output = name + ": HEALTH: " + health
@@ -269,15 +271,15 @@ public class Creature {
     public void setEnergy(int energy) {
         this.energy = energy;
     }
-    
-    public void setMaxEnergy(int maxEnergy) { 
+
+    public void setMaxEnergy(int maxEnergy) {
         this.maxEnergy = energy = maxEnergy;
     }
-    
+
     public int getMaxEnergy() {
         return maxEnergy;
     }
-    
+
     public void setPower(int power) {
         this.power = power;
     }
@@ -290,14 +292,13 @@ public class Creature {
         cumulativeTurnSpeed += speed;
     }
 
-
     public void setSpeed(int speed) {
         this.speed = speed;
         this.cumulativeTurnSpeed = speed;
     }
-    
+
     public void setCumulativeSpeed(int cumulativeSpeed) {
-       cumulativeTurnSpeed = cumulativeSpeed;
+        cumulativeTurnSpeed = cumulativeSpeed;
     }
 
     public void incrementTurnsAssigned() {
@@ -307,15 +308,15 @@ public class Creature {
     public int getTurnsAssigned() {
         return turnsAssigned;
     }
-    
+
     public int getOriginalSpeed() {
         return speed;
     }
-    
+
     public boolean isGood() {
         return isGood;
     }
-    
+
     public void initializeTurnEnergy() {
         if (isImpaired) {
             energy = maxEnergy / 2;
@@ -331,7 +332,7 @@ public class Creature {
     public int getMaxHealth() {
         return maxHealth;
     }
-    
+
     public void setMaxHealth(int maxHealth) {
         this.maxHealth = health = maxHealth;
     }
@@ -344,7 +345,7 @@ public class Creature {
             e.printStackTrace();
         }
     }
-    
+
     public void animateSkill(String animationType) {
         try {
             //System.out.println(animationType);
@@ -352,12 +353,11 @@ public class Creature {
             creatureChannel.setAnim(animationType);
             creatureChannel.setLoopMode(LoopMode.DontLoop);
             FakeMain2.movingCreature = true;
-            
+
         } catch (final Exception e) {
             e.printStackTrace();
         }
     }
-    
 
     void animateIdle() {
         try {
@@ -367,29 +367,140 @@ public class Creature {
             e.printStackTrace();
         }
     }
-    
+
     public void setPicturePath(String picturePath) {
         this.picturePath = picturePath;
     }
-    
-    public String getPicturePath() { 
+
+    public String getPicturePath() {
         return picturePath;
     }
-    
-    public void addAnimationListener(AnimEventListener main) { 
+
+    public void addAnimationListener(AnimEventListener main) {
         creatureControl.addListener(main);
     }
     /*
-    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
-        System.out.println(control);
-        if (animName.equals("Skill1") || animName.equals("Skill2") || animName.equals("Skill13")) {
-            System.out.println("onCycleDone");
-            FakeMain2.gameState = "idle";
-        }
+     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
+     System.out.println(control);
+     if (animName.equals("Skill1") || animName.equals("Skill2") || animName.equals("Skill13")) {
+     System.out.println("onCycleDone");
+     FakeMain2.gameState = "idle";
+     }
+     }
+
+     public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
+     System.out.println("onAnimChange"); //To change body of generated methods, choose Tools | Templates.
+     }*/
+
+    void rotateModelTowardsCoordinates(Coordinates originatingCoords, Coordinates targetCoords) {
+
+        Coordinates closestAdjacentCoords = originatingCoords.getAdjacentCoordinatesNearestTo(targetCoords);
+        String facingDirection = originatingCoords.getCardinalDirectionTowards(closestAdjacentCoords);
+        //System.out.println(this + "now facing " + facingDirection);
+        turnToFaceDirection(facingDirection);
+        /*
+         geometry3D.lookAt(new Vector3f(coordsToFace.getXCoord(), -1, coordsToFace.getYCoord()), new Vector3f(5f, 5f, 5f));
+         /*
+         while (facing != toFace) {
+            
+            
+         geometry3D.rotate(new Quaternion().fromAngles(0f, FastMath.HALF_PI, 0f));
+         facing = getDirectionInWhichModelIsFacing();
+         System.out.println("..." + ++counter + " rotation of 90deg, now facing: " + facing);
+         }
+         System.out.println();
+         /*else {
+         while (facing != toFace) {
+         System.out.println("...rotating 90 degrees");
+         geometry3D.rotate(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));
+         facing = getDirectionInWhichModelIsFacing();
+         }
+         }
+         System.out.println();
+         /*
+         for (int i = 0; i < 3; i++) {
+         if (directionToFace.equals(getDirectionInWhichModelIsFacing())) {
+         System.out.println("Success");
+         break;
+         } else {
+         System.out.println(getDirectionInWhichModelIsFacing() + " != " + directionToFace);
+         geometry3D.rotate(0f, FastMath.HALF_PI, 0f);
+         }
+         }
+         /*
+         while (!alreadyFacing.equals(directionToFace)) {
+         geometry3D.rotate(new Quaternion().fromAngleNormalAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));
+         alreadyFacing = getDirectionInWhichModelIsFacing();
+         System.out.println("  now facing: " + alreadyFacing);
+         }
+         */
+        /*
+         Quaternion rotation = new Quaternion();
+         rotation.lookAt(vectorToFace, Vector3f.UNIT_Y);
+         geometry3D.rotate(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));*/
     }
 
-    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
-        System.out.println("onAnimChange"); //To change body of generated methods, choose Tools | Templates.
+    private int getDirectionInWhichModelIsFacing() {
+        Quaternion initialOrientation = geometry3D.getLocalRotation();
+        float y = initialOrientation.getY();
+        float w = initialOrientation.getW();
+
+        int facing;
+
+        if (y < 0) {
+            if (w > 0) {
+                facing = 1;
+            } else {
+                facing = 2;
+            }
+        } else {
+            if (y > 0) {
+                facing = 3;
+            } else {
+                facing = 0;
+            }
+        }
+        System.out.println("    Current quaternion: " + initialOrientation);
+        return facing;
+    }
+
+    public void faceSouth() {
+        //geometry3D.rotate(0f, FastMath.HALF_PI, 0f);
+        System.out.print("About to face south...");
+        geometry3D.setLocalRotation(new Quaternion(0f, FastMath.PI, 0f, 0f));
+        System.out.println("done");
+    }
+/*
+    public void turnToFaceCreature(Creature creature) {
+        System.out.println("Creature " + creature + " at " + creature.geometry3D.getWorldTranslation() + " is being faced ");
+        turnToFaceTile(creature.geometry3D.getWorldTranslation());
+    }
+
+    public void turnToFaceTile(Vector3f targetVector) {
+        turnToFace("+x");
+        /*
+        Vector3f upVector = (Vector3f.UNIT_Y);//.add(mainTransform.getTranslation());
+        Quaternion mainRotation = new Quaternion(mainTransform.getRotation());
+        upVector = mainRotation.mult(upVector);
+        geometry3D.lookAt(targetVector, upVector);
+        geometry3D.rotate(0f, -FastMath.HALF_PI, 0f);
+       
     }*/
-      
+    
+    private void turnToFaceDirection(String direction) {
+        /*
+        Vector3f upVector = (Vector3f.UNIT_Y);//.add(mainTransform.getTranslation());
+        Quaternion mainRotation = new Quaternion(mainTransform.getRotation());
+        upVector = mainRotation.mult(upVector);*/
+        Quaternion facingRotation = new Quaternion();//.fromAngleAxis(level, upVector);
+        if (direction.equals("+x")) {
+            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(0f, Vector3f.UNIT_Y));  
+        } else if (direction.equals("-x")) {
+            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(FastMath.PI, Vector3f.UNIT_Y));  
+        } else if (direction.equals("+y")) {
+            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));  
+        } else if (direction.equals("-y")) {
+            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));  
+        }
+    }
 }

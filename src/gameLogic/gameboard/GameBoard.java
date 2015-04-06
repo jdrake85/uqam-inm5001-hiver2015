@@ -455,10 +455,10 @@ public class GameBoard {
         return overlay;
     }
 
-    // Error here for mustard gas
-    public void performTargetedSkill(Skill skill) {
+    public List<Creature> performTargetedSkill(Skill skill) {
         Coordinates targetCoords = skill.getTargetCoordinates();
         List<Coordinates> affectedCoords = skill.generateAffectedCoordinatesFrom(targetCoords);
+        List<Creature> affectedCreatures = new ArrayList<Creature>();
         for (Coordinates coords : affectedCoords) {
             Tile targetTile = getTileAt(coords);
             if (targetTile != null && targetTile.isOccupied()) {
@@ -466,6 +466,7 @@ public class GameBoard {
                 int damage = skill.performOn(target);
 
                 if (damage > 0) {
+                    affectedCreatures.add(target);
                     System.out.println(target + " receives " + damage + " damage from " + skill + ", is at " + target.getHealth() + "/" + target.getMaxHealth());
                     if (skill.hasKnockback()) {
                             knockbackCreatureFromSkill(target, skill);
@@ -481,6 +482,7 @@ public class GameBoard {
                 }
             }
         }
+        return affectedCreatures;
     } 
     
     public boolean containsTileWithCoordinates(Coordinates coords) { 

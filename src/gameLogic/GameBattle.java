@@ -231,17 +231,26 @@ public class GameBattle {
         return destinationReachable && !creatureCoords.equals(destCoords);
     }
 
-    public MotionEvent useCreatureSkillAt(Creature creature, int skillNumber, Coordinates coords) {
+    public MotionEvent useCreatureSkillAt(Creature creature, int skillNumber, Coordinates targetCoords) {
         MotionEvent attackEvent = null; //TODO: implement attack animation
         Skill skill = creature.prepareSkill(skillNumber);
         Coordinates originatingCoords = gameboard.getCreatureCoordinates(creature);
         skill.setOriginatingFrom(originatingCoords);
-        if (creatureCanUseSkillAt(creature, skillNumber, coords)) {
+        if (creatureCanUseSkillAt(creature, skillNumber, targetCoords)) {
             creature.consumeEnergyForSkillNumber(skillNumber);
-            skill.setTargetCoordinates(coords);
+            skill.setTargetCoordinates(targetCoords);
             String animationType = skill.getAnimationType();
+            creature.rotateModelTowardsCoordinates(originatingCoords, targetCoords);
+            //creature.faceSouth();
+            //float absoluteCreatureHeight = creature.geometry3D.getWorldScale().getY();
+            //creature.turnToFaceTile(FakeMain2.coordinatesWithHeightToVector3f(coords.getXCoord(), absoluteCreatureHeight, coords.getYCoord()));
             creature.animateSkill(animationType);
-            gameboard.performTargetedSkill(skill);
+            List<Creature> affectedCreatures = gameboard.performTargetedSkill(skill);
+            /* // use if the enemies are to turn around when hurt
+            for (Creature affectedCreature: affectedCreatures) { 
+                Coordinates creatureCoords = gameboard.getCreatureCoordinates(affectedCreature);
+                affectedCreature.rotateModelTowardsCoordinates(creatureCoords, originatingCoords);
+            }*/
             removeDeadCreaturesFromTurnOrder();
             while (creaturePriority.size() < 5) {
                 addCreatureListOnceToCreaturePriority();
@@ -619,5 +628,9 @@ public class GameBattle {
 
     public boolean zombieIsAdjacentToAGoodCreature(Creature zombie) {
         return getCoordsOfFirstGoodCreatureAdjacentToZombie(zombie) != null;
+    }
+    
+    public Coordinates getCreatureCoordinates(Creature creature) {
+        return gameboard.getCreatureCoordinates(creature);
     }
 }

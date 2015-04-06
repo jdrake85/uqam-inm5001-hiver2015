@@ -5,6 +5,7 @@
 package gameGUI;
 
 import com.jme3.app.Application;
+import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import de.lessvoid.nifty.Nifty;
@@ -92,41 +93,30 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void endTurn() {
-        battle.endTurn();
-        creatureInCommand = battle.getCreaturePlayingTurn();
+        FakeMain2.app.endTurn();
         //disableAllButtons();
         //smartEnableButtons();
         //smartEnableImages();
     }
 
     public void hero1Skill1() {
-        gameState = "skill";
-        FakeMain2.commandType = 1;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.hero, 1);
+        FakeMain2.app.requestSkill(1);
     }
 
     public void hero1Skill2() {
-        gameState = "skill";
-        FakeMain2.commandType = 2;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.hero, 2);
+        FakeMain2.app.requestSkill(2);
     }
 
     public void hero1Skill3() {
-        gameState = "skill";
-        FakeMain2.commandType = 3;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.hero, 3);
+        FakeMain2.app.requestSkill(3);
     }
 
     public void hero1Skill4() {
-        gameState = "skill";
-        FakeMain2.commandType = 4;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.hero, 4);
+        FakeMain2.app.requestSkill(4);
     }
 
     public void hero1move() {
-        gameState = "move";
-        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.hero);
-        FakeMain2.hero.animateMove();
+        FakeMain2.app.requestMove();
     }
 
     public void hero1endTurn() {
@@ -134,32 +124,23 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void hero2Skill1() {
-        gameState = "skill";
-        FakeMain2.commandType = 5;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.nurse, 5);
+        FakeMain2.app.requestSkill(5);
     }
 
     public void hero2Skill2() {
-        gameState = "skill";
-        FakeMain2.commandType = 6;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.nurse, 6);
+        FakeMain2.app.requestSkill(6);
     }
 
     public void hero2Skill3() {
-        gameState = "skill";
-        FakeMain2.commandType = 7;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.nurse, 7);
+        FakeMain2.app.requestSkill(7);
     }
 
     public void hero2Skill4() {
-        gameState = "skill";
-        FakeMain2.commandType = 8;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.nurse, 8);
+        FakeMain2.app.requestSkill(8);
     }
 
     public void hero2move() {
-        gameState = "move";
-        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.nurse);
+        FakeMain2.app.requestMove();
     }
 
     public void hero2endTurn() {
@@ -167,32 +148,23 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void hero3Skill1() {
-        gameState = "skill";
-        FakeMain2.commandType = 9;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.soldier, 9);
+        FakeMain2.app.requestSkill(9);
     }
 
     public void hero3Skill2() {
-        gameState = "skill";
-        FakeMain2.commandType = 10;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.soldier, 10);
+        FakeMain2.app.requestSkill(10);
     }
 
     public void hero3Skill3() {
-        gameState = "skill";
-        FakeMain2.commandType = 11;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.soldier, 11);
+        FakeMain2.app.requestSkill(11);
     }
 
     public void hero3Skill4() {
-        gameState = "skill";
-        FakeMain2.commandType = 12;
-        FakeMain2.battle.drawWithOverlayForCreatureSkill(FakeMain2.soldier, 12);
+        FakeMain2.app.requestSkill(12);
     }
 
     public void hero3move() {
-        gameState = "move";
-        FakeMain2.battle.drawWithOverlayForCreatureMoves(FakeMain2.soldier);
+        FakeMain2.app.requestMove();
     }
 
     public void hero3endTurn() {

@@ -189,7 +189,10 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
             }
         }
 
-        public void requestMove() {
+        
+    };
+
+    public void requestMove() {
             gameState = "move";
             commandType = 0;
             battle.drawWithOverlayForCreatureMoves(creatureInCommand);
@@ -315,8 +318,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 }
             }
         }
-    };
-
+    
     private Zombie performMovementForZombieTurn() {
         Zombie zombie = (Zombie) creatureInCommand;
         zombie.initializeTurnEnergy();
@@ -501,13 +503,14 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                                         gameState = "outOfLevel";
                                         level--;
                                     }
+                                    
                                 } else {
                                     System.out.println("Zombie turn finished");
                                     gameState = "idle";
                                     battle.endTurn();
                                     creatureInCommand = battle.getCreaturePlayingTurn();                                    
-                                    ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
                                 }
+                                ((GameState)(nifty.getCurrentScreen().getScreenController())).update();
                             }
                         } else if (!(gameState.equals("move") || gameState.equals("skill"))) {
                             gameState = "idle";

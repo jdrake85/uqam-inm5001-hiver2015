@@ -388,4 +388,9 @@ public class Creature {
     public Skill[] getSkills() {
         return skills;
     }
+    
+    public boolean hasSkillNumber(int skillNumber) {
+        // TODO: change 12 to 4
+        return 1 <= skillNumber && skillNumber <= 12 && skills[skillNumber - 1] != null;
+    }
 }

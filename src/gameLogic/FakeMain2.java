@@ -219,7 +219,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     }
 
     public void requestSkill(int command) {
-        if (noMotionEventPlaying() && !movingCreature) {
+        if (noMotionEventPlaying() && !movingCreature && creatureInCommand.hasSkillNumber(command)) {
             battle.clearOverlay();
             commandType = command;
             gameState = "skill";
@@ -262,12 +262,12 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 int commandX = (int) targetTile.getX();
                 int commandY = (int) targetTile.getZ();
 
-                if (0 <= Math.min(commandX, commandY) && Math.max(commandX, commandY) <= 7 && 0 <= commandType && commandType <= 7) {
+                if (0 <= Math.min(commandX, commandY) && Math.max(commandX, commandY) <= 7 && creatureInCommand.hasSkillNumber(commandType)) {
                     System.out.println("Using skill " + creatureInCommand.prepareSkill(commandType) + " at (" + commandX + ", " + commandY + ")...");
                     battle.useCreatureSkillAt(creatureInCommand, commandType, new Coordinates(commandX, commandY), activeDamageNodes, activeDamageMotions);
                     
                 } else {
-                    System.out.println("Error: coordinates " + new Coordinates(commandX, commandY) + " are outside the gameboard!");
+                    System.out.println("Error: invalid command or coordinates");
                 }
 
                 if (battle.isWon()) {

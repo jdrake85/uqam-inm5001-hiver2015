@@ -9,6 +9,7 @@ import gameLogic.creatures.Zombie;
 import com.jme3.cinematic.MotionPath;
 import com.jme3.cinematic.events.MotionEvent;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Node;
 import gameLogic.gameboard.GameBoard;
 import gameLogic.gameboard.Tile;
 import gameLogic.pathfinding.Coordinates;
@@ -17,6 +18,7 @@ import gameLogic.pathfinding.OptimalPaths;
 import gameLogic.skills.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
@@ -123,7 +125,7 @@ public class GameBattle {
         gameboard.displayCreatureCoordinates(creature);
     }
 
-    public void draw() {
+    public void clearOverlay() {
         currentOverlay = null;
         gameboard.drawWithBlankOverlay();
     }
@@ -184,8 +186,7 @@ public class GameBattle {
         return destinationReachable && !creatureCoords.equals(destCoords);
     }
 
-    public MotionEvent useCreatureSkillAt(Creature creature, int skillNumber, Coordinates targetCoords) {
-        MotionEvent attackEvent = null; //TODO: implement attack animation
+    public void useCreatureSkillAt(Creature creature, int skillNumber, Coordinates targetCoords, LinkedList<Node> damageNodes, LinkedList<MotionEvent> damageMotions) {
         Skill skill = creature.prepareSkill(skillNumber);
         Coordinates originatingCoords = gameboard.getCreatureCoordinates(creature);
         skill.setOriginatingFrom(originatingCoords);
@@ -195,7 +196,7 @@ public class GameBattle {
             String animationType = skill.getAnimationType();
             creature.rotateModelTowardsCoordinates(originatingCoords, targetCoords);
             creature.animateSkill(animationType);
-            attackEvent = gameboard.performTargetedSkill(skill);
+            gameboard.performTargetedSkill(skill, damageNodes, damageMotions);
             removeDeadCreaturesFromTurnOrder();
             while (creaturePriority.size() < 5) {
                 addCreatureListOnceToCreaturePriority();
@@ -203,12 +204,10 @@ public class GameBattle {
         } else if (!creature.canPayEnergyCostForSkillNumber(skillNumber)) {
             System.out.println("Not enough energy!");
         }
-        return attackEvent;
     }
-
+    
     private boolean creatureCanUseSkillAt(Creature creature, int skillNumber, Coordinates coords) {
         Skill skill = creature.prepareSkill(skillNumber);
-        boolean creatureIsGood = creature.isGood();
         currentOverlay = gameboard.getSkillOverlay(skill);
         int xCoord = coords.getXCoord();
         int yCoord = coords.getYCoord();
@@ -513,17 +512,13 @@ public class GameBattle {
         return targetCoords.areCardinalCoordinatesAdjacentTo(zombieCoords);
     }
 
-    public MotionEvent haveZombieAttackAdjacentTarget(Zombie zombie) {
+    public void haveZombieAttackAdjacentTarget(Zombie zombie, LinkedList<Node> damageNodes, LinkedList<MotionEvent> damageMotions) {
         int zombieSkill = 1;
         Creature targetCreature = zombie.getCurrentTarget();
         Coordinates targetCoords = gameboard.getCreatureCoordinates(targetCreature);
-        MotionEvent attackEvent;
         if (targetCoords != null) {
-            attackEvent = useCreatureSkillAt(zombie, zombieSkill, targetCoords);
-        } else {
-            attackEvent = null;
+            useCreatureSkillAt(zombie, zombieSkill, targetCoords, damageNodes, damageMotions);
         }
-        return attackEvent;
     }
 
     public boolean zombieIsAdjacentToAGoodCreature(Creature zombie) {

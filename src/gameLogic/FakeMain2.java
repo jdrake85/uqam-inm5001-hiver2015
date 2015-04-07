@@ -37,6 +37,9 @@ import gameLogic.pathfinding.Coordinates;
 import gameLogic.skills.hero.*;
 import gameLogic.skills.nurse.*;
 import gameLogic.skills.soldier.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
@@ -90,6 +93,8 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     public static boolean movingCreature = false;
     public static Transform mainTransform;
     public static Node lastDamageNode = null;
+    private LinkedList<MotionEvent> activeDamageMotions = new LinkedList<MotionEvent>();
+    private LinkedList<Node> activeDamageNodes = new LinkedList<Node>();
     public static final boolean FREQUENT = true;
 
     @Override
@@ -142,21 +147,18 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     }
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
-            //Equivalent du premier bouton
-            // TODO; effacer
+
             if (name.equals("MoveKey") && !keyPressed && gameState.equals("idle")) {
-                requestMove();
+                requestMovesOverlay();
             }
 
-            // Ending turn
             if (name.equals("EndTurnKey") && !keyPressed && gameState.equals("idle")) {
-                endTurn();
+                requestEndTurn();
 
             }
 
-            // Ending turn
             if (name.equals("BannerRefresh") && !keyPressed && gameState.equals("idle")) {
-                refreshAndDisplayBanner();
+                requestRefreshAndDisplayBanner();
             }
 
             if (name.substring(0, 5).equals("Skill") && !keyPressed && gameState.equals("idle")) {
@@ -169,43 +171,43 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
             }
 
             if (name.equals("EnergyKey") && !keyPressed && gameState.equals("idle")) {
-                increaseEnergy();
+                requestIncreaseEnergy();
             }
 
             if (name.equals("RestoreHealthKey") && !keyPressed && gameState.equals("idle")) {
-                restoreHealth();
+                requestRestoreHealth();
             }
 
             if (name.equals("SelectTile") && !keyPressed && gameState.equals("skill")) {
-                confirmSkill();
+                requestUseSkillOnSelectedTile();
             }
 
-
             if (name.equals("SelectTile") && !keyPressed && gameState.equals("move")) {
-                confirmMove();
+                requestMoveToSelectedTile();
             }
         }
     };
 
-    public void requestMove() {
+    public void requestMovesOverlay() {
         if (noMotionEventPlaying() && !movingCreature) {
+            battle.clearOverlay();
             gameState = "move";
             commandType = 0;
             battle.drawWithOverlayForCreatureMoves(creatureInCommand);
             creatureInCommand.animateMove();
         }
     }
-    
-    public void endTurn() {
+
+    public void requestEndTurn() {
         if (noMotionEventPlaying() && !movingCreature) {
+            battle.clearOverlay();
             battle.endTurn();
             creatureInCommand = battle.getCreaturePlayingTurn();
-            ((GameState)(nifty.getCurrentScreen().getScreenController())).update(!FREQUENT);
-            // Enemy turn(s), if next
+            ((GameState) (nifty.getCurrentScreen().getScreenController())).update(!FREQUENT);
         }
     }
 
-    public void refreshAndDisplayBanner() {
+    public void requestRefreshAndDisplayBanner() {
         if (noMotionEventPlaying() && !movingCreature) {
             Creature[] priorityBanner = battle.getCreatureTurnOrder();
             System.out.print("PRIORITY BANNER: ");
@@ -218,27 +220,28 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     public void requestSkill(int command) {
         if (noMotionEventPlaying() && !movingCreature) {
+            battle.clearOverlay();
             commandType = command;
             gameState = "skill";
             battle.drawWithOverlayForCreatureSkill(creatureInCommand, commandType);
         }
     }
 
-    public void increaseEnergy() {
+    public void requestIncreaseEnergy() {
         if (noMotionEventPlaying() && !movingCreature) {
             creatureInCommand.setEnergy(creatureInCommand.getEnergy() + 20);
             System.out.println(creatureInCommand.getEnergy());
         }
     }
 
-    public void restoreHealth() {
+    public void requestRestoreHealth() {
         if (noMotionEventPlaying() && !movingCreature) {
             creatureInCommand.receiveDamage(-16);
             System.out.println(creatureInCommand + " is now at " + creatureInCommand.getHealth() + " health!");
         }
     }
 
-    public void confirmSkill() {
+    public void requestUseSkillOnSelectedTile() {
         if (noMotionEventPlaying() && !movingCreature) {
             CollisionResults results = new CollisionResults();
             Vector2f click2d = inputManager.getCursorPosition();
@@ -259,37 +262,31 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 int commandX = (int) targetTile.getX();
                 int commandY = (int) targetTile.getZ();
 
-                MotionEvent nextMotionEvent = FakeMain2.performTurn(FakeMain2.commandType, commandX, commandY, FakeMain2.creatureInCommand, FakeMain2.battle);
-                setAndPlayNextMotionEvent(nextMotionEvent);
-                // TODO HERE
-
-
-                /*
-                 MyMaterial greenTile = new MyMaterial(assetManager);
-                 greenTile.setGreenTileMat();
-                 closest.setMaterial(greenTile.getMat());*/
-                for (int i = 0; i < 8; i++) {
-                    for (int j = 0; j < 8; j++) {
-                        g[i][j].setMaterial(greyMat);
-                        g[i][j].setQueueBucket(Bucket.Translucent);
-                    }
+                if (0 <= Math.min(commandX, commandY) && Math.max(commandX, commandY) <= 7 && 0 <= commandType && commandType <= 7) {
+                    System.out.println("Using skill " + creatureInCommand.prepareSkill(commandType) + " at (" + commandX + ", " + commandY + ")...");
+                    battle.useCreatureSkillAt(creatureInCommand, commandType, new Coordinates(commandX, commandY), activeDamageNodes, activeDamageMotions);
+                    
+                } else {
+                    System.out.println("Error: coordinates " + new Coordinates(commandX, commandY) + " are outside the gameboard!");
                 }
+
                 if (battle.isWon()) {
                     System.out.println("<PLACEHOLDER FUNCTION>: battle is won");
                     gameState = "loadPostBattleCinematic";
                     battleInProgress = false;
                 } else {
                     battle.refreshCreatureList();
-                    ((GameState)(nifty.getCurrentScreen().getScreenController())).update(!FREQUENT);
+                    ((GameState) (nifty.getCurrentScreen().getScreenController())).update(!FREQUENT);
                 }
 
             }
             gameState = "idle";
+            battle.clearOverlay();
             // creatureInCommand.animateIdle(); // TODO: specify creature
         }
     }
 
-    public void confirmMove() {
+    public void requestMoveToSelectedTile() {
         if (noMotionEventPlaying() && !movingCreature) {
             CollisionResults results = new CollisionResults();
             Vector2f click2d = inputManager.getCursorPosition();
@@ -310,22 +307,16 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 int commandX = (int) targetTile.getX();
                 int commandY = (int) targetTile.getZ();
 
-
-                MotionEvent nextMotionEvent = FakeMain2.performTurn(0, commandX, commandY, FakeMain2.creatureInCommand, FakeMain2.battle);
-                setAndPlayNextMotionEvent(nextMotionEvent);
+                if (0 <= Math.min(commandX, commandY) && Math.max(commandX, commandY) <= 7) {
+                    System.out.println("Moving to (" + commandX + ", " + commandY + ")...");
+                    MotionEvent nextMotionEvent = battle.moveCreatureTo(creatureInCommand, new Coordinates(commandX, commandY));
+                    setAndPlayNextMotionEvent(nextMotionEvent);
+                } else {
+                    System.out.println("Error: coordinates " + new Coordinates(commandX, commandY) + " are outside the gameboard!");
+                }
 
                 gameState = "idle";
-                //creatureInCommand.animateIdle(); // TODO: specify creature
-                /*
-                 MyMaterial greenTile = new MyMaterial(assetManager);
-                 greenTile.setGreenTileMat();
-                 closest.setMaterial(greenTile.getMat());*/
-                for (int i = 0; i < 8; i++) {
-                    for (int j = 0; j < 8; j++) {
-                        g[i][j].setMaterial(greyMat);
-                        g[i][j].setQueueBucket(Bucket.Translucent);
-                    }
-                }
+                battle.clearOverlay();
             }
         }
     }
@@ -339,19 +330,12 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
             creatureInCommand.animateMove();
             nextMotionEvent = battle.moveCreatureTo(zombie, attackPosition);
             setAndPlayNextMotionEvent(nextMotionEvent);
-            battle.draw();
-            for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
-                    g[i][j].setMaterial(greyMat);
-                    g[i][j].setQueueBucket(Bucket.Translucent);
-                }
-            }
+            battle.clearOverlay();
         }
         return zombie;
     }
 
     private boolean performAttackOnPlayerForZombieTurn() {
-
         //Debugging
         Zombie zombie = (Zombie) creatureInCommand;
         Creature zombieTarget = zombie.getCurrentTarget();
@@ -359,8 +343,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         boolean gameOver = false;
 
         if (zombieTarget != null && battle.zombieIsAdjacentToTarget(zombie)) {
-            //rotateModelsForSkillUserAndAffectedCreatures(zombieTarget);
-            battle.haveZombieAttackAdjacentTarget(zombie);
+            battle.haveZombieAttackAdjacentTarget(zombie, activeDamageNodes, activeDamageMotions);
             gameOver = !zombieTarget.isAlive();
         }
 
@@ -491,13 +474,10 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     public void simpleUpdate(float tpf) {
         if (!gameState.equals("outOfLevel")) {
             if (battleInProgress) {
-        ((GameState)(nifty.getCurrentScreen().getScreenController())).update(FREQUENT);
+                ((GameState) (nifty.getCurrentScreen().getScreenController())).update(FREQUENT);
                 if (!battle.isWon()) {
+                    clearFinishedDamageNodes();
                     if (noMotionEventPlaying() && !movingCreature) {
-                        if (lastDamageNode != null) {
-                            lastDamageNode.getParent().detachChild(lastDamageNode);
-                            lastDamageNode = null;
-                        }
                         if (gameState.equals("idle") && !creatureInCommand.creatureChannel.getAnimationName().equals("Idle")) {
                             creatureInCommand.animateIdle();
                         } else if (currentMovingZombie != null) {
@@ -535,7 +515,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 playedPreBattleCinematic = true;
                 battle.start();
                 creatureInCommand = battle.getCreaturePlayingTurn();
-                ((GameState)(nifty.getCurrentScreen().getScreenController())).update(!FREQUENT);
+                ((GameState) (nifty.getCurrentScreen().getScreenController())).update(!FREQUENT);
                 battleInProgress = true;
             } else if (!playedPostBattleCinematic) {
                 battleInProgress = false;
@@ -562,35 +542,17 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         }
     }
 
-    protected static MotionEvent performTurn(int commandType, int commandX, int commandY, Creature creature, GameBattle battle) {
-        MotionEvent motionEvent = null;
-        if (commandX == 8 || commandY == 8) {
-            System.out.println("Energy boost +40!");
-            creature.setEnergy(creature.getEnergy() + 40);
-        } else if (commandType == 0) {
-            System.out.println("Moving to (" + commandX + ", " + commandY + ")...");
-            motionEvent = battle.moveCreatureTo(creature, new Coordinates(commandX, commandY));
-            //} else if (commandType = )
-        } else if (commandType >= 1 && commandType <= 12) {
-            System.out.println("Using skill " + creature.prepareSkill(commandType) + " at (" + commandX + ", " + commandY + ")...");
-            motionEvent = battle.useCreatureSkillAt(creature, commandType, new Coordinates(commandX, commandY));
-        } else {
-            System.out.println("** Unrecognized commands; ending turn.");
-        }
-        return motionEvent;
-    }
-
-    public static Vector3f coordinatesWithHeightToVector3f(int x, float height, int y) {
-        Vector3f vector = null;
-        if (Math.min(x, y) >= 0 && Math.max(x, y) < 8) {
-            vector = g[x][y].getWorldTranslation();
-            vector.setY(height);
-        }
-        return vector;
-    }
-
     private boolean noMotionEventPlaying() {
         return currentMotionEvent == null || currentMotionEvent.getPlayState().equals(PlayState.Stopped);
+    }
+    
+    private void clearFinishedDamageNodes() {
+        assert(activeDamageNodes.isEmpty() == activeDamageMotions.isEmpty());
+        if (!activeDamageMotions.isEmpty()&& activeDamageMotions.peek().getPlayState().equals(PlayState.Stopped)) {
+            Node finishedNode = activeDamageNodes.removeFirst();
+            finishedNode.removeFromParent();
+            activeDamageMotions.removeFirst(); 
+        }
     }
 
     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {

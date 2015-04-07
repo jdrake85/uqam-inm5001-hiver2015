@@ -5,20 +5,25 @@
 package gameLogic.gameboard;
 
 import com.jme3.cinematic.MotionPath;
+import com.jme3.cinematic.PlayState;
 import com.jme3.cinematic.events.MotionEvent;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import gameLogic.Creature;
 import gameLogic.FakeMain2;
+import static gameLogic.FakeMain2.g;
+import static gameLogic.FakeMain2.greyMat;
 import gameLogic.pathfinding.Coordinates;
 import gameLogic.pathfinding.CoordPath;
 import gameLogic.skills.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class GameBoard {
@@ -313,7 +318,12 @@ public class GameBoard {
     }
 
     public void drawWithBlankOverlay() {
-        drawWithMovesOverlay(null);
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                FakeMain2.g[i][j].setMaterial(greyMat);
+                FakeMain2.g[i][j].setQueueBucket(RenderQueue.Bucket.Translucent);
+            }
+        }
     }
 
     public void drawWithMovesOverlay(boolean[][] overlay) {
@@ -463,34 +473,69 @@ public class GameBoard {
         return overlay;
     }
 
-    public MotionEvent performTargetedSkill(Skill skill) {
+    public void performTargetedSkill(Skill skill, LinkedList<Node> damageNodes, LinkedList<MotionEvent> damageMotions) {
         Coordinates targetCoords = skill.getTargetCoordinates();
         List<Coordinates> affectedCoords = skill.generateAffectedCoordinatesFrom(targetCoords);
-        MotionEvent motionControl = null;
         for (Coordinates coords : affectedCoords) {
             Tile targetTile = getTileAt(coords);
             if (targetTile != null && targetTile.isOccupied()) {
+                Node damagePannel = new Node("damagePannel");
+                MotionEvent motionControl = new MotionEvent();
+
                 Creature target = targetTile.getOccupier();
                 int damage = skill.performOn(target);
 
                 if (damage > 0) {
-                    motionControl = displayDamage(damage, target);
                     System.out.println(target + " receives " + damage + " damage from " + skill + ", is at " + target.getHealth() + "/" + target.getMaxHealth());
                     if (skill.hasKnockback()) {
                         knockbackCreatureFromSkill(target, skill);
                     }
                     if (!target.isAlive()) {
                         System.out.println("...and expires!");
-
                     }
-                } else if (damage == 0) {
-                    System.out.println(skill + "misses!");
-                } else {
-                    System.out.println(target + " regains " + (damage * -1) + " points from " + skill);
+                } else if (damage < 0) {
+                    damage *= -1;
+                    System.out.println(target + " receives " + damage + " healing from " + skill + ", is at " + target.getHealth() + "/" + target.getMaxHealth());
                 }
+
+                damagePannel.setLocalTranslation(target.geometry3D.getLocalTranslation());
+
+                Box b1 = new Box(0.1f, 0.2f, 0f);
+                Geometry tens = new Geometry("Box1", b1);
+                tens.setMaterial(FakeMain2.numberMat[damage / 10]);
+                tens.setLocalTranslation(tens.getLocalTranslation().add(new Vector3f(-0.15f, 0f, 0.5f)));
+
+                Box b2 = new Box(0.1f, 0.2f, 0f);
+                Geometry units = new Geometry("Box2", b2);
+                units.setMaterial(FakeMain2.numberMat[damage % 10]);
+                units.setLocalTranslation(units.getLocalTranslation().add(new Vector3f(+0.15f, 0f, 0.5f)));
+
+                damagePannel.attachChild(tens);
+                damagePannel.attachChild(units);
+
+                FakeMain2.charNode.attachChild(damagePannel);
+
+                MotionPath path = new MotionPath();
+                path.addWayPoint(damagePannel.getLocalTranslation());
+                path.addWayPoint(damagePannel.getLocalTranslation().add(new Vector3f(0f, 1.5f, 0f)));
+
+                motionControl = new MotionEvent(damagePannel, path);
+                motionControl.setDirectionType(MotionEvent.Direction.None);
+                motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
+                motionControl.setSpeed(10f);
+                //System.out.println("Playback status before play: " + motionControl.isEnabled());
+                motionControl.play();
+                //System.out.println("Playback PAUSE: " + motionControl.getPlayState().equals(PlayState.Paused));
+                //System.out.println("Playback fail: " + motionControl.getPlayState().equals(PlayState.Stopped));
+
+                //FakeMain2.lastDamageNode = damagePannel;
+                //FakeMain2.charNode.detachChild(damagePannel);
+
+                damageNodes.add(damagePannel);
+                damageMotions.add(motionControl);
+
             }
         }
-        return motionControl;
     }
 
     public boolean containsTileWithCoordinates(Coordinates coords) {
@@ -506,41 +551,4 @@ public class GameBoard {
         }
         return creatureFound;
     }
-
-    private MotionEvent displayDamage(int damage, Creature target) {
-
-        Node damagePannel = new Node("damagePannel");
-        damagePannel.setLocalTranslation(target.geometry3D.getLocalTranslation());
-        
-        Box b1 = new Box(0.1f, 0.2f, 0f);
-        Geometry tens = new Geometry("Box1", b1);
-        tens.setMaterial(FakeMain2.numberMat[damage/10]);
-        tens.setLocalTranslation(tens.getLocalTranslation().add(new Vector3f(-0.15f, 0f, 0.5f)));
-        
-        Box b2 = new Box(0.1f, 0.2f, 0f);
-        Geometry units = new Geometry("Box2", b2);
-        units.setMaterial(FakeMain2.numberMat[damage%10]);
-        units.setLocalTranslation(units.getLocalTranslation().add(new Vector3f(+0.15f, 0f, 0.5f)));
-        
-        damagePannel.attachChild(tens);
-        damagePannel.attachChild(units);
-        
-        FakeMain2.charNode.attachChild(damagePannel);
-        
-        MotionPath path = new MotionPath();
-        path.addWayPoint(damagePannel.getLocalTranslation());
-        path.addWayPoint(damagePannel.getLocalTranslation().add(new Vector3f(0f, 1.5f, 0f)));
-        
-        MotionEvent motionControl = new MotionEvent(damagePannel, path);
-        motionControl.setDirectionType(MotionEvent.Direction.None);
-        motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
-        motionControl.setSpeed(10f);
-        
-        FakeMain2.lastDamageNode = damagePannel;
-        
-        return motionControl;
-
-        //FakeMain2.charNode.detachChild(damagePannel);
- 
-    }      
 }

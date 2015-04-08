@@ -5,7 +5,6 @@
 package gameGUI;
 
 import com.jme3.app.Application;
-import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import de.lessvoid.nifty.Nifty;
@@ -17,13 +16,19 @@ import de.lessvoid.nifty.render.NiftyImage;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import gameLogic.Creature;
-import mygame.Main;
 
 import gameLogic.FakeMain2;
-import static gameLogic.FakeMain2.battle;
-import static gameLogic.FakeMain2.gameState;
 import static gameLogic.FakeMain2.creatureInCommand;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import org.json.JSONWriter;
 
 /**
  *
@@ -69,6 +74,8 @@ public class GameState extends AbstractAppState implements ScreenController {
             smartDisableButtons();
             smartDisableImages();
             updateTurnBanner();
+            Element title = FakeMain2.nifty.getCurrentScreen().findElementByName("levelTitle");
+            title.getRenderer(TextRenderer.class).setText("Level " + FakeMain2.app.level);
         }
         updateHealthAndEnergyBars();
     }
@@ -259,7 +266,7 @@ public class GameState extends AbstractAppState implements ScreenController {
 
     public String creatureInfo(int turn) {
         Creature toStats = FakeMain2.battle.getCreatureTurnOrder()[turn];
-        String infoString = new String("this is some info");
+        String infoString = toStats.statsOutput();
         return infoString;
     }
 
@@ -269,30 +276,33 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void showTurn1Stats() {
-        showTurnStats(1);
+        showTurnStats(0);
     }
 
     public void showTurn2Stats() {
 
-        showTurnStats(2);
+        showTurnStats(1);
     }
 
     public void showTurn3Stats() {
 
-        showTurnStats(3);
+        showTurnStats(2);
     }
 
     public void showTurn4Stats() {
 
-        showTurnStats(4);
+        showTurnStats(3);
     }
 
     public void showTurn5Stats() {
 
-        showTurnStats(5);
+        showTurnStats(4);
     }
 
     public void newGame() {
+        FakeMain2.gameState = "outOfLevel";
+        FakeMain2.app.level = 1;
+        FakeMain2.app.initializeBattleForLevel(FakeMain2.app.level);
         FakeMain2.nifty.gotoScreen("battle");
     }
 
@@ -301,33 +311,79 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void loadGame() {
-        FakeMain2.nifty.gotoScreen("battle");
+        String savePath = "assets/Configurations/save.json";
+        FakeMain2.gameState = "outOfLevel";
+        try{
+            Reader myReader = new FileReader(savePath);
+            JSONTokener myJsonReader = new JSONTokener(myReader);
+            FakeMain2.app.level = (new JSONObject(myJsonReader)).getInt("level");
+        }
+        catch(IOException ioe){
+            System.err.println("Reading file error : " + ioe.getMessage());
+            FakeMain2.app.level = 1;
+        }
+        catch(JSONException jse){
+            System.err.println("JSON error : " + jse.getMessage());
+            FakeMain2.app.level = 1;
+        }
+        finally{
+            FakeMain2.app.initializeBattleForLevel(FakeMain2.app.level);
+            FakeMain2.nifty.gotoScreen("battle");            
+        }
     }
 
     public void saveGame() {
-        FakeMain2.nifty.gotoScreen("battle");
+        int level = FakeMain2.app.level;
+        String savePath = "assets/Configurations/save.json";
+        try{
+            Writer myWriter = new FileWriter(savePath, false);
+            JSONWriter myJsonWriter = new JSONWriter(myWriter);
+            myJsonWriter.object();
+                myJsonWriter.key("level");
+                myJsonWriter.value(level);
+            myJsonWriter.endObject();
+            myWriter.close();
+        }
+        catch(IOException ioe){
+            System.err.println("Savin file error : " + ioe.getMessage());
+        }
+        catch(JSONException jse){
+            System.err.println("JSON error : " + jse.getMessage());
+        }
+        finally{
+            FakeMain2.nifty.gotoScreen("battle");            
+        }
     }
 
     public void quitGame() {
         FakeMain2.app.stop();
     }
 
-    public void showHeroStats(int i) {
+    public void showHeroStats(Creature toStats) {
+        String infoString = toStats.statsOutput();
         Element myElem = FakeMain2.nifty.getScreen("battle").findElementByName("infoText");
-        myElem.getRenderer(TextRenderer.class).setTextHAlign(HorizontalAlign.left);
-        myElem.getRenderer(TextRenderer.class).setText("HeroStats");
+        myElem.getRenderer(TextRenderer.class).setText(infoString);
     }
 
     public void showHero1Stats() {
-        showHeroStats(1);
+        Creature toStats = FakeMain2.hero;
+        if (toStats != null){
+            showHeroStats(toStats);
+        }
     }
 
     public void showHero2Stats() {
-        showHeroStats(2);
+        Creature toStats = FakeMain2.nurse;
+        if (toStats != null){
+            showHeroStats(toStats);
+        }
     }
 
     public void showHero3Stats() {
-        showHeroStats(3);
+        Creature toStats = FakeMain2.soldier;
+        if (toStats != null){
+            showHeroStats(toStats);
+        }
     }
 
     private void smartEnableChar(Creature character, int index) {
@@ -456,7 +512,7 @@ public class GameState extends AbstractAppState implements ScreenController {
 
     private void updatePlayerBars(Creature player, int index) {
         int scaled2X = 2 * index;
-        int maxBoxHeight = FakeMain2.nifty.getCurrentScreen().findElementByName("hero1hp").getHeight();
+        int maxBoxHeight = FakeMain2.nifty.getCurrentScreen().findElementByName("hero1hp").getHeight(); 
 
         float hpRatio = computeHpRatio(player);
         float enRatio = computeEnRatio(player);
@@ -464,8 +520,12 @@ public class GameState extends AbstractAppState implements ScreenController {
         int newHpHeight = (int)Math.ceil(hpRatio * maxBoxHeight);
         int newEnHeight = (int)Math.ceil(enRatio * maxBoxHeight);
         
-        FakeMain2.nifty.getCurrentScreen().findElementByName(hpAndEnergy.get(scaled2X)).setHeight(newHpHeight);
-        FakeMain2.nifty.getCurrentScreen().findElementByName(hpAndEnergy.get(scaled2X + 1)).setHeight(newEnHeight);
+        Element myElem = FakeMain2.nifty.getCurrentScreen().findElementByName(hpAndEnergy.get(scaled2X));
+        Element myElem2 = FakeMain2.nifty.getCurrentScreen().findElementByName(hpAndEnergy.get(scaled2X + 1));
+        
+        myElem.setHeight(maxBoxHeight - newHpHeight);
+        myElem2.setHeight(maxBoxHeight - newEnHeight);
+        
     }
 
     private float computeHpRatio(Creature player) {

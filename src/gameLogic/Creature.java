@@ -137,9 +137,12 @@ public class Creature {
         return motionControl;
     }
 
+    public String statsOutput() {
+        return name + ": HEALTH: " + health + " / ENERGY: " + energy;
+    }
+
     public void displayStats() {
-        String output = name + ": HEALTH: " + health
-                + " / ENERGY: " + energy;
+        String output = statsOutput();
         if (isGood) {
             output = "#####################################\n" + output;
             output += "\n#####################################";

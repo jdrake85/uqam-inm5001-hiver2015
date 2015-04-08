@@ -7,7 +7,6 @@ import com.jme3.animation.AnimEventListener;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.app.SimpleApplication;
-import com.jme3.asset.AssetManager;
 import com.jme3.asset.plugins.FileLocator;
 import com.jme3.cinematic.PlayState;
 import com.jme3.cinematic.events.MotionEvent;
@@ -42,8 +41,10 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     public static void main(String[] args) {
         app = new FakeMain2();
+        app.setDisplayStatView(false);
         app.start();
     }
+    
     protected Node pivot = new Node("pivot");
     protected Node mainNode = new Node("mainNode");
     public static Node charNode = new Node("charNode");
@@ -111,9 +112,6 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         // SOLDIER GRAPHICS
         soldierMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         soldierMat.setColor("Color", new ColorRGBA(0f, 1f, 0f, 0f));
-
-        // (DEBUGGING) Specifiy starting level here (first level is 1)
-        level = 1;
     }
 
     private void initKeys() {
@@ -140,6 +138,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         inputManager.addListener(actionListener, "SelectTile");
         inputManager.addListener(actionListener, "EndTurnKey");
     }
+    
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
             //Equivalent du premier bouton
@@ -603,7 +602,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         // Do nothing
     }
 
-    private void initializeBattleForLevel(int level) {
+    public void initializeBattleForLevel(int level) {
         if (battle != null) {
             battle.clearCombattants();
         }

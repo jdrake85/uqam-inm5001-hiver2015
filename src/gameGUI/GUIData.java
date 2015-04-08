@@ -26,9 +26,11 @@ public class GUIData {
     public static String greyedAsMoveAndEnd = imagesPath + "GreyedMnE.png";
     public static String heroMovePng = imagesPath + "heroMove.png";
     public static String heroEndTurnPng = imagesPath + "heroEndTurn.png";
-    public static String heroHpPng = imagesPath + "health.png";
-    public static String heroEnergyPng = imagesPath + "energy.png";
+    public static String heroHpPng = imagesPath + "GreyedHnE.png";
+    public static String heroEnergyPng = imagesPath + "GreyedHnE.png";
     public static String greyedAsHpAndEnergy = imagesPath + "GreyedHnE.png";
+    //public static String heroHpPng = imagesPath + "health.png";
+    //public static String heroEnergyPng = imagesPath + "energy.png";
 
     public static ArrayList<String> fillButtons() {
         

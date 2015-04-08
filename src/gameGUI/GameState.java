@@ -100,7 +100,7 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void endTurn() {
-        FakeMain2.app.endTurn();
+        FakeMain2.app.requestEndTurn();
         //disableAllButtons();
         //smartEnableButtons();
         //smartEnableImages();
@@ -123,7 +123,7 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void hero1move() {
-        FakeMain2.app.requestMove();
+        FakeMain2.app.requestMovesOverlay();
     }
 
     public void hero1endTurn() {
@@ -147,7 +147,7 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void hero2move() {
-        FakeMain2.app.requestMove();
+        FakeMain2.app.requestMovesOverlay();
     }
 
     public void hero2endTurn() {
@@ -171,7 +171,7 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void hero3move() {
-        FakeMain2.app.requestMove();
+        FakeMain2.app.requestMovesOverlay();
     }
 
     public void hero3endTurn() {

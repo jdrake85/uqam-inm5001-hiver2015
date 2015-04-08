@@ -12,6 +12,7 @@ import com.jme3.material.Material;
 import gameLogic.Creature;
 import static gameLogic.FakeMain2.findAnimControl;
 import static gameLogic.FakeMain2.heroScene;
+import gameLogic.skills.Skill;
 import gameLogic.skills.hero.Strike;
 
 
@@ -25,12 +26,13 @@ public class Zombie extends Creature {
     int stepsToCurrentTarget = Integer.MAX_VALUE;
     
     
-    
-    
     public Zombie(String name, AssetManager assetManager, AnimEventListener listener) {
         super(name, assetManager, listener);
         this.setAlignment("bad");
-        setSkillAsNumber(new Strike(15, 1), 1);
+        
+        Skill zombieStrike = new Strike(15, 1);
+        zombieStrike.setTargetsZombies(false);
+        setSkillAsNumber(zombieStrike, 1);
         setPicturePath("Interface/Images/" + name + ".png");
     }
     

@@ -137,7 +137,12 @@ public class GameBattle {
 
     public void drawWithOverlayForCreatureSkill(Creature creature, int skillNumber) {
         currentOverlay = getCalculatedOverlayForCreatureSkill(creature, skillNumber);
-        gameboard.drawWithSkillOverlay(creature, currentOverlay);
+        Skill creatureSkill = creature.getSkills()[skillNumber - 1];
+        if (creatureSkill instanceof DirectionnalSkill) {
+            gameboard.drawWithDirectionnalSkillOverlay(currentOverlay);
+        } else {
+            gameboard.drawWithGeneralSkillOverlay(creatureSkill.getTargetsZombies(), currentOverlay);
+        }
     }
 
     public void insertCreatureAt(Creature creature, int xCoord, int yCoord) {
@@ -209,10 +214,12 @@ public class GameBattle {
     private boolean creatureCanUseSkillAt(Creature creature, int skillNumber, Coordinates coords) {
         Skill skill = creature.prepareSkill(skillNumber);
         currentOverlay = gameboard.getSkillOverlay(skill);
+        Creature creatureAtTarget = gameboard.getCreatureAt(coords);
+        boolean incorrectTypeOfTarget = (creatureAtTarget != null) && (creatureAtTarget.isGood() == skill.getTargetsZombies());
         int xCoord = coords.getXCoord();
         int yCoord = coords.getYCoord();
         return creature.canPayEnergyCostForSkillNumber(skillNumber)
-                && currentOverlay[xCoord][yCoord];
+                && currentOverlay[xCoord][yCoord] && !incorrectTypeOfTarget;
     }
 
     public void start() {

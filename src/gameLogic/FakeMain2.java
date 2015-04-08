@@ -26,6 +26,8 @@ import com.jme3.math.Transform;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
+import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.filters.FadeFilter;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -96,6 +98,8 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     private LinkedList<MotionEvent> activeDamageMotions = new LinkedList<MotionEvent>();
     private LinkedList<Node> activeDamageNodes = new LinkedList<Node>();
     public static final boolean FREQUENT = true;
+    //private FilterPostProcessor fpp;
+    //private FadeFilter fade;
 
     @Override
     public void simpleInitApp() {
@@ -103,6 +107,13 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         flyCam.setEnabled(false);
         initScene();
         initKeys();
+
+        /*
+        fpp = new FilterPostProcessor(assetManager);
+        fade = new FadeFilter(2); // e.g. 2 seconds
+        fpp.addFilter(fade);
+        viewPort.addProcessor(fpp);
+        */
 
         // HERO GRAPHICS
         heroMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -119,6 +130,8 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
         // (DEBUGGING) Specifiy starting level here (first level is 1)
         level = 1;
+        
+        //fade.setValue(0);
     }
 
     private void initKeys() {
@@ -137,6 +150,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT)); // trigger 2: left-button click
         inputManager.addMapping("EndTurnKey", new KeyTrigger(KeyInput.KEY_Q));
+        inputManager.addMapping("VictoryKey", new KeyTrigger(KeyInput.KEY_V));
 
         inputManager.addListener(actionListener, "BannerRefresh");
         inputManager.addListener(actionListener, "MoveKey");
@@ -144,9 +158,15 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         inputManager.addListener(actionListener, "RestoreHealthKey");
         inputManager.addListener(actionListener, "SelectTile");
         inputManager.addListener(actionListener, "EndTurnKey");
+        inputManager.addListener(actionListener, "VictoryKey");
     }
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
+
+            if (name.equals("VictoryKey") && !keyPressed && gameState.equals("idle")) {
+                gameState = "outOfLevel";
+                //fade.fadeOut();
+            }
 
             if (name.equals("MoveKey") && !keyPressed && gameState.equals("idle")) {
                 requestMovesOverlay();
@@ -154,7 +174,6 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
             if (name.equals("EndTurnKey") && !keyPressed && gameState.equals("idle")) {
                 requestEndTurn();
-
             }
 
             if (name.equals("BannerRefresh") && !keyPressed && gameState.equals("idle")) {
@@ -265,7 +284,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 if (0 <= Math.min(commandX, commandY) && Math.max(commandX, commandY) <= 7 && creatureInCommand.hasSkillNumber(commandType)) {
                     System.out.println("Using skill " + creatureInCommand.prepareSkill(commandType) + " at (" + commandX + ", " + commandY + ")...");
                     battle.useCreatureSkillAt(creatureInCommand, commandType, new Coordinates(commandX, commandY), activeDamageNodes, activeDamageMotions);
-                    
+
                 } else {
                     System.out.println("Error: invalid command or coordinates");
                 }
@@ -518,6 +537,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 ((GameState) (nifty.getCurrentScreen().getScreenController())).update(!FREQUENT);
                 battleInProgress = true;
             } else if (!playedPostBattleCinematic) {
+                //fade.fadeOut();
                 battleInProgress = false;
                 System.out.println("<PLACEHOLDER FUNCTION / SIMPLE UPDATE>: play POST battle cinematic now");
                 playedPostBattleCinematic = true;
@@ -533,10 +553,12 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 playedPreBattleCinematic = battleInProgress = playedPostBattleCinematic = false;
                 currentMovingZombie = null;
                 movingCreature = false;
+                //fade.fadeIn();
                 initializeBattleForLevel(level++);
                 gameState = "idle";
             } else if (level == 9) {
                 System.out.println("Congratulations!");
+                //fade.fadeOut();
                 app.stop();
             }
         }
@@ -545,13 +567,13 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     private boolean noMotionEventPlaying() {
         return currentMotionEvent == null || currentMotionEvent.getPlayState().equals(PlayState.Stopped);
     }
-    
+
     private void clearFinishedDamageNodes() {
-        assert(activeDamageNodes.isEmpty() == activeDamageMotions.isEmpty());
-        if (!activeDamageMotions.isEmpty()&& activeDamageMotions.peek().getPlayState().equals(PlayState.Stopped)) {
+        assert (activeDamageNodes.isEmpty() == activeDamageMotions.isEmpty());
+        if (!activeDamageMotions.isEmpty() && activeDamageMotions.peek().getPlayState().equals(PlayState.Stopped)) {
             Node finishedNode = activeDamageNodes.removeFirst();
             finishedNode.removeFromParent();
-            activeDamageMotions.removeFirst(); 
+            activeDamageMotions.removeFirst();
         }
     }
 

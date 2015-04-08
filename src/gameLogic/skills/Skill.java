@@ -23,7 +23,7 @@ public abstract class Skill {
     protected Coordinates originatingCoords = null;
     protected Coordinates targetCoords = null;
     protected String animationType = null;
-    
+    protected boolean targetsZombies = true;
 
     public Skill(String name, int energyCost, int power) {
         this.name = name;
@@ -90,5 +90,17 @@ public abstract class Skill {
     
     public String getAnimationType() {
         return animationType;
+    }
+    
+    public void setTargetsZombies(boolean targetsZombies) {
+        this.targetsZombies = targetsZombies;
+    }
+    
+    public boolean getTargetsZombies() {
+        return targetsZombies;
+    }
+
+    public Object getName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

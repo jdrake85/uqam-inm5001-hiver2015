@@ -367,28 +367,30 @@ public class Creature {
     }
 
     void rotateModelTowardsCoordinates(Coordinates originatingCoords, Coordinates targetCoords) {
-        Coordinates closestAdjacentCoords = originatingCoords.getAdjacentCoordinatesNearestTo(targetCoords);
-        String facingDirection = originatingCoords.getCardinalDirectionTowards(closestAdjacentCoords);
-        turnToFaceDirection(facingDirection);
+        if (!originatingCoords.equals(targetCoords)) {
+            Coordinates closestAdjacentCoords = originatingCoords.getAdjacentCoordinatesNearestTo(targetCoords);
+            String facingDirection = originatingCoords.getCardinalDirectionTowards(closestAdjacentCoords);
+            turnToFaceDirection(facingDirection);
+        }
     }
 
     private void turnToFaceDirection(String direction) {
         Quaternion facingRotation = new Quaternion();
         if (direction.equals("+x")) {
-            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(0f, Vector3f.UNIT_Y));  
+            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(0f, Vector3f.UNIT_Y));
         } else if (direction.equals("-x")) {
-            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(FastMath.PI, Vector3f.UNIT_Y));  
+            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(FastMath.PI, Vector3f.UNIT_Y));
         } else if (direction.equals("+y")) {
-            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));  
+            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));
         } else if (direction.equals("-y")) {
-            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));  
+            geometry3D.setLocalRotation(facingRotation.fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));
         }
     }
 
     public Skill[] getSkills() {
         return skills;
     }
-    
+
     public boolean hasSkillNumber(int skillNumber) {
         // TODO: change 12 to 4
         return 1 <= skillNumber && skillNumber <= 12 && skills[skillNumber - 1] != null;

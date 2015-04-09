@@ -35,6 +35,7 @@ import com.jme3.texture.Texture;
 import de.lessvoid.nifty.Nifty;
 import gameGUI.GameState;
 import gameLogic.pathfinding.Coordinates;
+import gameLogic.skills.Skill;
 import gameLogic.skills.hero.*;
 import gameLogic.skills.nurse.*;
 import gameLogic.skills.soldier.*;
@@ -100,6 +101,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     public static final boolean FREQUENT = true;
     //private FilterPostProcessor fpp;
     //private FadeFilter fade;
+    public static Skill[] allSkills = new Skill[12];
 
     @Override
     public void simpleInitApp() {
@@ -107,6 +109,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         flyCam.setEnabled(false);
         initScene();
         initKeys();
+        generateAllSkills();
 
         /*
          fpp = new FilterPostProcessor(assetManager);
@@ -159,6 +162,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         public void onAction(String name, boolean keyPressed, float tpf) {
 
             if (name.equals("VictoryKey") && !keyPressed && gameState.equals("idle")) {
+                level++;
                 gameState = "outOfLevel";
                 //fade.fadeOut();
             }
@@ -233,11 +237,14 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     }
 
     public void requestSkill(int command) {
+        System.out.println("Command type BEFORE skill overlay: " + commandType);
         if (noMotionEventPlaying() && !movingCreature && creatureInCommand.hasSkillNumber(command)) {
             battle.clearOverlay();
             commandType = command;
             gameState = "skill";
             battle.drawWithOverlayForCreatureSkill(creatureInCommand, commandType);
+        } else {
+            System.out.println("...request ");
         }
     }
 
@@ -508,7 +515,6 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                                     if (performAttackOnPlayerForZombieTurn()) {
                                         System.out.println("<PLACEHOLDER FUNCTION>: battle is lost, return to main menu");
                                         gameState = "outOfLevel";
-                                        level--;
                                     }
 
                                 } else {
@@ -537,6 +543,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 System.out.println("<PLACEHOLDER FUNCTION / SIMPLE UPDATE>: play POST battle cinematic now");
                 playedPostBattleCinematic = true;
                 gameState = "outOfLevel";
+                level++;
             }
         } else {
             if (level < 9) {
@@ -545,8 +552,9 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 System.out.println("## LOADING LEVEL " + level + " ##");
                 System.out.println("---------------------------------");
                 System.out.println();
+
                 //fade.fadeIn();
-                initializeBattleForLevel(level++);
+                initializeBattleForLevel(level);
                 gameState = "idle";
             } else if (level == 9) {
                 System.out.println("Congratulations!");
@@ -585,6 +593,9 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
             currentMovingZombie = null;
             movingCreature = false;
             battle.clearCombattants();
+            playedPreBattleCinematic = battleInProgress = playedPostBattleCinematic = false;
+            currentMovingZombie = null;
+            movingCreature = false;
         }
         battle = new GameBattle();
         switch (level) {
@@ -647,8 +658,8 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
         nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
         nurse.setPicturePath("Interface/Images/Nurse.png");
-        nurse.setSkillAsNumber(new Heal(5, 4), 5);
-        nurse.setSkillAsNumber(new Push(8, 4), 8);
+        nurse.setSkillAsNumber(new Heal(5, 4), 1);
+        nurse.setSkillAsNumber(new Push(8, 4), 4);
 
         battle.insertCreatureAt(nurse, 7, 0);
 
@@ -656,8 +667,9 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         battle.insertCreatureAt(zombie1, 6, 1);
 
         // TODO: remove later
+        /*
         assignAllSkillsTo(hero);
-        assignAllSkillsTo(nurse);
+        assignAllSkillsTo(nurse);*/
     }
 
     // Level 3: 'Getting through'
@@ -672,8 +684,8 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
         nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
         nurse.setPicturePath("Interface/Images/Nurse.png");
-        nurse.setSkillAsNumber(new Heal(5, 4), 5);
-        nurse.setSkillAsNumber(new Push(8, 4), 8);
+        nurse.setSkillAsNumber(new Heal(5, 4), 1);
+        nurse.setSkillAsNumber(new Push(8, 4), 4);
         battle.insertCreatureAt(nurse, 3, 4);
 
         Creature zombie1 = new Zombie("Zombie1", assetManager, this);
@@ -684,8 +696,9 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         battle.insertCreatureAt(zombie3, 3, 1);
 
         // TODO: remove later
+        /*
         assignAllSkillsTo(hero);
-        assignAllSkillsTo(nurse);
+        assignAllSkillsTo(nurse);*/
     }
 
     // Level 4: 'Pincer Attack'
@@ -700,9 +713,9 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
         nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
         nurse.setPicturePath("Interface/Images/Nurse.png");
-        nurse.setSkillAsNumber(new Heal(5, 4), 5);
-        nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
-        nurse.setSkillAsNumber(new Push(8, 4), 8);
+        nurse.setSkillAsNumber(new Heal(5, 4), 1);
+        nurse.setSkillAsNumber(new Innoculation(6, 4), 2);
+        nurse.setSkillAsNumber(new Push(8, 4), 4);
         battle.insertCreatureAt(nurse, 3, 4);
 
         Creature zombie1 = new Zombie("Zombie1", assetManager, this);
@@ -715,8 +728,9 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         battle.insertCreatureAt(zombie4, 6, 1);
 
         // TODO: remove later
+        /*
         assignAllSkillsTo(hero);
-        assignAllSkillsTo(nurse);
+        assignAllSkillsTo(nurse);*/
     }
 
     // Level 5: 'Making Friends'
@@ -729,15 +743,15 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
         nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
         nurse.setPicturePath("Interface/Images/Nurse.png");
-        nurse.setSkillAsNumber(new Heal(5, 4), 5);
-        nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
-        nurse.setSkillAsNumber(new Push(8, 4), 8);
+        nurse.setSkillAsNumber(new Heal(5, 4), 1);
+        nurse.setSkillAsNumber(new Innoculation(6, 4), 2);
+        nurse.setSkillAsNumber(new Push(8, 4), 4);
         battle.insertCreatureAt(nurse, 2, 7);
 
         soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);
         soldier.setPicturePath("Interface/Images/Soldier.png");
-        soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
-        soldier.setSkillAsNumber(new Stab(11, 4), 11);
+        soldier.setSkillAsNumber(new AimedShot(9, 4), 1);
+        soldier.setSkillAsNumber(new Stab(11, 4), 3);
         battle.insertCreatureAt(soldier, 7, 0);
 
         Creature zombie1 = new Zombie("Zombie1", assetManager, this);
@@ -750,9 +764,10 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         battle.insertCreatureAt(zombie4, 7, 1);
 
         // TODO: remove later
+        /*
         assignAllSkillsTo(hero);
         assignAllSkillsTo(nurse);
-        assignAllSkillsTo(soldier);
+        assignAllSkillsTo(soldier);*/
     }
 
     // Level 6: 'Showdown'
@@ -766,15 +781,15 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
         nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
         nurse.setPicturePath("Interface/Images/Nurse.png");
-        nurse.setSkillAsNumber(new Heal(5, 4), 5);
-        nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
-        nurse.setSkillAsNumber(new Push(8, 4), 8);
+        nurse.setSkillAsNumber(new Heal(5, 4), 1);
+        nurse.setSkillAsNumber(new Innoculation(6, 4), 2);
+        nurse.setSkillAsNumber(new Push(8, 4), 4);
         battle.insertCreatureAt(nurse, 6, 3);
 
         soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);
         soldier.setPicturePath("Interface/Images/Soldier.png");
-        soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
-        soldier.setSkillAsNumber(new Stab(11, 4), 11);
+        soldier.setSkillAsNumber(new AimedShot(9, 4), 1);
+        soldier.setSkillAsNumber(new Stab(11, 4), 3);
         battle.insertCreatureAt(soldier, 6, 5);
 
         Creature zombie1 = new Zombie("Zombie1", assetManager, this);
@@ -791,9 +806,10 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         battle.insertCreatureAt(zombie6, 1, 6);
 
         // TODO: remove later
+        /*
         assignAllSkillsTo(hero);
         assignAllSkillsTo(nurse);
-        assignAllSkillsTo(soldier);
+        assignAllSkillsTo(soldier);*/
     }
 
     // Level 7: 'Surrounded'
@@ -807,17 +823,17 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
         nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
         nurse.setPicturePath("Interface/Images/Nurse.png");
-        nurse.setSkillAsNumber(new Heal(5, 4), 5);
-        nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
-        nurse.setSkillAsNumber(new MustardGas(7, 4), 7);
-        nurse.setSkillAsNumber(new Push(8, 4), 8);
+        nurse.setSkillAsNumber(new Heal(5, 4), 1);
+        nurse.setSkillAsNumber(new Innoculation(6, 4), 2);
+        nurse.setSkillAsNumber(new MustardGas(7, 4), 3);
+        nurse.setSkillAsNumber(new Push(8, 4), 4);
         battle.insertCreatureAt(nurse, 6, 0);
 
         soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);
         soldier.setPicturePath("Interface/Images/Soldier.png");
-        soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
-        soldier.setSkillAsNumber(new ShootEmAll(10, 4), 10);
-        soldier.setSkillAsNumber(new Stab(11, 4), 11);
+        soldier.setSkillAsNumber(new AimedShot(9, 4), 1);
+        soldier.setSkillAsNumber(new ShootEmAll(10, 4), 2);
+        soldier.setSkillAsNumber(new Stab(11, 4), 3);
         battle.insertCreatureAt(soldier, 6, 1);
 
         Creature zombie1 = new Zombie("Zombie1", assetManager, this);
@@ -846,9 +862,10 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         battle.insertCreatureAt(zombie12, 6, 4);
 
         // TODO: remove later
+        /*
         assignAllSkillsTo(hero);
         assignAllSkillsTo(nurse);
-        assignAllSkillsTo(soldier);
+        assignAllSkillsTo(soldier);*/
     }
 
     // Level 8: 'Big Bad Boss'
@@ -863,18 +880,18 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
         nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
         nurse.setPicturePath("Interface/Images/Nurse.png");
-        nurse.setSkillAsNumber(new Heal(5, 4), 5);
-        nurse.setSkillAsNumber(new Innoculation(6, 4), 6);
-        nurse.setSkillAsNumber(new MustardGas(7, 4), 7);
-        nurse.setSkillAsNumber(new Push(8, 4), 8);
+        nurse.setSkillAsNumber(new Heal(5, 4), 1);
+        nurse.setSkillAsNumber(new Innoculation(6, 2), 2);
+        nurse.setSkillAsNumber(new MustardGas(7, 4), 3);
+        nurse.setSkillAsNumber(new Push(8, 4), 4);
         battle.insertCreatureAt(nurse, 2, 5);
 
         soldier = new Creature("Soldier", FakeMain2.soldierMat, assetManager, this);
         soldier.setPicturePath("Interface/Images/Soldier.png");
-        soldier.setSkillAsNumber(new AimedShot(9, 4), 9);
-        soldier.setSkillAsNumber(new ShootEmAll(10, 4), 10);
-        soldier.setSkillAsNumber(new Stab(11, 4), 11);
-        soldier.setSkillAsNumber(new CutThroat(12, 1), 12);
+        soldier.setSkillAsNumber(new AimedShot(9, 4), 1);
+        soldier.setSkillAsNumber(new ShootEmAll(10, 4), 2);
+        soldier.setSkillAsNumber(new Stab(11, 4), 3);
+        soldier.setSkillAsNumber(new CutThroat(12, 1), 4);
         battle.insertCreatureAt(soldier, 4, 5);
 
         Creature boss = new Zombie("Boss", assetManager, this);
@@ -896,18 +913,19 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     }
 
     // TODO: remove later
-    protected static void assignAllSkillsTo(Creature creature) {
-        creature.setSkillAsNumber(new Strike(1, 4), 1);
-        creature.setSkillAsNumber(new HomeRun(2, 4), 2);
-        creature.setSkillAsNumber(new SpinningPipe(3, 4), 3);
-        creature.setSkillAsNumber(new Knockback(4, 4), 4);
-        creature.setSkillAsNumber(new Heal(5, 4), 5);
-        creature.setSkillAsNumber(new Innoculation(6, 4), 6);
-        creature.setSkillAsNumber(new MustardGas(7, 4), 7);
-        creature.setSkillAsNumber(new Push(8, 4), 8);
-        creature.setSkillAsNumber(new AimedShot(9, 4), 9);
-        creature.setSkillAsNumber(new ShootEmAll(10, 4), 10);
-        creature.setSkillAsNumber(new Stab(11, 4), 11);
-        creature.setSkillAsNumber(new CutThroat(12, 1), 12);
+
+    public static void generateAllSkills() {
+        allSkills[0] = new Strike(1, 4);
+        allSkills[1] = new HomeRun(2, 4);
+        allSkills[2] = new SpinningPipe(3, 4);
+        allSkills[3] = new Knockback(4, 4);
+        allSkills[4] = new Heal(5, 4);
+        allSkills[5] = new Innoculation(6, 4);
+        allSkills[6] = new MustardGas(7, 4);
+        allSkills[7] = new Push(8, 4);
+        allSkills[8] = new AimedShot(9, 4);
+        allSkills[9] = new ShootEmAll(10, 4);
+        allSkills[10] = new Stab(11, 4);
+        allSkills[11] = new CutThroat(12, 1);
     }
 }

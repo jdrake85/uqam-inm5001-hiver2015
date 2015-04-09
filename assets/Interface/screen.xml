@@ -76,25 +76,21 @@
                         </panel>                        
                         <panel id="hero1Skills" width="100%" height="20%" backgroundColor="#ff00" childLayout="horizontal" align="center" valign="center">
                             <panel id="hero1Skill1" width="25%" height="100%" childLayout="vertical" backgroundColor="#aa00" align="left" valign="center">
-                                <interact onMouseOver="hero1Skill1Info()"/>
                                 <interact onClick="hero1Skill1()"/>
                                 <image id="hero1sk1" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero1Skill2" width="25%" height="100%" childLayout="vertical"  backgroundColor="#0af0" align="center" valign="center">
-                                <interact onMouseOver="hero1Skill2Info()"/>
                                 <interact onClick="hero1Skill2()"/>
                                 <image id="hero1sk2" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero1Skill3" width="25%" height="100%" childLayout="vertical"  backgroundColor="#0a00" align="center" valign="center">
-                                <interact onMouseOver="hero1Skill3Info()"/>
                                 <interact onClick="hero1Skill3()"/>
                                 <image id="hero1sk3" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero1Skill4" width="25%" height="100%" childLayout="vertical"  backgroundColor="#a0a0" align="right" valign="center">
-                                <interact onMouseOver="hero1Skill4Info()"/>
                                 <interact onClick="hero1Skill4()"/>
                                 <image id="hero1sk4" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
@@ -133,25 +129,21 @@
                         </panel>                        
                         <panel id="hero2Skills" width="100%" height="20%" backgroundColor="#ff00" childLayout="horizontal" align="center" valign="center">
                             <panel id="hero2Skill1" width="25%" height="100%" childLayout="vertical"  backgroundColor="#aa00" align="left" valign="center">
-                                <interact onMouseOver="hero2Skill1Info()"/>
                                 <interact onClick="hero2Skill1()"/>
                                 <image id="hero2sk1" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero2Skill2" width="25%" height="100%" childLayout="vertical"  backgroundColor="#0af0" align="center" valign="center">
-                                <interact onMouseOver="hero2Skill2Info()"/>
                                 <interact onClick="hero2Skill2()"/>
                                 <image id="hero2sk2" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero2Skill3" width="25%" height="100%" childLayout="vertical"  backgroundColor="#0a00" align="center" valign="center">
-                                <interact onMouseOver="hero2Skill3Info()"/>
                                 <interact onClick="hero2Skill3()"/>
                                 <image id="hero2sk3" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero2Skill4" width="25%" height="100%" childLayout="vertical"  backgroundColor="#a0a0" align="right" valign="center">
-                                <interact onMouseOver="hero2Skill4Info()"/>
                                 <interact onClick="hero2Skill4()"/>
                                 <image id="hero2sk4" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
@@ -190,25 +182,21 @@
                         </panel>                        
                         <panel id="hero3Skills" width="100%" height="20%" backgroundColor="#ff00" childLayout="horizontal" align="center" valign="center">
                             <panel id="hero3Skill1" width="25%" height="100%" childLayout="vertical"  backgroundColor="#aa00" align="left" valign="center">
-                                <interact onMouseOver="hero3Skill1Info()"/>
                                 <interact onClick="hero3Skill1()"/>
                                 <image id="hero3sk1" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero3Skill2" width="25%" height="100%" childLayout="vertical"  backgroundColor="#0af0" align="center" valign="center">
-                                <interact onMouseOver="hero3Skill2Info()"/>
                                 <interact onClick="hero3Skill2()"/>
                                 <image id="hero3sk2" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero3Skill3" width="25%" height="100%" childLayout="vertical"  backgroundColor="#0a00" align="center" valign="center">
-                                <interact onMouseOver="hero3Skill3Info()"/>
                                 <interact onClick="hero3Skill3()"/>
                                 <image id="hero3sk3" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>
                             </panel>
                             <panel id="hero3Skill4" width="25%" height="100%" childLayout="vertical"  backgroundColor="#a0a0" align="right" valign="center">
-                                <interact onMouseOver="hero3Skill4Info()"/>
                                 <interact onClick="hero3Skill4()"/>
                                 <image id="hero3sk4" filename="Interface/Images/Locked.png" valign="center" align="center" height="100%" width="100%" >
                                 </image>

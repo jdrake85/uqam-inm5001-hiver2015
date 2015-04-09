@@ -108,18 +108,28 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void hero1Skill1() {
+        if (FakeMain2.hero.canPayEnergyCostForSkillNumber(1)){
+        hero1Skill1Info();
         FakeMain2.app.requestSkill(1);
+        } else {
+            String infoString = "Not enough Energy to use skill!";
+            Element myElem = FakeMain2.nifty.getScreen("battle").findElementByName("infoText");
+            myElem.getRenderer(TextRenderer.class).setText(infoString);
+        }
     }
 
     public void hero1Skill2() {
+        hero1Skill2Info();
         FakeMain2.app.requestSkill(2);
     }
 
     public void hero1Skill3() {
+        hero1Skill3Info();
         FakeMain2.app.requestSkill(3);
     }
 
     public void hero1Skill4() {
+        hero1Skill4Info();
         FakeMain2.app.requestSkill(4);
     }
 
@@ -132,18 +142,22 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void hero2Skill1() {
+        hero2Skill1Info();
         FakeMain2.app.requestSkill(1);
     }
 
     public void hero2Skill2() {
+        hero2Skill2Info();
         FakeMain2.app.requestSkill(2);
     }
 
     public void hero2Skill3() {
+        hero2Skill3Info();
         FakeMain2.app.requestSkill(3);
     }
 
     public void hero2Skill4() {
+        hero2Skill4Info();
         FakeMain2.app.requestSkill(4);
     }
 
@@ -156,18 +170,22 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void hero3Skill1() {
+        hero3Skill1Info();
         FakeMain2.app.requestSkill(1);
     }
 
     public void hero3Skill2() {
+        hero3Skill2Info();
         FakeMain2.app.requestSkill(2);
     }
 
     public void hero3Skill3() {
+        hero3Skill3Info();
         FakeMain2.app.requestSkill(3);
     }
 
     public void hero3Skill4() {
+        hero3Skill4Info();
         FakeMain2.app.requestSkill(4);
     }
 

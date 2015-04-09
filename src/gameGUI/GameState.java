@@ -131,19 +131,19 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void hero2Skill1() {
-        FakeMain2.app.requestSkill(5);
+        FakeMain2.app.requestSkill(1);
     }
 
     public void hero2Skill2() {
-        FakeMain2.app.requestSkill(6);
+        FakeMain2.app.requestSkill(2);
     }
 
     public void hero2Skill3() {
-        FakeMain2.app.requestSkill(7);
+        FakeMain2.app.requestSkill(3);
     }
 
     public void hero2Skill4() {
-        FakeMain2.app.requestSkill(8);
+        FakeMain2.app.requestSkill(4);
     }
 
     public void hero2move() {
@@ -155,19 +155,19 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void hero3Skill1() {
-        FakeMain2.app.requestSkill(9);
+        FakeMain2.app.requestSkill(1);
     }
 
     public void hero3Skill2() {
-        FakeMain2.app.requestSkill(10);
+        FakeMain2.app.requestSkill(2);
     }
 
     public void hero3Skill3() {
-        FakeMain2.app.requestSkill(11);
+        FakeMain2.app.requestSkill(3);
     }
 
     public void hero3Skill4() {
-        FakeMain2.app.requestSkill(12);
+        FakeMain2.app.requestSkill(4);
     }
 
     public void hero3move() {
@@ -395,9 +395,10 @@ public class GameState extends AbstractAppState implements ScreenController {
             myElem.enable();
             myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(scaled2X + 13));
             myElem.enable();
-            for (int i = scaled4X; i < scaled4X + 4; i++) {
-                if (FakeMain2.hero.getSkills()[i] != null) {
-                    myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(i));
+            //JASON: TODO check changement (OK1)
+            for (int i = 0; i < 4; i++) {
+                if (character.getSkills()[i] != null) {
+                    myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(i + scaled4X));
                     myElem.enable();
                 }
             }
@@ -419,9 +420,9 @@ public class GameState extends AbstractAppState implements ScreenController {
             swapImages(heroEnergyPng, hpAndEnergy.get(scaled2X + 1));
             swapImages(heroMovePng, moveAndEnd.get(scaled2X + 0));
             swapImages(heroEndTurnPng, moveAndEnd.get(scaled2X + 1));
-            for (int i = 0 + scaled4X; i < scaled4X + 4; i++) {
+            for (int i = 0; i < 4; i++) { // JASON: TODO check changement (OK1)
                 if (player.getSkills()[i] != null) {
-                    swapImages(skillsList.get(i), skillsHolders.get(i));
+                    swapImages(skillsList.get(i + scaled4X), skillsHolders.get(i + scaled4X));
                 }
             }
         }
@@ -460,8 +461,9 @@ public class GameState extends AbstractAppState implements ScreenController {
             myElem.disable();
             myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(scaled2X + 13));
             myElem.disable();
+            // JASON: CHANGEMENT ICI (TODO check)
             for (int i = scaled4X; i < scaled4X + 4; i++) {
-                if (FakeMain2.hero.getSkills()[i] != null) {
+                if (FakeMain2.allSkills[i] != null) {
                     myElem = FakeMain2.nifty.getScreen("battle").findElementByName(buttons.get(i));
                     myElem.disable();
                 }
@@ -481,8 +483,9 @@ public class GameState extends AbstractAppState implements ScreenController {
         if (player != null && !player.equals(creatureInCommand)) {
             swapImages(greyedAsMoveAndEnd, moveAndEnd.get(scaled2X + 0));
             swapImages(greyedAsMoveAndEnd, moveAndEnd.get(scaled2X + 1));
+            //JASON: TODO check changement
             for (int i = 0 + scaled4X; i < scaled4X + 4; i++) {
-                if (player.getSkills()[i] != null) {
+                if (FakeMain2.allSkills[i] != null) {
                     swapImages(lockedAsSkill, skillsHolders.get(i));
                 }
             }

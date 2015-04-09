@@ -54,7 +54,7 @@ public class Creature {
 
     public Creature(String name, AnimEventListener listener) {
         this.name = name;
-        skills = new Skill[12]; // TODO: eventually set to 4
+        skills = new Skill[4];
         Box box = new Box(0.2f, 1.5f, 0.2f);
         geometry3D = new Geometry(name, box);
         //geometry3D = (Node) assetManager.loadModel("Hero.scene");
@@ -65,7 +65,7 @@ public class Creature {
 
     public Creature(String name, AssetManager assetManager, AnimEventListener listener) {
         this.name = name;
-        skills = new Skill[12]; // TODO: eventually set to 4
+        skills = new Skill[4];
         /*Box box = new Box(0.2f, 1.5f, 0.2f);
          geometry3D = new Geometry(name, box);*/
         geometry3D = (Node) assetManager.loadModel("Zombie.scene");
@@ -86,7 +86,7 @@ public class Creature {
     public Creature(String name, Material material, AnimEventListener listener) {
         //this(name);
         this.name = name;
-        skills = new Skill[12]; // TODO: eventually set to 4
+        skills = new Skill[4];
         geometry3D = FakeMain2.heroScene; // WIP; node is assigned to Spatial..
         geometry3D.setMaterial(material);
         FakeMain2.charNode.attachChild(geometry3D);
@@ -95,7 +95,7 @@ public class Creature {
 
     public Creature(String name, Material material, AssetManager assetManager, AnimEventListener listener) {
         this.name = name;
-        skills = new Skill[12]; // TODO: eventually set to 4
+        skills = new Skill[4];
         geometry3D = (Node) assetManager.loadModel(name + ".scene");
         geometry3D.setLocalScale(.025f);
         geometry3D.setMaterial(material);
@@ -246,7 +246,7 @@ public class Creature {
     }
 
     public void setSkillAsNumber(Skill skill, int skillNumber) {
-        if (1 <= skillNumber && skillNumber <= 12) {
+        if (1 <= skillNumber && skillNumber <= 4) {
             skills[skillNumber - 1] = skill;
         } else {
             System.err.println("Error: skill added with an out-of-bounds number");
@@ -396,6 +396,6 @@ public class Creature {
 
     public boolean hasSkillNumber(int skillNumber) {
         // TODO: change 12 to 4
-        return 1 <= skillNumber && skillNumber <= 12 && skills[skillNumber - 1] != null;
+        return 1 <= skillNumber && skillNumber <= 4 && skills[skillNumber - 1] != null;
     }
 }

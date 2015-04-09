@@ -49,7 +49,6 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         app.setDisplayStatView(false);
         app.start();
     }
-    
     protected Node pivot = new Node("pivot");
     protected Node mainNode = new Node("mainNode");
     public static Node charNode = new Node("charNode");
@@ -110,11 +109,11 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         initKeys();
 
         /*
-        fpp = new FilterPostProcessor(assetManager);
-        fade = new FadeFilter(2); // e.g. 2 seconds
-        fpp.addFilter(fade);
-        viewPort.addProcessor(fpp);
-        */
+         fpp = new FilterPostProcessor(assetManager);
+         fade = new FadeFilter(2); // e.g. 2 seconds
+         fpp.addFilter(fade);
+         viewPort.addProcessor(fpp);
+         */
 
         // HERO GRAPHICS
         heroMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -156,7 +155,6 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         inputManager.addListener(actionListener, "EndTurnKey");
         inputManager.addListener(actionListener, "VictoryKey");
     }
-    
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
 
@@ -547,9 +545,6 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 System.out.println("## LOADING LEVEL " + level + " ##");
                 System.out.println("---------------------------------");
                 System.out.println();
-                playedPreBattleCinematic = battleInProgress = playedPostBattleCinematic = false;
-                currentMovingZombie = null;
-                movingCreature = false;
                 //fade.fadeIn();
                 initializeBattleForLevel(level++);
                 gameState = "idle";
@@ -586,6 +581,9 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     public void initializeBattleForLevel(int level) {
         if (battle != null) {
+            playedPreBattleCinematic = battleInProgress = playedPostBattleCinematic = false;
+            currentMovingZombie = null;
+            movingCreature = false;
             battle.clearCombattants();
         }
         battle = new GameBattle();

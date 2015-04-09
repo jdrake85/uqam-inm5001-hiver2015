@@ -19,6 +19,7 @@ import gameLogic.Creature;
 
 import gameLogic.FakeMain2;
 import static gameLogic.FakeMain2.creatureInCommand;
+import gameLogic.skills.Skill;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -178,6 +179,66 @@ public class GameState extends AbstractAppState implements ScreenController {
         endTurn();
     }
 
+    public void hero1Skill1Info() {
+        heroSkillInfo(FakeMain2.hero, 0);
+    }
+
+    public void hero1Skill2Info() {
+        heroSkillInfo(FakeMain2.hero, 1);
+    }
+
+    public void hero1Skill3Info() {
+        heroSkillInfo(FakeMain2.hero, 2);
+    }
+
+    public void hero1Skill4Info() {
+        heroSkillInfo(FakeMain2.hero, 3);
+    }
+
+    public void hero2Skill1Info() {
+        heroSkillInfo(FakeMain2.nurse, 0);
+    }
+
+    public void hero2Skill2Info() {
+        heroSkillInfo(FakeMain2.nurse, 1);
+    }
+
+    public void hero2Skill3Info() {
+        heroSkillInfo(FakeMain2.nurse, 2);
+    }
+
+    public void hero2Skill4Info() {
+        heroSkillInfo(FakeMain2.nurse, 3);
+    }
+
+    public void hero3Skill1Info() {
+        heroSkillInfo(FakeMain2.soldier, 0);
+    }
+
+    public void hero3Skill2Info() {
+        heroSkillInfo(FakeMain2.soldier, 1);
+    }
+
+    public void hero3Skill3Info() {
+        heroSkillInfo(FakeMain2.soldier, 2);
+    }
+
+    public void hero3Skill4Info() {
+        heroSkillInfo(FakeMain2.soldier, 3);
+    }
+
+    public void heroSkillInfo(Creature player, int index) {
+        if (player != null) {
+            Skill currentSkill = player.getSkills()[index];
+            if (currentSkill != null) {
+                String info = "Skill : " + currentSkill.getName();
+                info += "\nDescription : " + currentSkill.getDescription();
+                Element myElem = FakeMain2.nifty.getScreen("battle").findElementByName("infoText");
+                myElem.getRenderer(TextRenderer.class).setText(info);
+            }
+        }
+    }
+
     public void startGame(String nextScreen) {
         FakeMain2.nifty.gotoScreen("battle");
 
@@ -313,45 +374,40 @@ public class GameState extends AbstractAppState implements ScreenController {
     public void loadGame() {
         String savePath = "assets/Configurations/save.json";
         FakeMain2.gameState = "outOfLevel";
-        try{
+        try {
             Reader myReader = new FileReader(savePath);
             JSONTokener myJsonReader = new JSONTokener(myReader);
             FakeMain2.app.level = (new JSONObject(myJsonReader)).getInt("level");
-        }
-        catch(IOException ioe){
+        } catch (IOException ioe) {
             System.err.println("Reading file error : " + ioe.getMessage());
             FakeMain2.app.level = 1;
-        }
-        catch(JSONException jse){
+        } catch (JSONException jse) {
             System.err.println("JSON error : " + jse.getMessage());
             FakeMain2.app.level = 1;
-        }
-        finally{
+        } finally {
             FakeMain2.app.initializeBattleForLevel(FakeMain2.app.level);
-            FakeMain2.nifty.gotoScreen("battle");            
+
+            FakeMain2.nifty.gotoScreen("battle");
         }
     }
 
     public void saveGame() {
         int level = FakeMain2.app.level;
         String savePath = "assets/Configurations/save.json";
-        try{
+        try {
             Writer myWriter = new FileWriter(savePath, false);
             JSONWriter myJsonWriter = new JSONWriter(myWriter);
             myJsonWriter.object();
-                myJsonWriter.key("level");
-                myJsonWriter.value(level);
+            myJsonWriter.key("level");
+            myJsonWriter.value(level);
             myJsonWriter.endObject();
             myWriter.close();
-        }
-        catch(IOException ioe){
+        } catch (IOException ioe) {
             System.err.println("Savin file error : " + ioe.getMessage());
-        }
-        catch(JSONException jse){
+        } catch (JSONException jse) {
             System.err.println("JSON error : " + jse.getMessage());
-        }
-        finally{
-            FakeMain2.nifty.gotoScreen("battle");            
+        } finally {
+            FakeMain2.nifty.gotoScreen("battle");
         }
     }
 
@@ -367,21 +423,21 @@ public class GameState extends AbstractAppState implements ScreenController {
 
     public void showHero1Stats() {
         Creature toStats = FakeMain2.hero;
-        if (toStats != null){
+        if (toStats != null) {
             showHeroStats(toStats);
         }
     }
 
     public void showHero2Stats() {
         Creature toStats = FakeMain2.nurse;
-        if (toStats != null){
+        if (toStats != null) {
             showHeroStats(toStats);
         }
     }
 
     public void showHero3Stats() {
         Creature toStats = FakeMain2.soldier;
-        if (toStats != null){
+        if (toStats != null) {
             showHeroStats(toStats);
         }
     }
@@ -512,20 +568,20 @@ public class GameState extends AbstractAppState implements ScreenController {
 
     private void updatePlayerBars(Creature player, int index) {
         int scaled2X = 2 * index;
-        int maxBoxHeight = FakeMain2.nifty.getCurrentScreen().findElementByName("hero1hp").getHeight(); 
+        int maxBoxHeight = FakeMain2.nifty.getCurrentScreen().findElementByName("hero1hp").getHeight();
 
         float hpRatio = computeHpRatio(player);
         float enRatio = computeEnRatio(player);
-        
-        int newHpHeight = (int)Math.ceil(hpRatio * maxBoxHeight);
-        int newEnHeight = (int)Math.ceil(enRatio * maxBoxHeight);
-        
+
+        int newHpHeight = (int) Math.ceil(hpRatio * maxBoxHeight);
+        int newEnHeight = (int) Math.ceil(enRatio * maxBoxHeight);
+
         Element myElem = FakeMain2.nifty.getCurrentScreen().findElementByName(hpAndEnergy.get(scaled2X));
         Element myElem2 = FakeMain2.nifty.getCurrentScreen().findElementByName(hpAndEnergy.get(scaled2X + 1));
-        
+
         myElem.setHeight(maxBoxHeight - newHpHeight);
         myElem2.setHeight(maxBoxHeight - newEnHeight);
-        
+
     }
 
     private float computeHpRatio(Creature player) {

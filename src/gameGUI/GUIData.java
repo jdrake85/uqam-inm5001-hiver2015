@@ -141,9 +141,9 @@ public class GUIData {
         skillsList.add(imagesPath + "Innoculation.png");
         skillsList.add(imagesPath + "Mustard Gas.png");
         skillsList.add(imagesPath + "Push.png");
-        skillsList.add(imagesPath + "Stab.png");
         skillsList.add(imagesPath + "Aimed Shot.png");
         skillsList.add(imagesPath + "Shoot Em All.png");
+        skillsList.add(imagesPath + "Stab.png");
         skillsList.add(imagesPath + "Cut Throat.png");
         return skillsList;
     }

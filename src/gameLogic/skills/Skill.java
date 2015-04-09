@@ -24,6 +24,7 @@ public abstract class Skill {
     protected Coordinates targetCoords = null;
     protected String animationType = null;
     protected boolean targetsZombies = true;
+    private String description = null;
 
     public Skill(String name, int energyCost, int power) {
         this.name = name;
@@ -102,5 +103,14 @@ public abstract class Skill {
 
     public Object getName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String getDescription() {
+        return "Generic Description.";
+        //return description;
+    }
+
+    public void setDescription(String desc) {
+        description = desc;
     }
 }

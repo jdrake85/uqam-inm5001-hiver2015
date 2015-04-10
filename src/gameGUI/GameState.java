@@ -107,10 +107,10 @@ public class GameState extends AbstractAppState implements ScreenController {
         //smartEnableImages();
     }
 
-    public void hero1Skill1() {
-        if (FakeMain2.hero.canPayEnergyCostForSkillNumber(1)){
-        hero1Skill1Info();
-        FakeMain2.app.requestSkill(1);
+    public void heroSkillCall(Creature player, int index) {
+        if (player.canPayEnergyCostForSkillNumber(index)){
+        heroSkillInfo(player, index - 1);
+        FakeMain2.app.requestSkill(index);
         } else {
             String infoString = "Not enough Energy to use skill!";
             Element myElem = FakeMain2.nifty.getScreen("battle").findElementByName("infoText");
@@ -118,19 +118,20 @@ public class GameState extends AbstractAppState implements ScreenController {
         }
     }
 
+    public void hero1Skill1() {        
+        heroSkillCall(FakeMain2.hero, 1);
+    }
+
     public void hero1Skill2() {
-        hero1Skill2Info();
-        FakeMain2.app.requestSkill(2);
+        heroSkillCall(FakeMain2.hero, 2);
     }
 
     public void hero1Skill3() {
-        hero1Skill3Info();
-        FakeMain2.app.requestSkill(3);
+        heroSkillCall(FakeMain2.hero, 3);
     }
 
     public void hero1Skill4() {
-        hero1Skill4Info();
-        FakeMain2.app.requestSkill(4);
+        heroSkillCall(FakeMain2.hero, 4);
     }
 
     public void hero1move() {
@@ -142,23 +143,19 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void hero2Skill1() {
-        hero2Skill1Info();
-        FakeMain2.app.requestSkill(1);
+        heroSkillCall(FakeMain2.nurse, 1);
     }
 
     public void hero2Skill2() {
-        hero2Skill2Info();
-        FakeMain2.app.requestSkill(2);
+        heroSkillCall(FakeMain2.nurse, 2);
     }
 
     public void hero2Skill3() {
-        hero2Skill3Info();
-        FakeMain2.app.requestSkill(3);
+        heroSkillCall(FakeMain2.nurse, 3);
     }
 
     public void hero2Skill4() {
-        hero2Skill4Info();
-        FakeMain2.app.requestSkill(4);
+        heroSkillCall(FakeMain2.nurse, 4);
     }
 
     public void hero2move() {
@@ -170,23 +167,19 @@ public class GameState extends AbstractAppState implements ScreenController {
     }
 
     public void hero3Skill1() {
-        hero3Skill1Info();
-        FakeMain2.app.requestSkill(1);
+        heroSkillCall(FakeMain2.soldier, 1);
     }
 
     public void hero3Skill2() {
-        hero3Skill2Info();
-        FakeMain2.app.requestSkill(2);
+        heroSkillCall(FakeMain2.soldier, 2);
     }
 
     public void hero3Skill3() {
-        hero3Skill3Info();
-        FakeMain2.app.requestSkill(3);
+        heroSkillCall(FakeMain2.soldier, 3);
     }
 
     public void hero3Skill4() {
-        hero3Skill4Info();
-        FakeMain2.app.requestSkill(4);
+        heroSkillCall(FakeMain2.soldier, 4);
     }
 
     public void hero3move() {

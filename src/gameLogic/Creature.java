@@ -11,7 +11,6 @@ import com.jme3.animation.LoopMode;
 import com.jme3.asset.AssetManager;
 import com.jme3.cinematic.MotionPath;
 import com.jme3.cinematic.events.MotionEvent;
-import com.jme3.input.controls.ActionListener;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
@@ -20,10 +19,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
-import static gameLogic.FakeMain2.creatureInCommand;
 import static gameLogic.FakeMain2.findAnimControl;
-import static gameLogic.FakeMain2.mainTransform;
-import gameLogic.pathfinding.CoordPath;
 import gameLogic.pathfinding.Coordinates;
 import gameLogic.skills.Skill;
 

@@ -4,14 +4,9 @@
  */
 package gameLogic.creatures;
 
-import com.jme3.animation.AnimChannel;
-import com.jme3.animation.AnimControl;
 import com.jme3.animation.AnimEventListener;
 import com.jme3.asset.AssetManager;
-import com.jme3.material.Material;
 import gameLogic.Creature;
-import static gameLogic.FakeMain2.findAnimControl;
-import static gameLogic.FakeMain2.heroScene;
 import gameLogic.skills.Skill;
 import gameLogic.skills.hero.Strike;
 

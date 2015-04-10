@@ -12,9 +12,7 @@ import com.jme3.asset.AssetManager;
  */
 public class Level {
     
-    private AssetManager assetManager;
     
-    public Level(AssetManager assetManager){
-        this.assetManager = assetManager;
+    public Level(){
     }
 }

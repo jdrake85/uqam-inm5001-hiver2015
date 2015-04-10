@@ -5,8 +5,6 @@
 package gameLogic.skills;
 
 import gameLogic.pathfinding.Coordinates;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *

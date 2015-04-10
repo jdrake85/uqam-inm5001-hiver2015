@@ -25,8 +25,6 @@ import com.jme3.math.Transform;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
-import com.jme3.post.FilterPostProcessor;
-import com.jme3.post.filters.FadeFilter;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -39,9 +37,7 @@ import gameLogic.skills.Skill;
 import gameLogic.skills.hero.*;
 import gameLogic.skills.nurse.*;
 import gameLogic.skills.soldier.*;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Queue;
 
 public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 

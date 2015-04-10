@@ -5,9 +5,7 @@
 package gameLogic.gameboard;
 
 import com.jme3.cinematic.MotionPath;
-import com.jme3.cinematic.PlayState;
 import com.jme3.cinematic.events.MotionEvent;
-import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -17,7 +15,6 @@ import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import gameLogic.Creature;
 import gameLogic.FakeMain2;
-import static gameLogic.FakeMain2.g;
 import static gameLogic.FakeMain2.greyMat;
 import gameLogic.pathfinding.Coordinates;
 import gameLogic.pathfinding.CoordPath;

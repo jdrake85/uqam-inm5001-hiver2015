@@ -149,40 +149,47 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     }
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
-
-            if (name.equals("VictoryKey") && !keyPressed && gameState.equals("idle")) {
-                level++;
-                gameState = "outOfLevel";
-                //fade.fadeOut();
-            }
-
-            if (name.equals("MoveKey") && !keyPressed && gameState.equals("idle")) {
+            if (name.equals("MoveKey") && !keyPressed) {
                 requestMovesOverlay();
             }
 
-            if (name.equals("EndTurnKey") && !keyPressed && gameState.equals("idle")) {
+            if (name.equals("EndTurnKey") && !keyPressed) {
                 requestEndTurn();
             }
 
-            if (name.equals("BannerRefresh") && !keyPressed && gameState.equals("idle")) {
-                requestRefreshAndDisplayBanner();
-            }
-
-            if (name.substring(0, 5).equals("Skill") && !keyPressed && gameState.equals("idle")) {
+            if (name.substring(0, 5).equals("Skill") && !keyPressed) {
+                int command;
                 try {
-                    commandType = Integer.parseInt(name.substring(5)) % 4;
+                    command = Integer.parseInt(name.substring(5)) % 4;
+                    if (command == 0) {
+                        command = 4; // Simplest way to get numbers between 1 and 4
+                    }
                 } catch (Exception e) {
-                    commandType = 1;
+                    command = 1;
                 }
-                requestSkill(commandType);
+                requestSkill(command);
+            }
+            
+            // For debugging (TODO: remove)
+            if (name.equals("VictoryKey") && !keyPressed && gameState.equals("idle") 
+                    && noMotionEventPlaying() && !movingCreature) {
+                level++;
+                gameState = "outOfLevel";
             }
 
+            // For debugging (TODO: remove)
             if (name.equals("EnergyKey") && !keyPressed && gameState.equals("idle")) {
                 requestIncreaseEnergy();
             }
 
+            // For debugging (TODO: remove)
             if (name.equals("RestoreHealthKey") && !keyPressed && gameState.equals("idle")) {
                 requestRestoreHealth();
+            }
+            
+            // For debugging (TODO: remove)
+            if (name.equals("BannerRefresh") && !keyPressed && gameState.equals("idle")) {
+                requestRefreshAndDisplayBanner();
             }
 
             if (name.equals("SelectTile") && !keyPressed && gameState.equals("skill")) {
@@ -196,7 +203,8 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     };
 
     public void requestMovesOverlay() {
-        if (noMotionEventPlaying() && !movingCreature) {
+        if ((gameState.equals("idle") || gameState.equals("skill")) 
+                && noMotionEventPlaying() && !movingCreature) {
             battle.clearOverlay();
             gameState = "move";
             commandType = 0;
@@ -204,16 +212,37 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
             creatureInCommand.animateMove();
         }
     }
+    
+    public void requestSkill(Creature creature, int command) { 
+        if (creature.equals(creatureInCommand)) {
+            requestSkill(command);
+        }
+    }
+    
+    private void requestSkill(int command) {
+        if (!(gameState.equals("enemyAttack") || gameState.equals("outOfLevel")) 
+                && noMotionEventPlaying() && !movingCreature && creatureInCommand.hasSkillNumber(command)) {
+            creatureInCommand.animateIdle();
+            battle.clearOverlay();
+            commandType = command;
+            gameState = "skill";
+            battle.drawWithOverlayForCreatureSkill(creatureInCommand, commandType);
+        }
+    }
 
     public void requestEndTurn() {
-        if (noMotionEventPlaying() && !movingCreature) {
+        if (!(gameState.equals("enemyAttack") || gameState.equals("outOfLevel")) 
+                && noMotionEventPlaying() && !movingCreature) {
+            creatureInCommand.animateIdle();
             battle.clearOverlay();
+            gameState = "idle";
             battle.endTurn();
             creatureInCommand = battle.getCreaturePlayingTurn();
             ((GameState) (nifty.getCurrentScreen().getScreenController())).update(!FREQUENT);
         }
     }
 
+    // For debugging (TODO: remove)
     public void requestRefreshAndDisplayBanner() {
         if (noMotionEventPlaying() && !movingCreature) {
             Creature[] priorityBanner = battle.getCreatureTurnOrder();
@@ -225,18 +254,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         }
     }
 
-    public void requestSkill(int command) {
-        System.out.println("Command type BEFORE skill overlay: " + commandType);
-        if (noMotionEventPlaying() && !movingCreature && creatureInCommand.hasSkillNumber(command)) {
-            battle.clearOverlay();
-            commandType = command;
-            gameState = "skill";
-            battle.drawWithOverlayForCreatureSkill(creatureInCommand, commandType);
-        } else {
-            System.out.println("...request ");
-        }
-    }
-
+    // For debugging (TODO: remove)
     public void requestIncreaseEnergy() {
         if (noMotionEventPlaying() && !movingCreature) {
             creatureInCommand.setEnergy(creatureInCommand.getEnergy() + 20);
@@ -244,6 +262,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         }
     }
 
+    // For debugging (TODO: remove)
     public void requestRestoreHealth() {
         if (noMotionEventPlaying() && !movingCreature) {
             creatureInCommand.receiveDamage(-16);
@@ -272,7 +291,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 int commandX = (int) targetTile.getX();
                 int commandY = (int) targetTile.getZ();
 
-                if (0 <= Math.min(commandX, commandY) && Math.max(commandX, commandY) <= 7 && creatureInCommand.hasSkillNumber(commandType)) {
+                if (0 <= Math.min(commandX, commandY) && Math.max(commandX, commandY) <= 7 && creatureInCommand.hasSkillNumber(commandType)) {          
                     System.out.println("Using skill " + creatureInCommand.prepareSkill(commandType) + " at (" + commandX + ", " + commandY + ")...");
                     battle.useCreatureSkillAt(creatureInCommand, commandType, new Coordinates(commandX, commandY), activeDamageNodes, activeDamageMotions);
 
@@ -334,7 +353,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
     private Zombie performMovementForZombieTurn() {
         Zombie zombie = (Zombie) creatureInCommand;
         Coordinates attackPosition = battle.getCoordinatesForBestClosestTarget(zombie);
-        MotionEvent nextMotionEvent = null;
+        MotionEvent nextMotionEvent;
         if (attackPosition != null) {
             creatureInCommand.animateMove();
             nextMotionEvent = battle.moveCreatureTo(zombie, attackPosition);
@@ -375,12 +394,12 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
          * Read your XML and initialize your custom ScreenController
          */
         nifty.fromXml("./Interface/screen.xml", "battle");
-// nifty.fromXml("Interface/helloworld.xml", "start", new MySettingsScreen(data));
-// attach the Nifty display to the gui view port as a processor
+        // nifty.fromXml("Interface/helloworld.xml", "start", new MySettingsScreen(data));
+        // attach the Nifty display to the gui view port as a processor
         guiViewPort.addProcessor(niftyDisplay);
-// disable the fly cam
+        // disable the fly cam
         flyCam.setDragToRotate(true);
-//nifty.fromXml("Interface/screen.xml", "start", new GUIOverlay());
+        //nifty.fromXml("Interface/screen.xml", "start", new GUIOverlay());
 
         greenMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         greenMat.setColor("Color", new ColorRGBA(.1f, .75f, .1f, 0.5f));//R,B,G,Alphas
@@ -484,6 +503,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
     @Override
     public void simpleUpdate(float tpf) {
+        //displayGameInfo();
         if (!gameState.equals("outOfLevel")) {
             if (battleInProgress) {
                 ((GameState) (nifty.getCurrentScreen().getScreenController())).update(FREQUENT);
@@ -528,7 +548,6 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 ((GameState) (nifty.getCurrentScreen().getScreenController())).update(!FREQUENT);
                 battleInProgress = true;
             } else if (!playedPostBattleCinematic) {
-                //fade.fadeOut();
                 battleInProgress = false;
                 System.out.println("<PLACEHOLDER FUNCTION / SIMPLE UPDATE>: play POST battle cinematic now");
                 playedPostBattleCinematic = true;
@@ -542,13 +561,10 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
                 System.out.println("## LOADING LEVEL " + level + " ##");
                 System.out.println("---------------------------------");
                 System.out.println();
-
-                //fade.fadeIn();
                 initializeBattleForLevel(level);
                 gameState = "idle";
             } else if (level == 9) {
                 System.out.println("Congratulations!");
-                //fade.fadeOut();
                 app.stop();
             }
         }
@@ -920,5 +936,15 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         zombie2.faceSouth();
         zombie3.faceSouth();
         zombie4.faceSouth();
+    }
+    
+    // Debugging function (TODO: remove)
+    private void displayGameInfo() {
+        System.out.println();
+        System.out.println("*******************");
+        System.out.println("GameState: " + gameState);
+        System.out.println("Motion event playing: " + !noMotionEventPlaying());
+        System.out.println("Creature using a skill: " + movingCreature);
+        System.out.println();
     }
 }

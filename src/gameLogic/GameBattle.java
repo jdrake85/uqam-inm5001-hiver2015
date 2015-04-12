@@ -36,6 +36,7 @@ public class GameBattle {
     private int maxCumulativeCreatureSpeed = 0;
     private int minCumulativeCreatureSpeed = Integer.MAX_VALUE;
     private int turnCounter = 1;
+    private int heroCount = 0;
 
     public GameBattle() {
         paths = new OptimalPaths(8, 8);
@@ -81,16 +82,19 @@ public class GameBattle {
         return !goodCreatures.isEmpty();
     }
 
-    // Player loses as soon as one of the heroes is defeated
+    // Player loses as soon as one of the heroes is defeated - TODO: use or delete!
     public boolean isLost() {
-        boolean defeat = false;
-        for (Creature creature : creatureList) {
-            if (creature.isGood() && !creature.isAlive()) {
-                defeat = true;
-                break;
+        int currentHeroCount = 0;
+        for (Creature creature: creatureList) { 
+            if (!(creature instanceof Zombie)) {
+                if (creature.isAlive()) {
+                    currentHeroCount++;
+                } else {
+                    break;
+                }
             }
         }
-        return defeat;
+        return currentHeroCount == heroCount;
     }
 
     // Player wins as soon as all zombies are defeated
@@ -225,6 +229,12 @@ public class GameBattle {
 
     public void start() {
         refreshCreatureList();
+        heroCount = 0;
+        for (Creature creature: creatureList) {
+            if (!(creature instanceof Zombie)) {
+                heroCount++;
+            }
+        }
         forceGoodCreaturesToBeInitialyFastest();
         while (creaturePriority.size() < 5) {
             addCreatureListOnceToCreaturePriority();

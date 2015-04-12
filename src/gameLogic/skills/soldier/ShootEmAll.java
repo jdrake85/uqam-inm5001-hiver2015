@@ -17,6 +17,9 @@ public class ShootEmAll extends EverywhereSkill {
     public ShootEmAll(int energyCost, int power) {
         super("Shoot Em All", energyCost, power, "bad");
         setAnimationType("Skill1");
+        String description =
+                "A desperate attempt to shoot all enemies!  The further they are, the more likely it is to miss the shot.";
+        setDescription(description);
     }
 
     @Override

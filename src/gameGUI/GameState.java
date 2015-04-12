@@ -75,7 +75,7 @@ public class GameState extends AbstractAppState implements ScreenController {
             smartDisableImages();
             updateTurnBanner();
             Element title = FakeMain2.nifty.getCurrentScreen().findElementByName("levelTitle");
-            title.getRenderer(TextRenderer.class).setText("Level " + FakeMain2.app.level);
+            title.getRenderer(TextRenderer.class).setText(FakeMain2.app.levelName);
         }
         updateHealthAndEnergyBars();
     }

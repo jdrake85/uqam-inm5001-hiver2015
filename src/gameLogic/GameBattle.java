@@ -16,6 +16,7 @@ import gameLogic.pathfinding.Coordinates;
 import gameLogic.pathfinding.CoordPath;
 import gameLogic.pathfinding.OptimalPaths;
 import gameLogic.skills.*;
+import gameLogic.skills.hero.SpinningPipe;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -138,8 +139,8 @@ public class GameBattle {
     public void drawWithOverlayForCreatureSkill(Creature creature, int skillNumber) {
         currentOverlay = getCalculatedOverlayForCreatureSkill(creature, skillNumber);
         Skill creatureSkill = creature.getSkills()[skillNumber - 1];
-        if (creatureSkill instanceof DirectionnalSkill) {
-            gameboard.drawWithDirectionnalSkillOverlay(currentOverlay);
+        if (creatureSkill instanceof SpinningPipe || creatureSkill instanceof DirectionnalSkill) {
+            gameboard.drawWithAreaOfEffectSkillOverlay(currentOverlay);
         } else {
             gameboard.drawWithGeneralSkillOverlay(creatureSkill.getTargetsZombies(), currentOverlay);
         }
@@ -277,6 +278,7 @@ public class GameBattle {
         addCreatureToCreaturePriorityRecursivelyAtLeastOnceAccordingToSpeed(creaturePlayingTurn); // Push creature who just played, who is now 'slower'
         CreatureSpeedTurnTriplet nextPair = creaturePriority.peek();
         creaturePlayingTurn = nextPair.getCreature();
+        creaturePlayingTurn.initializeTurnEnergy();
         System.out.println('\n' + "------------------" + '\n' + "TURN #" + turnCounter++ + '\n' + "------------------");
         displayCreatureSpeedPairsForTurnOrder();
     }

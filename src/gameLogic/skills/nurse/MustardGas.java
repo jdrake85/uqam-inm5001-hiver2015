@@ -20,6 +20,9 @@ public class MustardGas extends DirectionnalSkill {
     public MustardGas(int energyCost, int power) {
         super("Mustard Gas", energyCost, power, 4);
         setAnimationType("Skill1");
+        String description =
+                "Unleash a deadly funnel-cloud of poisonous gas.  Handle with caution!";
+        setDescription(description);
     }
 
     @Override

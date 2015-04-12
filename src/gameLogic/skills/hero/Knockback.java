@@ -16,6 +16,9 @@ public class Knockback extends MeleeSkill{
     public Knockback(int energyCost, int power) {
         super("Knockback", energyCost, power, true, true);
         setAnimationType("Skill1");
+        String description =
+                "Punishing blow which knocks back the enemy up to two tiles.";
+        setDescription(description);
     }
 
     @Override

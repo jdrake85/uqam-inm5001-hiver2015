@@ -16,6 +16,9 @@ public class Stab extends MeleeSkill{
     public Stab(int energyCost, int power) {
         super("Stab", energyCost, power);
         setAnimationType("Skill2");
+        String description =
+                "Stab an enemy with deadly force.";
+        setDescription(description);
     }
 
     @Override

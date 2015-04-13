@@ -7,6 +7,7 @@ import com.jme3.animation.AnimEventListener;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.app.SimpleApplication;
+import com.jme3.app.state.ScreenshotAppState;
 import com.jme3.asset.plugins.FileLocator;
 import com.jme3.cinematic.PlayState;
 import com.jme3.cinematic.events.MotionEvent;
@@ -106,6 +107,7 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         flyCam.setEnabled(false);
         initScene();
         initKeys();
+        enableScreenshots(); // allows PRINTSCREEN to save screenshots
 
         // HERO GRAPHICS
         heroMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -946,5 +948,11 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         System.out.println("Motion event playing: " + !noMotionEventPlaying());
         System.out.println("Creature using a skill: " + movingCreature);
         System.out.println();
+    }
+    
+    // Debugging function (TODO: remove)
+    private void enableScreenshots() {
+        ScreenshotAppState screenShotState = new ScreenshotAppState();
+        this.stateManager.attach(screenShotState);
     }
 }

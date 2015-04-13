@@ -75,7 +75,7 @@ public class GameState extends AbstractAppState implements ScreenController {
             smartDisableImages();
             updateTurnBanner();
             Element title = FakeMain2.nifty.getCurrentScreen().findElementByName("levelTitle");
-            title.getRenderer(TextRenderer.class).setText("Level " + FakeMain2.app.level);
+            title.getRenderer(TextRenderer.class).setText(FakeMain2.app.levelName);
         }
         updateHealthAndEnergyBars();
     }
@@ -108,8 +108,8 @@ public class GameState extends AbstractAppState implements ScreenController {
 
     public void heroSkillCall(Creature player, int index) {
         if (player.canPayEnergyCostForSkillNumber(index)){
-        heroSkillInfo(player, index - 1);
-        FakeMain2.app.requestSkill(index);
+            heroSkillInfo(player, index - 1);
+            FakeMain2.app.requestSkill(player, index);
         } else {
             String infoString = "Not enough Energy to use skill!";
             Element myElem = FakeMain2.nifty.getScreen("battle").findElementByName("infoText");

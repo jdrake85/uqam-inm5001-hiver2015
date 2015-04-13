@@ -17,6 +17,9 @@ public class AimedShot extends RangedSkill{
     public AimedShot(int energyCost, int power) {
         super("Aimed Shot", energyCost, power, 6);
         setAnimationType("Skill1");
+        String description =
+                "Fire a bullet at an enemy; chances to miss increase along with the distance of the target.";
+        setDescription(description);
     }
 
     @Override

@@ -16,6 +16,9 @@ public class HomeRun extends MeleeSkill{
     public HomeRun(int energyCost, int power) {
         super("Home Run", energyCost, power, false, true);
         setAnimationType("Skill1");
+        String description =
+                "A powerful hit that causes IMPAIR: the recipient will only have half energy during their next round.";
+        setDescription(description);
     }
 
     @Override

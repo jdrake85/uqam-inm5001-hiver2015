@@ -16,6 +16,9 @@ public class Innoculation extends RangedSkill{
     public Innoculation(int energyCost, int power) {
         super("Innoculation", energyCost, power, 4);
         setAnimationType("Skill1");
+        String description =
+                "Attack the undead at a distance with this mixture of antibiotics.";
+        setDescription(description);
     }
 
     @Override

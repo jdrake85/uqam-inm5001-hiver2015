@@ -17,6 +17,9 @@ public class Heal extends MeleeSkill{
         super("Heal", energyCost, power * -1);
         setAnimationType("Skill1");
         setTargetsZombies(false);
+        String description =
+                "Restore health to yourself or to an adjacent ally.";
+        setDescription(description);
     }
 
     @Override

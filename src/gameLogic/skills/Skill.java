@@ -106,7 +106,7 @@ public abstract class Skill {
     }
 
     public String getDescription() {
-        return "Generic Description.";
+        return description;
         //return description;
     }
 

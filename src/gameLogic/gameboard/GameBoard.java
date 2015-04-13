@@ -358,7 +358,7 @@ public class GameBoard {
         }
     }
 
-    public void drawWithDirectionnalSkillOverlay(boolean[][] overlay) {
+    public void drawWithAreaOfEffectSkillOverlay(boolean[][] overlay) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (overlay[i][j]) {

@@ -210,16 +210,8 @@ public class Creature {
         }
     }
 
-    public void setIsImpaired(boolean isImpaired) {
-        this.isImpaired = isImpaired;
-    }
-
-    public void isImpaired(boolean isImpaired) {
-        this.isImpaired = isImpaired;
-    }
-
     public void becomeImpaired() {
-        energy = maxEnergy / 2;
+        isImpaired = true;
     }
 
     public void setAlignment(String alignment) {
@@ -300,14 +292,6 @@ public class Creature {
 
     public boolean isGood() {
         return isGood;
-    }
-
-    public void initializeTurnEnergy() {
-        if (isImpaired) {
-            energy = maxEnergy / 2;
-        } else {
-            energy = maxEnergy;
-        }
     }
 
     public int getHealth() {
@@ -394,4 +378,34 @@ public class Creature {
         // TODO: change 12 to 4
         return 1 <= skillNumber && skillNumber <= 4 && skills[skillNumber - 1] != null;
     }
+
+    public void initializeTurnEnergy() {
+        if (isImpaired) {
+            energy = maxEnergy/2;
+            isImpaired = false;
+        } else {
+            energy = maxEnergy;
+        }
+    }
+    
+    public void faceEast() { //+x
+        Quaternion facingRotation = new Quaternion();
+        geometry3D.setLocalRotation(facingRotation.fromAngleAxis(0f, Vector3f.UNIT_Y));
+    }
+    
+    public void faceWest() { //-x
+        Quaternion facingRotation = new Quaternion();
+        geometry3D.setLocalRotation(facingRotation.fromAngleAxis(FastMath.PI, Vector3f.UNIT_Y));
+    }
+    
+    public void faceSouth() { //+y
+        Quaternion facingRotation = new Quaternion();
+        geometry3D.setLocalRotation(facingRotation.fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));
+    }
+        
+     
+    public void faceNorth() { //-y
+        Quaternion facingRotation = new Quaternion();
+        geometry3D.setLocalRotation(facingRotation.fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y));
+    } 
 }

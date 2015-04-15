@@ -159,8 +159,11 @@ public class GameBattle {
     // Quick implementation
     public void removeCreatureAt(int xCoord, int yCoord) {
         Tile tile = gameboard.getTileAt(xCoord, yCoord);
-        tile.removeOccupier();
-        //TODO creature.hideCreatureOn3DBoard();
+        Creature foundCreature = tile.getOccupier();
+        if (foundCreature != null) { 
+            foundCreature.hideCreatureOn3DBoard();
+            tile.removeOccupier();
+        }
     }
 
     public MotionEvent moveCreatureTo(Creature creature, Coordinates destCoords) {

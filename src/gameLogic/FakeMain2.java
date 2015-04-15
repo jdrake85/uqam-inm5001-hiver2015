@@ -647,7 +647,17 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         levelName = "Level 1: Fight for Freedom";
 
         soldier = null;
+        
+        // Special pre-loading version of level 1
+        nurse = new Creature("Nurse", FakeMain2.nurseMat, assetManager, this);
+        nurse.setPicturePath("Interface/Images/Nurse.png");
+        nurse.setSkillAsNumber(new Heal(5, 4), 1);
+        nurse.setSkillAsNumber(new Push(8, 4), 4);
+        battle.insertCreatureAt(nurse, 7, 0);
+        nurse.faceSouth();
+        battle.removeCreatureAt(7, 0);
         nurse = null;
+        
         hero = new Creature("Hero", FakeMain2.heroMat, assetManager, this);
         hero.setPicturePath("Interface/Images/Hero.png");
         hero.setSkillAsNumber(new Strike(1, 4), 1);

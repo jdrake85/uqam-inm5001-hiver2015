@@ -68,6 +68,12 @@ public class GameState extends AbstractAppState implements ScreenController {
 
     public void updateCombatWindow(boolean frequent) {
         if (!frequent) {
+            
+            resetHpAndEnergyPics();
+            resetFacesPics();
+            resetSkillsPics();
+            resetMoveAndEndPics();
+            disableAllButtons();
             disableAllButtons();
             smartEnableButtons();
             smartEnableImages();

@@ -111,16 +111,19 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
 
         // HERO GRAPHICS
         heroMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        heroMat.setColor("Color", new ColorRGBA(0f, 0f, 1f, 0f));
+        //heroMat.setColor("Color", new ColorRGBA(0f, 0f, 1f, 0f));
         assetManager.registerLocator("assets/Models/Hero/", FileLocator.class);
+        heroMat.setTexture("ColorMap",assetManager.loadTexture("HeroTexture.png"));
 
         // NURSE GRAPHICS
         nurseMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        nurseMat.setColor("Color", new ColorRGBA(1f, 0.5f, 0.1f, 0f));
+        //nurseMat.setColor("Color", new ColorRGBA(1f, 0.5f, 0.1f, 0f));
+        nurseMat.setTexture("ColorMap",assetManager.loadTexture("NurseTexture.png"));
 
         // SOLDIER GRAPHICS
         soldierMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        soldierMat.setColor("Color", new ColorRGBA(0f, 1f, 0f, 0f));
+        //soldierMat.setColor("Color", new ColorRGBA(0f, 1f, 0f, 0f));
+        soldierMat.setTexture("ColorMap",assetManager.loadTexture("SoldierTexture.png"));
     }
 
     private void initKeys() {
@@ -420,7 +423,9 @@ public class FakeMain2 extends SimpleApplication implements AnimEventListener {
         blueMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
 
         redZombie = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        redZombie.setColor("Color", new ColorRGBA(0.75f, 0f, 0f, 0f));//R,B,G,Alphas
+        //redZombie.setColor("Color", new ColorRGBA(0.75f, 0f, 0f, 0f));//R,B,G,Alphas
+        assetManager.registerLocator("assets/Models/Hero/", FileLocator.class);
+        redZombie.setTexture("ColorMap",assetManager.loadTexture("Zombie1Texture.png"));
 
         for (int i = 0; i < 10; i++) {
             numberMat[i] = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");

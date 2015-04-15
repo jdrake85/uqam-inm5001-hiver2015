@@ -64,7 +64,7 @@ public class Creature {
         skills = new Skill[4];
         /*Box box = new Box(0.2f, 1.5f, 0.2f);
          geometry3D = new Geometry(name, box);*/
-        geometry3D = (Node) assetManager.loadModel("Zombie.scene");
+        geometry3D = (Node) assetManager.loadModel("Zombie1.scene");
         geometry3D.setLocalScale(.025f);
         geometry3D.setMaterial(FakeMain2.redZombie);
 

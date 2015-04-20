@@ -1,17 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gameLogic.skills;
 
 import gameLogic.pathfinding.Coordinates;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author User
- */
 public abstract class EverywhereSkill extends Skill{
     String targetAlignment = "bad";
     

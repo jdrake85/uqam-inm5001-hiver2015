@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gameLogic;
 
 import gameLogic.creatures.CreatureSpeedTurnTriplet;
@@ -74,7 +70,6 @@ public class GameBattle {
     public void refreshCreatureList() {
         gameboard.removeDeadCreatures();
         creatureList = gameboard.getFullCreatureList();
-        //System.out.println("Refreshing list of ALL creatures on the map: " + creatureList);
     }
 
     public boolean containsGoodCreatures() {
@@ -126,10 +121,6 @@ public class GameBattle {
         return creatureFound;
     }
 
-    public void displayCreatureCoordinates(Creature creature) {
-        gameboard.displayCreatureCoordinates(creature);
-    }
-
     public void clearOverlay() {
         currentOverlay = null;
         gameboard.drawWithBlankOverlay();
@@ -168,14 +159,12 @@ public class GameBattle {
 
     public MotionEvent moveCreatureTo(Creature creature, Coordinates destCoords) {
         MotionEvent motionEvent = null;
-        int initialEnergy = creature.getEnergy();
         if (creatureCanMoveTo(creature, destCoords)) {
             MotionPath path = new MotionPath();
 
             CoordPath pathChosen = paths.getPathForCreatureToCoordinates(creature, destCoords);
             int stepCount = pathChosen.length() - 1;
             creature.consumeEnergyForSteps(stepCount);
-            System.out.println(pathChosen);
 
             while (!pathChosen.isEmpty()) {
                 Coordinates coord = pathChosen.popFirstCoordinates();
@@ -184,10 +173,9 @@ public class GameBattle {
 
             motionEvent = creature.generateMotionEventForMovingCreatureOn3DBoard(path, stepCount);
             gameboard.moveCreatureTo(creature, destCoords);
-            System.out.println("Energy left: " + creature.getEnergy() + '/' + initialEnergy);
 
         } else {
-            System.out.println("Error: creature cannot move to " + destCoords);
+            System.err.println("Error: creature cannot move to " + destCoords);
         }
         return motionEvent;
     }
@@ -215,7 +203,7 @@ public class GameBattle {
                 addCreatureListOnceToCreaturePriority();
             }
         } else if (!creature.canPayEnergyCostForSkillNumber(skillNumber)) {
-            System.out.println("Not enough energy!");
+            System.err.println("Not enough energy!");
         }
     }
     
@@ -244,10 +232,7 @@ public class GameBattle {
         }
 
         CreatureSpeedTurnTriplet startingPair = creaturePriority.peek();
-        // System.out.println("*** NEXT TURN: " + startingPair);
-        System.out.println('\n' + "------------------" + '\n' + "TURN #" + turnCounter++ + '\n' + "------------------");
         creaturePlayingTurn = startingPair.getCreature();
-        displayCreatureSpeedPairsForTurnOrder();
     }
 
     private void addCreatureListOnceToCreaturePriority() {
@@ -292,8 +277,6 @@ public class GameBattle {
         CreatureSpeedTurnTriplet nextPair = creaturePriority.peek();
         creaturePlayingTurn = nextPair.getCreature();
         creaturePlayingTurn.initializeTurnEnergy();
-        System.out.println('\n' + "------------------" + '\n' + "TURN #" + turnCounter++ + '\n' + "------------------");
-        displayCreatureSpeedPairsForTurnOrder();
     }
 
     private void removeDeadCreaturesFromTurnOrder() {
@@ -333,35 +316,6 @@ public class GameBattle {
         return fiveCreatureTurnOrder;
     }
 
-    public void displayCreatureTurnOrder() {
-        Creature[] creatureTurnOrder = getCreatureTurnOrder();
-        System.out.print("TURN ORDER BANNER: ");
-        for (Creature creature : creatureTurnOrder) {
-            if (creature != null) {
-                System.out.print(creature + ": " + creature.getTurnsAssigned() + " times speed of " + creature.getCumulativeTurnSpeed() + ", ");
-            }
-        }
-        System.out.println();
-    }
-
-    public void displayCreatureSpeedPairsForTurnOrder() {
-        CreatureSpeedTurnTriplet[] allCreatureSpeedTurnOrder = new CreatureSpeedTurnTriplet[creaturePriority.size()];
-        creaturePriority.toArray(allCreatureSpeedTurnOrder);
-        Arrays.sort(allCreatureSpeedTurnOrder);
-        CreatureSpeedTurnTriplet[] fiveCreatureSpeedTurnOrder = new CreatureSpeedTurnTriplet[5];
-        System.arraycopy(allCreatureSpeedTurnOrder, 0, fiveCreatureSpeedTurnOrder, 0, Math.min(5, creaturePriority.size()));
-        for (int i = creaturePriority.size(); i < 5; i++) {
-            fiveCreatureSpeedTurnOrder[i] = null;
-        }
-        System.out.print("TURN ORDER BANNER: ");
-        for (CreatureSpeedTurnTriplet pair : fiveCreatureSpeedTurnOrder) {
-            if (pair != null) {
-                System.out.print(pair.toString() + ", ");
-            }
-        }
-        System.out.println();
-    }
-
     public Creature getCreaturePlayingTurn() {
         return creaturePlayingTurn;
     }
@@ -393,7 +347,7 @@ public class GameBattle {
                     }
                 }
             } while (reachableDesirableCoordinates.isEmpty() && overlayContainsATrueValue(availableMoves));
-            System.out.println("Reachable desirable coordinates: " + reachableDesirableCoordinates);
+
             // Re-evalute target if closer to moves overlay than previously chosen target
             nextMove = selectSingleClosestReachableCoordinates(reachableDesirableCoordinates);
             Creature oldTarget = zombie.getCurrentTarget();
@@ -432,18 +386,17 @@ public class GameBattle {
         for (Coordinates rootCoords : previouslyKnownCoordsSet) {
             Creature rootEnemy = coordsLeadingToEnemies.get(rootCoords);
             for (Coordinates cardinalCoords : rootCoords.getFourSurroundingCardinalCoordinates()) {
-                //System.out.println("NEW CANDIDATE COORDINATED: " + cardinalCoords);
+
                 if (gameboard.containsTileWithCoordinates(cardinalCoords)
                         && !previouslyKnownCoordsSet.contains(cardinalCoords) && !nextValidCoordsList.contains(cardinalCoords)) {
-                    //System.out.println("              NEW COORDINATED ADDED: " + cardinalCoords);
+
                     nextValidCoordsList.add(cardinalCoords); // Take note of new valid cardinal coords
                     additionalCoordsForCreatures.put(cardinalCoords, rootEnemy); // Take note of root enemy related to new cardinal coords
                 }
             }
         }
-        //System.out.println("BEFORE: " + coordsLeadingToEnemies);
+
         coordsLeadingToEnemies.putAll(additionalCoordsForCreatures);
-        //System.out.println("AFTER: " + coordsLeadingToEnemies);
         return nextValidCoordsList;
     }
 

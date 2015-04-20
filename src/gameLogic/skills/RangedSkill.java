@@ -1,15 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gameLogic.skills;
 
 import gameLogic.pathfinding.Coordinates;
 
-/**
- *
- * @author User
- */
 public abstract class RangedSkill extends Skill{
     
    protected int range;

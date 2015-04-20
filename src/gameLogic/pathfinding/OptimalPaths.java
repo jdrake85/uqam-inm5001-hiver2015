@@ -1,17 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gameLogic.pathfinding;
 
 import gameLogic.Creature;
 import gameLogic.gameboard.GameBoard;
 import java.util.PriorityQueue;
 
-/**
- *
- * @author User
- */
 public class OptimalPaths {
 
     private final int xDim;

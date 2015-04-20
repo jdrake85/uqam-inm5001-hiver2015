@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gameLogic;
 
 import com.jme3.animation.AnimChannel;
@@ -19,7 +15,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
-import static gameLogic.FakeMain2.findAnimControl;
+import static gameLogic.Main.findAnimControl;
 import gameLogic.pathfinding.Coordinates;
 import gameLogic.skills.Skill;
 
@@ -54,8 +50,8 @@ public class Creature {
         Box box = new Box(0.2f, 1.5f, 0.2f);
         geometry3D = new Geometry(name, box);
         //geometry3D = (Node) assetManager.loadModel("Hero.scene");
-        geometry3D.setMaterial(FakeMain2.redZombie);
-        FakeMain2.charNode.attachChild(geometry3D);
+        geometry3D.setMaterial(Main.redZombie);
+        Main.charNode.attachChild(geometry3D);
         this.addAnimationListener(listener);
     }
 
@@ -66,7 +62,7 @@ public class Creature {
          geometry3D = new Geometry(name, box);*/
         geometry3D = (Node) assetManager.loadModel("Zombie1.scene");
         geometry3D.setLocalScale(.025f);
-        geometry3D.setMaterial(FakeMain2.redZombie);
+        geometry3D.setMaterial(Main.redZombie);
 
         creatureControl = findAnimControl(geometry3D);
         creatureChannel = creatureControl.createChannel();
@@ -75,7 +71,7 @@ public class Creature {
         //skillChannel = creatureControl.createChannel();
         //skillChannel.setLoopMode(LoopMode.DontLoop);
 
-        FakeMain2.charNode.attachChild(geometry3D);
+        Main.charNode.attachChild(geometry3D);
         this.addAnimationListener(listener);
     }
 
@@ -83,9 +79,9 @@ public class Creature {
         //this(name);
         this.name = name;
         skills = new Skill[4];
-        geometry3D = FakeMain2.heroScene; // WIP; node is assigned to Spatial..
+        geometry3D = Main.heroScene; // WIP; node is assigned to Spatial..
         geometry3D.setMaterial(material);
-        FakeMain2.charNode.attachChild(geometry3D);
+        Main.charNode.attachChild(geometry3D);
         this.addAnimationListener(listener);
     }
 
@@ -103,7 +99,7 @@ public class Creature {
         //skillChannel = creatureControl.createChannel();
         //skillChannel.setLoopMode(LoopMode.DontLoop);
 
-        FakeMain2.charNode.attachChild(geometry3D);
+        Main.charNode.attachChild(geometry3D);
         this.addAnimationListener(listener);
     }
 
@@ -321,7 +317,7 @@ public class Creature {
             // create a channel and start the wobble animation
             creatureChannel.setAnim(animationType);
             creatureChannel.setLoopMode(LoopMode.DontLoop);
-            FakeMain2.movingCreature = true;
+            Main.movingCreature = true;
 
         } catch (final Exception e) {
             e.printStackTrace();

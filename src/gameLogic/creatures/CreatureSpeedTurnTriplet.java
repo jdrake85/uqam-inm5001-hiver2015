@@ -1,15 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gameLogic.creatures;
 
 import gameLogic.Creature;
 
-/**
- *
- * @author User
- */
 public class CreatureSpeedTurnTriplet implements Comparable {
     Creature creature;
     int speed;

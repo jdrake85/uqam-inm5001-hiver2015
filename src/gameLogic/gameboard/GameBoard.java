@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gameLogic.gameboard;
 
 import com.jme3.cinematic.MotionPath;
@@ -14,8 +10,8 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import gameLogic.Creature;
-import gameLogic.FakeMain2;
-import static gameLogic.FakeMain2.greyMat;
+import gameLogic.Main;
+import static gameLogic.Main.greyMat;
 import gameLogic.pathfinding.Coordinates;
 import gameLogic.pathfinding.CoordPath;
 import gameLogic.skills.*;
@@ -102,16 +98,6 @@ public class GameBoard {
         return tilesAlongX + tilesAlongY;
     }
 
-    public void displayCreatureCoordinates(Creature creature) {
-        Coordinates coordinates = getCreatureCoordinates(creature);
-        String outputIntro = "Creature '" + creature + '\'';
-        if (coordinates != null) {
-            System.out.println(outputIntro + " is at " + coordinates);
-        } else {
-            System.out.println(outputIntro + " was not found on the gameboard.");
-        }
-    }
-
     public boolean containsCreature(Creature creature) {
         return getCreatureCoordinates(creature) != null;
     }
@@ -129,34 +115,16 @@ public class GameBoard {
         return coordinates;
     }
 
-    // Unit movement
-    public void moveCreatureInDirection(Creature creature, String direction) {
-        Coordinates initialCoords = getCreatureCoordinates(creature);
-        if (validDestinationTile(initialCoords, direction)) {
-            Coordinates destinationCoords = initialCoords.coordinatesOneUnitInDirection(direction);
-            Tile initialTile = getTileAt(initialCoords);
-            Tile destinationTile = getTileAt(destinationCoords);
-            destinationTile.addOccupier(creature);
-            initialTile.removeOccupier();
-            //creature.displayCreatureOn3DBoard(destinationCoords.getXCoord(),destinationCoords.getYCoord());           
-
-        } else {
-            System.out.println("Error: GameBattle request for invalid move");
-        }
-    }
-
     public void moveCreatureTo(Creature creature, Coordinates destCoords) {
         if (validAndEmptyDestinationTileAt(destCoords)) {
             Coordinates initCoords = getCreatureCoordinates(creature);
-            System.out.println("GAMEBOARD: Moving from " + initCoords + " to " + destCoords);
             Tile initialTile = getTileAt(initCoords);
             Tile destinationTile = getTileAt(destCoords);
             destinationTile.addOccupier(creature);
-            initialTile.removeOccupier();
-            //creature.displayCreatureOn3DBoard(destCoords.getXCoord(),destCoords.getYCoord());           
+            initialTile.removeOccupier();       
 
         } else {
-            System.out.println("Error: GameBattle request for invalid move");
+            System.err.println("Error: GameBattle request for invalid move");
         }
     }
 
@@ -206,7 +174,7 @@ public class GameBoard {
         if (!targetTile.isOccupied()) {
             targetTile.addOccupier(creature);
         } else {
-            System.out.println("Error: tile at (" + xCoord + ", " + yCoord + ") already occupied");
+            System.err.println("Error: tile at (" + xCoord + ", " + yCoord + ") already occupied");
         }
     }
 
@@ -225,10 +193,10 @@ public class GameBoard {
         Coordinates coordsAfterMove = coordinates.coordinatesOneUnitInDirection(direction);
         // Outputs for debugging purposes
         if (!tileIsWithinGameBoard(coordsAfterMove)) {
-            System.out.println("Error: tile at " + coordsAfterMove + " is outside of the gameboard");
+            System.err.println("Error: tile at " + coordsAfterMove + " is outside of the gameboard");
         } else if (tileIsOccupied(coordsAfterMove)) {
             Tile targetTile = getTileAt(coordsAfterMove);
-            System.out.println("Error: tile at " + coordsAfterMove + " is already occupied by " + targetTile.getOccupier());
+            System.err.println("Error: tile at " + coordsAfterMove + " is already occupied by " + targetTile.getOccupier());
         }
         return tileIsWithinGameBoard(coordsAfterMove) && !tileIsOccupied(coordsAfterMove);
     }
@@ -318,8 +286,8 @@ public class GameBoard {
     public void drawWithBlankOverlay() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                FakeMain2.g[i][j].setMaterial(greyMat);
-                FakeMain2.g[i][j].setQueueBucket(RenderQueue.Bucket.Translucent);
+                Main.g[i][j].setMaterial(greyMat);
+                Main.g[i][j].setQueueBucket(RenderQueue.Bucket.Translucent);
             }
         }
     }
@@ -330,9 +298,9 @@ public class GameBoard {
                 char tileDrawing = drawTile(i, j);
                 if (overlay[i][j]) {
                     if (tileDrawing == ' ') {
-                        FakeMain2.g[i][j].setMaterial(FakeMain2.greenMat);
+                        Main.g[i][j].setMaterial(Main.greenMat);
                     } else {
-                        FakeMain2.g[i][j].setMaterial(FakeMain2.redMat);
+                        Main.g[i][j].setMaterial(Main.redMat);
                     }
                 }
             }
@@ -346,12 +314,12 @@ public class GameBoard {
                     if (tiles[i][j].isOccupied()) {
                         Creature occupier = tiles[i][j].getOccupier();
                         if (occupier.isGood() != skillTargetsZombies) {
-                            FakeMain2.g[i][j].setMaterial(FakeMain2.redMat);
+                            Main.g[i][j].setMaterial(Main.redMat);
                         } else {
-                            FakeMain2.g[i][j].setMaterial(FakeMain2.blueMat);
+                            Main.g[i][j].setMaterial(Main.blueMat);
                         }
                     } else {
-                        FakeMain2.g[i][j].setMaterial(FakeMain2.greenMat);
+                        Main.g[i][j].setMaterial(Main.greenMat);
                     }
                 }
             }
@@ -362,7 +330,7 @@ public class GameBoard {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (overlay[i][j]) {
-                    FakeMain2.g[i][j].setMaterial(FakeMain2.redMat);
+                    Main.g[i][j].setMaterial(Main.redMat);
                 }
             }
         }
@@ -416,7 +384,7 @@ public class GameBoard {
         if (skill instanceof Heal) {
             overlay[xCoord][yCoord] = true; // A creature can heal themselves
         }
-        //skillUseOverlay[xCoord][yCoord] = true; // TODO: USE WHEN FINISHED WITH ASCII GRAPHICS
+
         if (tileIsWithinGameBoard(xCoord, yCoord + 1)) {
             overlay[xCoord][yCoord + 1] = true;
         }
@@ -495,37 +463,29 @@ public class GameBoard {
                 if (damage == 0 && (skillTargetsZombies == target.isGood())) {
                     // Do nothing
                 } else {
-                    if (damage > 0) {
-                        System.out.println(target + " receives " + damage + " damage from " + skill + ", is at " + target.getHealth() + "/" + target.getMaxHealth());
-                        if (skill.hasKnockback()) {
+                    if (damage > 0 && skill.hasKnockback()) {
                             knockbackCreatureFromSkill(target, skill);
-                        }
-                        if (!target.isAlive()) {
-                            System.out.println("...and expires!");
-                        }
+                        
                     } else if (damage < 0) {
                         damage *= -1;
-                        System.out.println(target + " receives " + damage + " healing from " + skill + ", is at " + target.getHealth() + "/" + target.getMaxHealth());
-                    } else {
-                        System.out.println(skill + " misses " + target + "!");
-                    }
+                    } 
 
                     damagePannel.setLocalTranslation(target.geometry3D.getLocalTranslation());
 
                     Box b1 = new Box(0.1f, 0.2f, 0f);
                     Geometry tens = new Geometry("Box1", b1);
-                    tens.setMaterial(FakeMain2.numberMat[damage / 10]);
+                    tens.setMaterial(Main.numberMat[damage / 10]);
                     tens.setLocalTranslation(tens.getLocalTranslation().add(new Vector3f(-0.15f, 0f, 0.5f)));
 
                     Box b2 = new Box(0.1f, 0.2f, 0f);
                     Geometry units = new Geometry("Box2", b2);
-                    units.setMaterial(FakeMain2.numberMat[damage % 10]);
+                    units.setMaterial(Main.numberMat[damage % 10]);
                     units.setLocalTranslation(units.getLocalTranslation().add(new Vector3f(+0.15f, 0f, 0.5f)));
 
                     damagePannel.attachChild(tens);
                     damagePannel.attachChild(units);
 
-                    FakeMain2.charNode.attachChild(damagePannel);
+                    Main.charNode.attachChild(damagePannel);
 
                     MotionPath path = new MotionPath();
                     path.addWayPoint(damagePannel.getLocalTranslation());
@@ -535,13 +495,8 @@ public class GameBoard {
                     motionControl.setDirectionType(MotionEvent.Direction.None);
                     motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
                     motionControl.setSpeed(10f);
-                    //System.out.println("Playback status before play: " + motionControl.isEnabled());
-                    motionControl.play();
-                    //System.out.println("Playback PAUSE: " + motionControl.getPlayState().equals(PlayState.Paused));
-                    //System.out.println("Playback fail: " + motionControl.getPlayState().equals(PlayState.Stopped));
 
-                    //FakeMain2.lastDamageNode = damagePannel;
-                    //FakeMain2.charNode.detachChild(damagePannel);
+                    motionControl.play();
 
                     damageNodes.add(damagePannel);
                     damageMotions.add(motionControl);

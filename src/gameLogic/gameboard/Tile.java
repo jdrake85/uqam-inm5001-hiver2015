@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gameLogic.gameboard;
 
 import gameLogic.Creature;
@@ -34,7 +30,7 @@ public class Tile {
         if (!isOccupied()) {
             occupier = creature;
         } else {
-            System.out.println("Error: attempt to stack creatures on same tile");
+            System.err.println("Error: attempt to stack creatures on same tile");
         }
     }
     

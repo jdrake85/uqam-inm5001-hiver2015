@@ -182,25 +182,6 @@ public class GameBoard {
         return tileIsWithinGameBoard(coords) && !tileIsOccupied(coords);
     }
 
-    // Unit movement
-    public boolean validDestinationTile(Creature creature, String direction) {
-        Coordinates coordinates = getCreatureCoordinates(creature);
-        return validDestinationTile(coordinates, direction);
-    }
-
-    // Unit movement
-    public boolean validDestinationTile(Coordinates coordinates, String direction) {
-        Coordinates coordsAfterMove = coordinates.coordinatesOneUnitInDirection(direction);
-        // Outputs for debugging purposes
-        if (!tileIsWithinGameBoard(coordsAfterMove)) {
-            System.err.println("Error: tile at " + coordsAfterMove + " is outside of the gameboard");
-        } else if (tileIsOccupied(coordsAfterMove)) {
-            Tile targetTile = getTileAt(coordsAfterMove);
-            System.err.println("Error: tile at " + coordsAfterMove + " is already occupied by " + targetTile.getOccupier());
-        }
-        return tileIsWithinGameBoard(coordsAfterMove) && !tileIsOccupied(coordsAfterMove);
-    }
-
     public static boolean tileIsWithinGameBoard(Coordinates coordinates) {
         int xCoord = coordinates.getXCoord();
         int yCoord = coordinates.getYCoord();
@@ -214,11 +195,6 @@ public class GameBoard {
     public boolean tileIsOccupied(Coordinates coordinates) {
         Tile tile = getTileAt(coordinates);
         return tile.isOccupied();
-    }
-
-    private ArrayList<Coordinates> getValidUnoccupiedCoordinatesAdjacentTo(Coordinates initCoord) {
-        ArrayList<Coordinates> unoccupiedCoords = new ArrayList<Coordinates>();
-        return unoccupiedCoords;
     }
 
     public boolean[][] getOccupiedTiles() {
@@ -352,7 +328,6 @@ public class GameBoard {
     }
 
     public boolean[][] getSkillOverlay(Skill skill) {
-        //TODO: distinguish between good and bad creatures
         boolean[][] skillUseOverlay = null;
         if (skill instanceof MeleeSkill) {
             skillUseOverlay = generateMeleeOverlay(skill);

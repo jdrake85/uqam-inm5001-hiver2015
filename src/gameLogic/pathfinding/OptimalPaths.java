@@ -90,16 +90,6 @@ public class OptimalPaths {
         return queue;
     }
     
-    public void displayOptimalPaths() {
-        for (int i = 0; i < xDim; i++) {
-            for (int j = 0; j < yDim; j++) {
-                if (dCoords[i][j] != null && dCoords[i][j].getSourceCoordinates() != null) {
-                    System.out.println(dCoords[i][j]);
-                }
-            }
-        }
-    }
-    
     public boolean[][] getTilesReachableInAtMostNSteps(int stepCount) { 
         boolean[][] reachableTiles = new boolean[xDim][yDim];
         for (int i = 0; i < xDim; i++) {

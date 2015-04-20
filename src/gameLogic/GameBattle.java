@@ -63,10 +63,6 @@ public class GameBattle {
         paths.calculateOptimalPathsStartingFromCoordinates(occupiedTiles, initCoords);
     }
 
-    public void displayOptimalPaths() {
-        paths.displayOptimalPaths();
-    }
-
     public void refreshCreatureList() {
         gameboard.removeDeadCreatures();
         creatureList = gameboard.getFullCreatureList();

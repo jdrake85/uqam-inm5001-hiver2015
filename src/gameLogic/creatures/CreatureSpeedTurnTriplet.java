@@ -45,14 +45,6 @@ public class CreatureSpeedTurnTriplet implements Comparable {
                 String name = creature.toString();
                 comparison = name.compareTo(otherCreature.toString());
             }
-            // TODO: remove this, used for debugging
-            String compareSign = " = ";
-            if (comparison > 0) {
-                compareSign = " > ";
-            } else if (comparison < 0) { 
-                compareSign = " < ";
-            }
-            //System.out.println("                            " + this + compareSign + otherTriplet);
         }
         return comparison;
     }
@@ -75,6 +67,4 @@ public class CreatureSpeedTurnTriplet implements Comparable {
     public String toString() {
         return creature.toString() + "(" + speed + ")";
     }
-    
-    
 }

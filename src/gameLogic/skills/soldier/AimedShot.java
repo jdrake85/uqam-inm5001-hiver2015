@@ -1,17 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gameLogic.skills.soldier;
 
 import gameLogic.Creature;
 import gameLogic.skills.RangedSkill;
 import java.util.Random;
 
-/**
- *
- * @author User
- */
 public class AimedShot extends RangedSkill{
     
     public AimedShot(int energyCost, int power) {

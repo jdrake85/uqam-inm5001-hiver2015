@@ -1,17 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gameLogic.pathfinding;
 
 import gameLogic.Creature;
 import gameLogic.gameboard.GameBoard;
 import java.util.PriorityQueue;
 
-/**
- *
- * @author User
- */
 public class OptimalPaths {
 
     private final int xDim;
@@ -96,16 +88,6 @@ public class OptimalPaths {
             }
         }
         return queue;
-    }
-    
-    public void displayOptimalPaths() {
-        for (int i = 0; i < xDim; i++) {
-            for (int j = 0; j < yDim; j++) {
-                if (dCoords[i][j] != null && dCoords[i][j].getSourceCoordinates() != null) {
-                    System.out.println(dCoords[i][j]);
-                }
-            }
-        }
     }
     
     public boolean[][] getTilesReachableInAtMostNSteps(int stepCount) { 

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gameLogic.skills.nurse;
 
 import gameLogic.Creature;
@@ -11,10 +7,6 @@ import gameLogic.skills.DirectionnalSkill;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author User
- */
 public class MustardGas extends DirectionnalSkill {
 
     public MustardGas(int energyCost, int power) {

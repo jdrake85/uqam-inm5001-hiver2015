@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gameLogic.skills.hero;
 
 import gameLogic.Creature;
@@ -11,10 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- *
- * @author User
- */
 public class SpinningPipe extends MeleeSkill {
     public SpinningPipe(int energyCost, int power) {
         super("Spinning Pipe", energyCost, power);

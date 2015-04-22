@@ -19,10 +19,6 @@ import static gameLogic.Main.findAnimControl;
 import gameLogic.pathfinding.Coordinates;
 import gameLogic.skills.Skill;
 
-/**
- *
- * @author User
- */
 public class Creature {
 
     private static final int COST_OF_STEP = 2;
@@ -49,7 +45,7 @@ public class Creature {
         skills = new Skill[4];
         Box box = new Box(0.2f, 1.5f, 0.2f);
         geometry3D = new Geometry(name, box);
-        //geometry3D = (Node) assetManager.loadModel("Hero.scene");
+
         geometry3D.setMaterial(Main.redZombie);
         Main.charNode.attachChild(geometry3D);
         this.addAnimationListener(listener);
@@ -58,8 +54,7 @@ public class Creature {
     public Creature(String name, AssetManager assetManager, AnimEventListener listener) {
         this.name = name;
         skills = new Skill[4];
-        /*Box box = new Box(0.2f, 1.5f, 0.2f);
-         geometry3D = new Geometry(name, box);*/
+
         geometry3D = (Node) assetManager.loadModel("Zombie1.scene");
         geometry3D.setLocalScale(.025f);
         geometry3D.setMaterial(Main.redZombie);
@@ -68,18 +63,14 @@ public class Creature {
         creatureChannel = creatureControl.createChannel();
         creatureChannel.setAnim("Idle");
 
-        //skillChannel = creatureControl.createChannel();
-        //skillChannel.setLoopMode(LoopMode.DontLoop);
-
         Main.charNode.attachChild(geometry3D);
         this.addAnimationListener(listener);
     }
 
     public Creature(String name, Material material, AnimEventListener listener) {
-        //this(name);
         this.name = name;
         skills = new Skill[4];
-        geometry3D = Main.heroScene; // WIP; node is assigned to Spatial..
+        geometry3D = Main.heroScene;
         geometry3D.setMaterial(material);
         Main.charNode.attachChild(geometry3D);
         this.addAnimationListener(listener);
@@ -96,9 +87,6 @@ public class Creature {
         creatureChannel = creatureControl.createChannel();
         creatureChannel.setAnim("Idle");
 
-        //skillChannel = creatureControl.createChannel();
-        //skillChannel.setLoopMode(LoopMode.DontLoop);
-
         Main.charNode.attachChild(geometry3D);
         this.addAnimationListener(listener);
     }
@@ -114,7 +102,6 @@ public class Creature {
 
     public void displayCreatureOn3DBoard(int xCoord, int yCoord) {
         geometry3D.setLocalTranslation(new Vector3f(xCoord, -1, yCoord));
-        //FakeMain2.charNode.attachChild(geometry3D);
     }
 
     public void hideCreatureOn3DBoard() {
@@ -124,22 +111,13 @@ public class Creature {
     public MotionEvent generateMotionEventForMovingCreatureOn3DBoard(MotionPath path, int stepCount) {
         MotionEvent motionControl = new MotionEvent(geometry3D, path);
         motionControl.setDirectionType(MotionEvent.Direction.PathAndRotation);
-        motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));//???
+        motionControl.setRotation(new Quaternion().fromAngleNormalAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));
         motionControl.setSpeed(20f / stepCount);
         return motionControl;
     }
 
     public String statsOutput() {
         return name + ": HEALTH: " + health + " / ENERGY: " + energy;
-    }
-
-    public void displayStats() {
-        String output = statsOutput();
-        if (isGood) {
-            output = "#####################################\n" + output;
-            output += "\n#####################################";
-        }
-        System.out.println(output);
     }
 
     public boolean isAlive() {
@@ -163,8 +141,8 @@ public class Creature {
     private void consumeEnergy(int energyConsumed) {
         if (canPayEnergyCostOf(energyConsumed)) {
             energy -= energyConsumed;
-        } else {    // Debugging?
-            System.out.println("Error: not enough energy to perform action");
+        } else {   
+            System.err.println("Error: not enough energy to perform action");
         }
     }
 
@@ -304,7 +282,6 @@ public class Creature {
 
     public void animateMove() {
         try {
-            // create a channel and start the wobble animation
             creatureChannel.setAnim("Walk");
         } catch (final Exception e) {
             e.printStackTrace();
@@ -313,8 +290,6 @@ public class Creature {
 
     public void animateSkill(String animationType) {
         try {
-            //System.out.println(animationType);
-            // create a channel and start the wobble animation
             creatureChannel.setAnim(animationType);
             creatureChannel.setLoopMode(LoopMode.DontLoop);
             Main.movingCreature = true;
@@ -371,7 +346,6 @@ public class Creature {
     }
 
     public boolean hasSkillNumber(int skillNumber) {
-        // TODO: change 12 to 4
         return 1 <= skillNumber && skillNumber <= 4 && skills[skillNumber - 1] != null;
     }
 

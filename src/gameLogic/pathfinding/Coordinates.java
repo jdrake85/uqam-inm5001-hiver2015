@@ -74,7 +74,7 @@ public class Coordinates implements Comparable {
         return xCoord == coord.getXCoord() && yCoord == coord.getYCoord();
     }
 
-    // Coordinates must be adjacent (one of the four surrounding cardinal coords
+    // Coordinates must be adjacent (one of the four surrounding cardinal coords)
     public Coordinates getNextCoordinatesInTheDirectionOf(Coordinates coords) {
         Coordinates nextCoords = null;
         if (this.areCardinalCoordinatesAdjacentTo(coords)) {

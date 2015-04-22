@@ -56,8 +56,6 @@ public class GameState extends AbstractAppState implements ScreenController {
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
-        //TODO: initialize your AppState, e.g. attach spatials to rootNode
-        //this is called on the OpenGL thread after the AppState has been attached
     }
 
     public void update(boolean frequent) {
@@ -89,9 +87,6 @@ public class GameState extends AbstractAppState implements ScreenController {
     @Override
     public void cleanup() {
         super.cleanup();
-        //TODO: clean up what you initialized in the initialize method,
-        //e.g. remove all spatials from rootNode
-        //this is called on the OpenGL thread after the AppState has been detached
     }
 
     public void bind(Nifty nifty, Screen screen) {
@@ -467,7 +462,7 @@ public class GameState extends AbstractAppState implements ScreenController {
             myElem.enable();
             myElem = Main.nifty.getScreen("battle").findElementByName(buttons.get(scaled2X + 13));
             myElem.enable();
-            //JASON: TODO check changement (OK1)
+     
             for (int i = 0; i < 4; i++) {
                 if (character.getSkills()[i] != null) {
                     myElem = Main.nifty.getScreen("battle").findElementByName(buttons.get(i + scaled4X));
@@ -492,7 +487,7 @@ public class GameState extends AbstractAppState implements ScreenController {
             swapImages(heroEnergyPng, hpAndEnergy.get(scaled2X + 1));
             swapImages(heroMovePng, moveAndEnd.get(scaled2X + 0));
             swapImages(heroEndTurnPng, moveAndEnd.get(scaled2X + 1));
-            for (int i = 0; i < 4; i++) { // JASON: TODO check changement (OK1)
+            for (int i = 0; i < 4; i++) {
                 if (player.getSkills()[i] != null) {
                     swapImages(skillsList.get(i + scaled4X), skillsHolders.get(i + scaled4X));
                 }
@@ -533,7 +528,7 @@ public class GameState extends AbstractAppState implements ScreenController {
             myElem.disable();
             myElem = Main.nifty.getScreen("battle").findElementByName(buttons.get(scaled2X + 13));
             myElem.disable();
-            // JASON: CHANGEMENT ICI (TODO check)
+     
             for (int i = scaled4X; i < scaled4X + 4; i++) {
                 if (Main.allSkills[i] != null) {
                     myElem = Main.nifty.getScreen("battle").findElementByName(buttons.get(i));
@@ -555,7 +550,7 @@ public class GameState extends AbstractAppState implements ScreenController {
         if (player != null && !player.equals(creatureInCommand)) {
             swapImages(greyedAsMoveAndEnd, moveAndEnd.get(scaled2X + 0));
             swapImages(greyedAsMoveAndEnd, moveAndEnd.get(scaled2X + 1));
-            //JASON: TODO check changement
+    
             for (int i = 0 + scaled4X; i < scaled4X + 4; i++) {
                 if (Main.allSkills[i] != null) {
                     swapImages(lockedAsSkill, skillsHolders.get(i));

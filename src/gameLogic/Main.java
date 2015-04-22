@@ -51,9 +51,9 @@ public class Main extends SimpleApplication implements AnimEventListener {
     protected Node mainNode = new Node("mainNode");
     public static Node charNode = new Node("charNode");
     public static String gameState = "outOfLevel"; // idle, move, skill, outOfLevel, enemyBusy, enemyIdle
-    public static Material greenMat; //TODO remove
-    public static Material redMat; //TODO remove
-    public static Material greyMat; //TODO remove
+    public static Material greenMat;
+    public static Material redMat;
+    public static Material greyMat; 
     public static Material blueMat;
     public static Material redZombie;
     public static Material heroMat;
@@ -100,22 +100,19 @@ public class Main extends SimpleApplication implements AnimEventListener {
         flyCam.setEnabled(false);
         initScene();
         initKeys();
-        enableScreenshots(); // allows PRINTSCREEN to save screenshots
+        enableScreenshots(); // allows PRINTSCREEN key to take in-game screenshots
 
         // HERO GRAPHICS
         heroMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        //heroMat.setColor("Color", new ColorRGBA(0f, 0f, 1f, 0f));
         assetManager.registerLocator("assets/Models/Hero/", FileLocator.class);
         heroMat.setTexture("ColorMap",assetManager.loadTexture("HeroTexture.png"));
 
         // NURSE GRAPHICS
         nurseMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        //nurseMat.setColor("Color", new ColorRGBA(1f, 0.5f, 0.1f, 0f));
         nurseMat.setTexture("ColorMap",assetManager.loadTexture("NurseTexture.png"));
 
         // SOLDIER GRAPHICS
         soldierMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        //soldierMat.setColor("Color", new ColorRGBA(0f, 1f, 0f, 0f));
         soldierMat.setTexture("ColorMap",assetManager.loadTexture("SoldierTexture.png"));
     }
 
@@ -128,21 +125,16 @@ public class Main extends SimpleApplication implements AnimEventListener {
         }
 
         inputManager.addMapping("MoveKey", new KeyTrigger(KeyInput.KEY_M));
-        inputManager.addMapping("EnergyKey", new KeyTrigger(KeyInput.KEY_E));
-        inputManager.addMapping("RestoreHealthKey", new KeyTrigger(KeyInput.KEY_R));
         inputManager.addMapping("SelectTile",
-                new KeyTrigger(KeyInput.KEY_SPACE), // trigger 1: spacebar
-                new MouseButtonTrigger(MouseInput.BUTTON_LEFT)); // trigger 2: left-button click
+                new KeyTrigger(KeyInput.KEY_SPACE), 
+                new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addMapping("EndTurnKey", new KeyTrigger(KeyInput.KEY_Q));
         inputManager.addMapping("VictoryKey", new KeyTrigger(KeyInput.KEY_V));
 
-        inputManager.addListener(actionListener, "BannerRefresh");
         inputManager.addListener(actionListener, "MoveKey");
-        inputManager.addListener(actionListener, "EnergyKey");
-        inputManager.addListener(actionListener, "RestoreHealthKey");
         inputManager.addListener(actionListener, "SelectTile");
         inputManager.addListener(actionListener, "EndTurnKey");
-        inputManager.addListener(actionListener, "VictoryKey");
+        inputManager.addListener(actionListener, "VictoryKey"); //Cheat key
     }
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
@@ -167,21 +159,11 @@ public class Main extends SimpleApplication implements AnimEventListener {
                 requestSkill(command);
             }
             
-            // For debugging (TODO: remove)
+            // Cheat key to rapidly move through levels
             if (name.equals("VictoryKey") && !keyPressed && gameState.equals("idle") 
                     && noMotionEventPlaying() && !movingCreature) {
                 level++;
                 gameState = "outOfLevel";
-            }
-
-            // For debugging (TODO: remove)
-            if (name.equals("EnergyKey") && !keyPressed && gameState.equals("idle")) {
-                requestIncreaseEnergy();
-            }
-
-            // For debugging (TODO: remove)
-            if (name.equals("RestoreHealthKey") && !keyPressed && gameState.equals("idle")) {
-                requestRestoreHealth();
             }
 
             if (name.equals("SelectTile") && !keyPressed && gameState.equals("skill")) {
@@ -234,22 +216,6 @@ public class Main extends SimpleApplication implements AnimEventListener {
         }
     }
 
-    // For debugging (TODO: remove)
-    public void requestIncreaseEnergy() {
-        if (noMotionEventPlaying() && !movingCreature) {
-            creatureInCommand.setEnergy(creatureInCommand.getEnergy() + 20);
-            System.out.println(creatureInCommand.getEnergy());
-        }
-    }
-
-    // For debugging (TODO: remove)
-    public void requestRestoreHealth() {
-        if (noMotionEventPlaying() && !movingCreature) {
-            creatureInCommand.receiveDamage(-16);
-            System.out.println(creatureInCommand + " is now at " + creatureInCommand.getHealth() + " health!");
-        }
-    }
-
     public void requestUseSkillOnSelectedTile() {
         if (noMotionEventPlaying() && !movingCreature) {
             CollisionResults results = new CollisionResults();
@@ -261,9 +227,9 @@ public class Main extends SimpleApplication implements AnimEventListener {
             Ray ray = new Ray(click3d, dir);
             pivot.collideWith(ray, results);
 
-            // Use the results (we mark the hit object)
+
             if (results.size() > 0) {
-                // The closest collision point is what was truly hit:
+     
                 Geometry closest = results.getClosestCollision().getGeometry();
 
                 Vector3f targetTile;
@@ -303,9 +269,8 @@ public class Main extends SimpleApplication implements AnimEventListener {
             Ray ray = new Ray(click3d, dir);
             pivot.collideWith(ray, results);
 
-            // Use the results (we mark the hit object)
             if (results.size() > 0) {
-                // The closest collision point is what was truly hit:
+
                 Geometry closest = results.getClosestCollision().getGeometry();
 
                 Vector3f targetTile;
@@ -339,6 +304,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
         return zombie;
     }
 
+    // Returns true if a human character is defeated
     private boolean performAttackOnPlayerForZombieTurn() {
         Zombie zombie = (Zombie) creatureInCommand;
         Creature zombieTarget = zombie.getCurrentTarget();
@@ -365,7 +331,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
         flyCam.setDragToRotate(true);
 
         greenMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        greenMat.setColor("Color", new ColorRGBA(.1f, .75f, .1f, 0.5f));//R,B,G,Alphas
+        greenMat.setColor("Color", new ColorRGBA(.1f, .75f, .1f, 0.5f)); // R, B, G, Alphas
         greenMat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
 
         greyMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -461,6 +427,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
         }
     }
 
+    // Main (game) loop that runs constantly
     @Override
     public void simpleUpdate(float tpf) {
         if (!gameState.equals("outOfLevel")) {
@@ -532,12 +499,14 @@ public class Main extends SimpleApplication implements AnimEventListener {
         }
     }
 
+    // Animation listener
     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
         if (animName.equals("Skill1") || animName.equals("Skill2") || animName.equals("Skill13")) {
             movingCreature = false;
         }
     }
 
+    // Animation listener
     public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
         // Do nothing
     }
@@ -589,15 +558,6 @@ public class Main extends SimpleApplication implements AnimEventListener {
         levelName = "Level 1: Fight for Freedom";
 
         soldier = null;
-        
-        // Special pre-loading version of level 1
-        nurse = new Creature("Nurse", Main.nurseMat, assetManager, this);
-        nurse.setPicturePath("Interface/Images/Nurse.png");
-        nurse.setSkillAsNumber(new Heal(5, 4), 1);
-        nurse.setSkillAsNumber(new Push(8, 4), 4);
-        battle.insertCreatureAt(nurse, 7, 0);
-        nurse.faceSouth();
-        battle.removeCreatureAt(7, 0);
         nurse = null;
         
         hero = new Creature("Hero", Main.heroMat, assetManager, this);
@@ -897,7 +857,6 @@ public class Main extends SimpleApplication implements AnimEventListener {
         zombie4.faceSouth();
     }
     
-    // Debugging function (TODO: remove)
     private void enableScreenshots() {
         ScreenshotAppState screenShotState = new ScreenshotAppState();
         this.stateManager.attach(screenShotState);

@@ -31,7 +31,6 @@ public class GameBattle {
     private PriorityQueue<CreatureSpeedTurnTriplet> creaturePriority = new PriorityQueue<CreatureSpeedTurnTriplet>();
     private int maxCumulativeCreatureSpeed = 0;
     private int minCumulativeCreatureSpeed = Integer.MAX_VALUE;
-    private int turnCounter = 1;
     private int heroCount = 0;
 
     public GameBattle() {
@@ -47,7 +46,6 @@ public class GameBattle {
         Skill skill = creature.prepareSkill(skillNumber);
         Coordinates originatingCoords = gameboard.getCreatureCoordinates(creature);
         skill.setOriginatingFrom(originatingCoords);
-        //boolean creatureIsGood = creature.isGood();
         return gameboard.getSkillOverlay(skill);
     }
 
@@ -71,21 +69,6 @@ public class GameBattle {
     public boolean containsGoodCreatures() {
         List<Creature> goodCreatures = gameboard.getGoodCreatureList();
         return !goodCreatures.isEmpty();
-    }
-
-    // Player loses as soon as one of the heroes is defeated - TODO: use or delete!
-    public boolean isLost() {
-        int currentHeroCount = 0;
-        for (Creature creature: creatureList) { 
-            if (!(creature instanceof Zombie)) {
-                if (creature.isAlive()) {
-                    currentHeroCount++;
-                } else {
-                    break;
-                }
-            }
-        }
-        return currentHeroCount == heroCount;
     }
 
     // Player wins as soon as all zombies are defeated
@@ -143,7 +126,6 @@ public class GameBattle {
         refreshCreatureList();
     }
 
-    // Quick implementation
     public void removeCreatureAt(int xCoord, int yCoord) {
         Tile tile = gameboard.getTileAt(xCoord, yCoord);
         Creature foundCreature = tile.getOccupier();
@@ -316,7 +298,7 @@ public class GameBattle {
         return creaturePlayingTurn;
     }
 
-    // If zombie already has a target, a different target is only considered if actually closer
+    // Zombie A.I.: If zombie already has a target, a different target is only considered if actually closer
     public Coordinates getCoordinatesForBestClosestTarget(Zombie zombie) {
         Coordinates nextMove = null;
         if (zombieIsAdjacentToAGoodCreature(zombie)) {

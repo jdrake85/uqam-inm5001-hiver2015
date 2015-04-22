@@ -49,7 +49,7 @@ public class CreatureSpeedTurnTriplet implements Comparable {
         return comparison;
     }
     
-    // Note: non standard equals, because its implementation will be used only to quickly remove triplits from a PriorityQueue
+    // Note: non standard equals, because its implementation will be used only to quickly remove triplets from a PriorityQueue
     @Override
     public boolean equals(Object o) {
         boolean equality = false;
